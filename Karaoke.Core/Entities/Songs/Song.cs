@@ -31,6 +31,21 @@ public sealed class Song : AuditableEntity
     public CultureInfo OriginalLanguage { get; set; } = Languages.Japanese;
 
     /// <summary>
+    ///     Gets or sets the file path of the song.
+    /// </summary>
+    public string FilePath { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the file name of the song.
+    /// </summary>
+    public string FileName { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the file size of the song.
+    /// </summary>
+    public long FileSize { get; set; }
+
+    /// <summary>
     ///     Gets the <see cref="Songs.Lyrics" /> of the song.
     /// </summary>
     public ICollection<Lyrics> Lyrics { get; } = new List<Lyrics>();
@@ -64,6 +79,11 @@ public sealed class Song : AuditableEntity
     ///     Gets an <see cref="ICollection{T}" /> of <see cref="Collection" />s the song belongs to.
     /// </summary>
     public ICollection<Collection> Collections { get; } = new List<Collection>();
+
+    /// <summary>
+    ///     Gets an <see cref="ICollection{T}" /> of <see cref="Tag" />s the song is tagged with.
+    /// </summary>
+    public ICollection<Tag> Tags { get; } = new List<Tag>();
 
     /// <summary>
     ///     Adds a title to the song.
