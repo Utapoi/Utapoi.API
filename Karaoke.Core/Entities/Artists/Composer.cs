@@ -1,4 +1,5 @@
-﻿using Karaoke.Core.Entities.Songs;
+﻿using Karaoke.Core.Entities.Common;
+using Karaoke.Core.Entities.Songs;
 
 namespace Karaoke.Core.Entities.Artists;
 

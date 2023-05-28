@@ -1,4 +1,6 @@
-﻿namespace Karaoke.Core.Entities.Songs;
+﻿using Karaoke.Core.Entities.Songs;
+
+namespace Karaoke.Core.Entities.Common;
 
 public sealed class Collection : AuditableEntity
 {

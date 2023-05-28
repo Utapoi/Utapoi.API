@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Karaoke.Core.Common;
 using Karaoke.Core.Entities.Artists;
+using Karaoke.Core.Entities.Common;
 
 namespace Karaoke.Core.Entities.Songs;
 
@@ -55,6 +56,11 @@ public sealed class Song : AuditableEntity
     public ICollection<SongWriter> SongWriters { get; } = new List<SongWriter>();
 
     /// <summary>
+    ///     Gets an <see cref="ICollection{T}" /> of <see cref="Work" />s the song appears in.
+    /// </summary>
+    public ICollection<Work> Sources { get; } = new List<Work>();
+
+    /// <summary>
     ///     Gets an <see cref="ICollection{T}" /> of <see cref="Collection" />s the song belongs to.
     /// </summary>
     public ICollection<Collection> Collections { get; } = new List<Collection>();
@@ -91,20 +97,6 @@ public sealed class Song : AuditableEntity
         return Titles.FirstOrDefault(t => Equals(t.Language, culture))?.Text
                ?? Titles.FirstOrDefault()?.Text
                ?? string.Empty;
-    }
-
-    /// <summary>
-    ///     Gets the title of the song in the specified culture.
-    /// </summary>
-    /// <param name="culture">
-    ///     The culture.
-    /// </param>
-    /// <returns>
-    ///     The title of the song in the specified culture or the default one if not found.
-    /// </returns>
-    public string GetTitle(string culture)
-    {
-        return GetTitle(CultureInfo.GetCultureInfo(culture));
     }
 
     /// <summary>
