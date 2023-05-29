@@ -31,19 +31,34 @@ public sealed class Song : AuditableEntity
     public CultureInfo OriginalLanguage { get; set; } = Languages.Japanese;
 
     /// <summary>
-    ///     Gets or sets the file path of the song.
+    ///     Gets or sets the vocal file path of the song.
     /// </summary>
-    public string FilePath { get; set; } = string.Empty;
+    public string VocalFilePath { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the file name of the song.
+    ///     Gets or sets the vocal file name of the song.
     /// </summary>
-    public string FileName { get; set; } = string.Empty;
+    public string VocalFileName { get; set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or sets the file size of the song.
+    ///     Gets or sets the vocal file size of the song.
     /// </summary>
-    public long FileSize { get; set; }
+    public long VocalFileSize { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the instrumental file path of the song.
+    /// </summary>
+    public string InstrumentalFilePath { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the instrumental file name of the song.
+    /// </summary>
+    public string InstrumentalFileName { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets or sets the instrumental file size of the song.
+    /// </summary>
+    public long InstrumentalFileSize { get; set; }
 
     /// <summary>
     ///     Gets the <see cref="Songs.Lyrics" /> of the song.
