@@ -1,3 +1,4 @@
+using Karaoke.Application;
 using Karaoke.Infrastructure;
 using Karaoke.Infrastructure.Persistence;
 
@@ -5,8 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => { c.CustomSchemaIds(type => type?.FullName?.Replace("+", ".")); });
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -30,5 +34,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseAuthorization();
+app.UseAuthentication();
 app.MapControllers();
 app.Run();

@@ -1,4 +1,5 @@
-﻿using Karaoke.Application.Interfaces.Persistence;
+﻿using Karaoke.Application.Interfaces.Auth;
+using Karaoke.Application.Interfaces.Persistence;
 using Karaoke.Infrastructure.Identity;
 using Karaoke.Infrastructure.Persistence;
 using Karaoke.Infrastructure.Persistence.Interceptors;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Karaoke.Infrastructure;
 
@@ -22,9 +22,6 @@ public static class DependencyInjection
     /// <param name="services">
     ///     The <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="env">
-    ///     The <see cref="IHostEnvironment" />.
-    /// </param>
     /// <param name="configuration">
     ///     The <see cref="IConfiguration" />.
     /// </param>
@@ -38,6 +35,8 @@ public static class DependencyInjection
         AddAuthDbContext(services, configuration);
         AddKaraokeDbContext(services, configuration);
         AddStatsDbContext(services, configuration);
+
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }
@@ -104,7 +103,18 @@ public static class DependencyInjection
         });
 
         services
-            .AddDefaultIdentity<ApplicationUser>()
+            .AddDefaultIdentity<ApplicationUser>(x =>
+            {
+                x.SignIn.RequireConfirmedAccount = false;
+                x.User.RequireUniqueEmail = true;
+                x.User.AllowedUserNameCharacters =
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                x.Password.RequireDigit = true;
+                x.Password.RequireLowercase = true;
+                x.Password.RequireLowercase = true;
+                x.Password.RequireNonAlphanumeric = true;
+                x.Password.RequiredLength = 8;
+            })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AuthDbContext>();
 
