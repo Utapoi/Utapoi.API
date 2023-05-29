@@ -1,8 +1,8 @@
-﻿using System.Globalization;
+﻿using Duende.IdentityServer.EntityFramework.Options;
 using Karaoke.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Karaoke.Infrastructure.Persistence;
 
@@ -12,7 +12,7 @@ namespace Karaoke.Infrastructure.Persistence;
 /// <remarks>
 ///     This context is only used for authentication and authorization.
 /// </remarks>
-internal sealed class AuthDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+public sealed class AuthDbContext : ApiAuthorizationDbContext<ApplicationUser>
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="AuthDbContext" /> class.
@@ -20,18 +20,22 @@ internal sealed class AuthDbContext : IdentityDbContext<ApplicationUser, Identit
     /// <param name="options">
     ///     The <see cref="DbContextOptions{TContext}" />.
     /// </param>
-    public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
+    /// <param name="operationalStoreOptions">
+    ///     The <see cref="IOptions{OperationalStoreOptions}" />.
+    /// </param>
+    public AuthDbContext(DbContextOptions<AuthDbContext> options,
+        IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
     {
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<ApplicationUser>()
-            .Property(x => x.Languages)
-            .HasConversion(
-                x => x.Select(c => c.IetfLanguageTag),
-                x => x.Select(CultureInfo.GetCultureInfo).ToList()
-            );
+        //builder.Entity<ApplicationUser>()
+        //    .Property(x => x.Languages)
+        //    .HasConversion(
+        //        x => x.Select(c => c.IetfLanguageTag),
+        //        x => x.Select(CultureInfo.GetCultureInfo).ToList()
+        //    );
 
         base.OnModelCreating(builder);
     }

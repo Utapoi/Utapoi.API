@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Karaoke.Infrastructure.Identity;
 
@@ -9,11 +8,10 @@ namespace Karaoke.Infrastructure.Identity;
 /// <remarks>
 ///     This class is used by ASP.NET Core Identity and has been extended to include a <see cref="Guid" /> as the primary
 ///     key.
-///     All entities that need to reference the user should use <see cref="Karaoke.Core.Entities.Users.User" /> since the
-///     <see cref="ApplicationUser" />
-///     will be only used for authentication and authorization.
+///     All entities that need to reference the user should use <see cref="Core.Entities.Users.User" /> since the
+///     <see cref="ApplicationUser" /> will be only used for authentication and authorization.
 /// </remarks>
-public sealed class ApplicationUser : IdentityUser<Guid>
+public sealed class ApplicationUser : IdentityUser
 {
     /// <summary>
     ///     Gets or sets the profile picture.
@@ -27,5 +25,6 @@ public sealed class ApplicationUser : IdentityUser<Guid>
     ///     The default language is <see cref="Core.Common.Languages.English" />.
     ///     They are sorted by preference.
     /// </remarks>
-    public ICollection<CultureInfo> Languages { get; } = new List<CultureInfo>();
+    //[NotMapped]
+    //public ICollection<CultureInfo> Languages { get; } = new List<CultureInfo>();
 }

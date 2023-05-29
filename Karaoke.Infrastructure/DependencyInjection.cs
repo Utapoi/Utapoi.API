@@ -1,6 +1,9 @@
-﻿using Karaoke.Infrastructure.Identity;
+﻿using Karaoke.Application.Interfaces.Persistence;
+using Karaoke.Infrastructure.Identity;
 using Karaoke.Infrastructure.Persistence;
 using Karaoke.Infrastructure.Persistence.Interceptors;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,14 +31,13 @@ public static class DependencyInjection
     /// <returns>
     ///     The <see cref="IServiceCollection" /> so that additional calls can be chained.
     /// </returns>
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IHostEnvironment env,
-        IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
-        AddKaraokeDbContext(services, env, configuration);
-        AddAuthDbContext(services, env, configuration);
-        AddStatsDbContext(services, env, configuration);
+        AddAuthDbContext(services, configuration);
+        AddKaraokeDbContext(services, configuration);
+        AddStatsDbContext(services, configuration);
 
         return services;
     }
@@ -46,18 +48,14 @@ public static class DependencyInjection
     /// <param name="services">
     ///     The <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="env">
-    ///     The <see cref="IHostEnvironment" />.
-    /// </param>
     /// <param name="configuration">
     ///     The <see cref="IConfiguration" />.
     /// </param>
-    private static void AddKaraokeDbContext(IServiceCollection services, IHostEnvironment env,
-        IConfiguration configuration)
+    private static void AddKaraokeDbContext(IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<KaraokeDbContext>(x =>
         {
-            if (env.IsDevelopment())
+            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
             {
                 // Note(Mikyan): Switch to SQLite or MSSQL for testing?
                 x.UseInMemoryDatabase("KaraokeDb");
@@ -72,6 +70,8 @@ public static class DependencyInjection
             x.EnableDetailedErrors();
             x.LogTo(Console.WriteLine);
         });
+
+        services.AddScoped<IKaraokeDbContext>(provider => provider.GetRequiredService<KaraokeDbContext>());
     }
 
     /// <summary>
@@ -80,18 +80,14 @@ public static class DependencyInjection
     /// <param name="services">
     ///     The <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="env">
-    ///     The <see cref="IHostEnvironment" />.
-    /// </param>
     /// <param name="configuration">
     ///     The <see cref="IConfiguration" />.
     /// </param>
-    private static void AddAuthDbContext(IServiceCollection services, IHostEnvironment env,
-        IConfiguration configuration)
+    private static void AddAuthDbContext(IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AuthDbContext>(x =>
         {
-            if (env.IsDevelopment())
+            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
             {
                 // Note(Mikyan): Switch to SQLite or MSSQL for testing?
                 x.UseInMemoryDatabase("AuthDb");
@@ -108,8 +104,17 @@ public static class DependencyInjection
         });
 
         services
-            .AddIdentityCore<ApplicationUser>()
+            .AddDefaultIdentity<ApplicationUser>()
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AuthDbContext>();
+
+        services.AddIdentityServer()
+            .AddApiAuthorization<ApplicationUser, AuthDbContext>();
+
+        services.AddAuthentication()
+            .AddIdentityServerJwt();
+
+        services.AddScoped<AuthDbContextInitializer>();
     }
 
     /// <summary>
@@ -118,18 +123,14 @@ public static class DependencyInjection
     /// <param name="services">
     ///     The <see cref="IServiceCollection" />.
     /// </param>
-    /// <param name="env">
-    ///     The <see cref="IHostEnvironment" />.
-    /// </param>
     /// <param name="configuration">
     ///     The <see cref="IConfiguration" />.
     /// </param>
-    private static void AddStatsDbContext(IServiceCollection services, IHostEnvironment env,
-        IConfiguration configuration)
+    private static void AddStatsDbContext(IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<StatsDbContext>(x =>
         {
-            if (env.IsDevelopment())
+            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
             {
                 // Note(Mikyan): Switch to SQLite or MSSQL for testing?
                 x.UseInMemoryDatabase("StatsDb");
