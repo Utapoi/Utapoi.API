@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using ValidationException = Karaoke.Application.Common.Exceptions.ValidationException;
 
 namespace Karaoke.Application.Common.Behaviours;
 

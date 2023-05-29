@@ -1,5 +1,6 @@
 ﻿using Karaoke.Application.Auth.Requests.LoginUser;
 using Karaoke.Application.Auth.Requests.RegisterUser;
+using Karaoke.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Karaoke.API.Controllers;
@@ -49,6 +50,11 @@ public class AuthController : ApiControllerBase
 
             return Created(string.Empty, response.UserId);
         }
+        catch (ValidationException ex)
+        {
+            _logger.LogError(ex, "Error registering in user: {Username}", request.Username);
+            return BadRequest(ex.Errors);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error registering user: {Username} / {Email}", request.Username, request.Email);
@@ -82,6 +88,11 @@ public class AuthController : ApiControllerBase
             }
 
             return Ok(response.UserId);
+        }
+        catch (ValidationException ex)
+        {
+            _logger.LogError(ex, "Error logging in user: {Username}", request.Username);
+            return BadRequest(ex.Errors);
         }
         catch (Exception ex)
         {
