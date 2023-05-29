@@ -1,24 +1,24 @@
 ﻿using System.Reflection;
 using Karaoke.Application.Interfaces.Persistence;
 using Karaoke.Core.Entities.Songs;
-using Karaoke.Infrastructure.Identity;
 using Karaoke.Infrastructure.Persistence.Interceptors;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Karaoke.Infrastructure.Persistence;
 
 /// <summary>
-///     The application database context.
+///     This is the official database used for the Karaoke application.
 /// </summary>
-internal sealed class ApplicationDbContext
-    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext
+/// <remarks>
+///     We may want to consider using a separate database for community submitted songs.
+///     This allow us to have a concept of "official" songs and "community" songs.
+/// </remarks>
+internal sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
 {
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="ApplicationDbContext" /> class.
+    ///     Initializes a new instance of the <see cref="KaraokeDbContext" /> class.
     /// </summary>
     /// <param name="options">
     ///     The <see cref="DbContextOptions{TContext}" />.
@@ -26,7 +26,7 @@ internal sealed class ApplicationDbContext
     /// <param name="auditableEntitySaveChangesInterceptor">
     ///     The <see cref="AuditableEntitySaveChangesInterceptor" />.
     /// </param>
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
+    public KaraokeDbContext(DbContextOptions<KaraokeDbContext> options,
         AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor) : base(options)
     {
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
@@ -38,12 +38,12 @@ internal sealed class ApplicationDbContext
     public DbSet<Song> Songs => Set<Song>();
 
     /// <inheritdoc />
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(ApplicationDbContext)) ??
-                                                Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(KaraokeDbContext)) ??
+                                                     Assembly.GetExecutingAssembly());
 
-        base.OnModelCreating(builder);
+        base.OnModelCreating(modelBuilder);
     }
 
     /// <inheritdoc />

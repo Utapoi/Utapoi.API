@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Karaoke.Application.Interfaces.Persistence;
 
-public interface IApplicationDbContext
+public interface IKaraokeDbContext
 {
     DbSet<Song> Songs { get; }
 }
