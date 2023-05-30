@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Karaoke.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,7 +29,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
             return;
         }
 
-        var key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
+        var key = SHA512.HashData(Encoding.UTF8.GetBytes(_jwtSettings.Key));
 
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;

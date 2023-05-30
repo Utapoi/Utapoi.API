@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using Karaoke.Application.Common.Exceptions;
 using Karaoke.Application.Identity.Tokens;
 using Karaoke.Infrastructure.Identity.JWT;
@@ -88,7 +89,7 @@ public class TokenService : ITokenService
 
     private SigningCredentials GetSigningCredentials()
     {
-        var key = SHA512.HashData("SuperSecret"u8.ToArray());
+        var key = SHA512.HashData(Encoding.UTF8.GetBytes(_jwtSettings.Key));
 
         return new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
     }
