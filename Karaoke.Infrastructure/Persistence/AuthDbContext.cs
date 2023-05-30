@@ -1,6 +1,5 @@
-﻿using Duende.IdentityServer.EntityFramework.Options;
-using Karaoke.Infrastructure.Identity;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+﻿using Karaoke.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -12,7 +11,7 @@ namespace Karaoke.Infrastructure.Persistence;
 /// <remarks>
 ///     This context is only used for authentication and authorization.
 /// </remarks>
-public sealed class AuthDbContext : ApiAuthorizationDbContext<ApplicationUser>
+public sealed class AuthDbContext : IdentityDbContext<ApplicationUser>
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="AuthDbContext" /> class.
@@ -23,20 +22,7 @@ public sealed class AuthDbContext : ApiAuthorizationDbContext<ApplicationUser>
     /// <param name="operationalStoreOptions">
     ///     The <see cref="IOptions{OperationalStoreOptions}" />.
     /// </param>
-    public AuthDbContext(DbContextOptions<AuthDbContext> options,
-        IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
+    public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
     {
-    }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        //builder.Entity<ApplicationUser>()
-        //    .Property(x => x.Languages)
-        //    .HasConversion(
-        //        x => x.Select(c => c.IetfLanguageTag),
-        //        x => x.Select(CultureInfo.GetCultureInfo).ToList()
-        //    );
-
-        base.OnModelCreating(builder);
     }
 }

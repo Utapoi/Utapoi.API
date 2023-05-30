@@ -18,13 +18,7 @@ public sealed class ApplicationUser : IdentityUser
     /// </summary>
     public string ProfilePicture { get; set; } = string.Empty;
 
-    /// <summary>
-    ///     Gets an <see cref="ICollection{T}" /> of <see cref="CultureInfo" /> of the languages the user speaks.
-    /// </summary>
-    /// <remarks>
-    ///     The default language is <see cref="Core.Common.Languages.English" />.
-    ///     They are sorted by preference.
-    /// </remarks>
-    //[NotMapped]
-    //public ICollection<CultureInfo> Languages { get; } = new List<CultureInfo>();
+    public string RefreshToken { get; set; } = string.Empty;
+
+    public DateTime RefreshTokenExpiryTime { get; set; } = DateTime.Now;
 }

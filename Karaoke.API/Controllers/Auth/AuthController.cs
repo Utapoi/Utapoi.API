@@ -1,9 +1,10 @@
-﻿using Karaoke.Application.Auth.Requests.LoginUser;
+﻿using Karaoke.API.Requests.Auth;
+using Karaoke.Application.Auth.Requests.LoginUser;
 using Karaoke.Application.Auth.Requests.RegisterUser;
 using Karaoke.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Karaoke.API.Controllers;
+namespace Karaoke.API.Controllers.Auth;
 
 /// <summary>
 ///     The controller for authentication.
@@ -37,18 +38,26 @@ public class AuthController : ApiControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> RegisterAsync([FromBody] RegisterUser.Request request)
+    public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
     {
         try
         {
-            var response = await Mediator.Send(request);
-
-            if (!response.Result.Succeeded)
+            var m = new RegisterUser.Request
             {
-                return BadRequest(response.Result.Errors);
+                Username = request.Username,
+                Email = request.Email,
+                Password = request.Password,
+                IpAddress = GetOriginFromRequest()
+            };
+
+            var response = await Mediator.Send(m);
+
+            if (response == null)
+            {
+                return BadRequest();
             }
 
-            return Created(string.Empty, response.UserId);
+            return Created(string.Empty, response);
         }
         catch (ValidationException ex)
         {
@@ -76,18 +85,25 @@ public class AuthController : ApiControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> LoginAsync([FromBody] LoginUser.Request request)
+    public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
     {
         try
         {
-            var response = await Mediator.Send(request);
-
-            if (!response.Result.Succeeded)
+            var m = new LoginUser.Request
             {
-                return BadRequest(response.Result.Errors);
+                Username = request.Username,
+                Password = request.Password,
+                IpAddress = GetOriginFromRequest()
+            };
+
+            var response = await Mediator.Send(m);
+
+            if (response == null)
+            {
+                return BadRequest();
             }
 
-            return Ok(response.UserId);
+            return Ok(response);
         }
         catch (ValidationException ex)
         {

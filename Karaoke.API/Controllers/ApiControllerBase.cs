@@ -16,4 +16,15 @@ public class ApiControllerBase : ControllerBase
     ///     Gets the mediator.
     /// </summary>
     protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<ISender>();
+
+    /// <summary>
+    ///     Gets the origin from the request.
+    /// </summary>
+    /// <returns>
+    ///     The origin from the request.
+    /// </returns>
+    protected string GetOriginFromRequest()
+    {
+        return $"{Request.Scheme}://{Request.Host.Value}{Request.PathBase.Value}";
+    }
 }

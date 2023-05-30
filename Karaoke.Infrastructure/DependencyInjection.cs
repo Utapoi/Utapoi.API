@@ -1,13 +1,19 @@
-﻿using Karaoke.Application.Interfaces.Auth;
+﻿using Karaoke.Application.Identity.Auth;
+using Karaoke.Application.Identity.Tokens;
 using Karaoke.Application.Interfaces.Persistence;
 using Karaoke.Infrastructure.Identity;
+using Karaoke.Infrastructure.Identity.Auth;
+using Karaoke.Infrastructure.Identity.JWT;
+using Karaoke.Infrastructure.Identity.Tokens;
 using Karaoke.Infrastructure.Persistence;
 using Karaoke.Infrastructure.Persistence.Interceptors;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Karaoke.Infrastructure;
 
@@ -36,9 +42,17 @@ public static class DependencyInjection
         AddKaraokeDbContext(services, configuration);
         AddStatsDbContext(services, configuration);
 
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
+    }
+
+    public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
+    {
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        return app;
     }
 
     /// <summary>
@@ -102,29 +116,38 @@ public static class DependencyInjection
             x.LogTo(Console.WriteLine);
         });
 
-        services
-            .AddDefaultIdentity<ApplicationUser>(x =>
-            {
-                x.SignIn.RequireConfirmedAccount = false;
-                x.User.RequireUniqueEmail = true;
-                x.User.AllowedUserNameCharacters =
-                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                x.Password.RequireDigit = true;
-                x.Password.RequireLowercase = true;
-                x.Password.RequireLowercase = true;
-                x.Password.RequireNonAlphanumeric = true;
-                x.Password.RequiredLength = 8;
-            })
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<AuthDbContext>();
-
-        services.AddIdentityServer()
-            .AddApiAuthorization<ApplicationUser, AuthDbContext>();
-
-        services.AddAuthentication()
-            .AddIdentityServerJwt();
-
         services.AddScoped<AuthDbContextInitializer>();
+
+        services
+            .AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 6;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<AuthDbContext>()
+            .AddDefaultTokenProviders();
+
+        services.AddOptions<JwtSettings>()
+            .BindConfiguration($"SecuritySettings:{nameof(JwtSettings)}")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+
+        services
+            .AddAuthentication(authentication =>
+            {
+                authentication.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                authentication.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
+
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IAuthService, AuthService>();
     }
 
     /// <summary>

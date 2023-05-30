@@ -14,10 +14,8 @@ public static class DependencyInjection
         services.AddMediatR(c =>
         {
             c.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            c.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
             c.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
         });
-
 
         return services;
     }

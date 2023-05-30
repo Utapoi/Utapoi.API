@@ -1,19 +1,22 @@
 ﻿using FluentValidation;
 using JetBrains.Annotations;
-using Karaoke.Application.Interfaces.Auth;
+using Karaoke.Application.Identity.Auth;
+using Karaoke.Application.Identity.Tokens;
 using MediatR;
 
 namespace Karaoke.Application.Auth.Requests.RegisterUser;
 
 public static class RegisterUser
 {
-    public sealed class Request : IRequest<RegisterUserResponse>
+    public sealed class Request : IRequest<TokenResponse?>
     {
         public string Username { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
 
         public string Email { get; set; } = string.Empty;
+
+        public string IpAddress { get; set; } = string.Empty;
     }
 
     [UsedImplicitly]
@@ -24,11 +27,12 @@ public static class RegisterUser
             RuleFor(x => x.Username).NotEmpty();
             RuleFor(x => x.Password).NotEmpty();
             RuleFor(x => x.Email).NotEmpty();
+            RuleFor(x => x.IpAddress).NotEmpty();
         }
     }
 
     [UsedImplicitly]
-    internal sealed class Handler : IRequestHandler<Request, RegisterUserResponse>
+    internal sealed class Handler : IRequestHandler<Request, TokenResponse?>
     {
         private readonly IAuthService _authService;
 
@@ -37,15 +41,9 @@ public static class RegisterUser
             _authService = authService;
         }
 
-        public async Task<RegisterUserResponse> Handle(Request request, CancellationToken cancellationToken)
+        public Task<TokenResponse?> Handle(Request request, CancellationToken cancellationToken)
         {
-            var (result, userId) = await _authService.CreateUserAsync(request, cancellationToken);
-
-            return new RegisterUserResponse
-            {
-                Result = result,
-                UserId = userId
-            };
+            return _authService.CreateUserAsync(request, cancellationToken);
         }
     }
 }
