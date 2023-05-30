@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using Karaoke.Core.Common;
+using Karaoke.Core.Entities.Common;
 
 namespace Karaoke.Core.Entities.Songs;
 
@@ -20,7 +20,7 @@ public sealed class Lyrics : AuditableEntity
     /// <remarks>
     ///     The default language is <see cref="Languages.English" />.
     /// </remarks>
-    public CultureInfo Language { get; set; } = Languages.English;
+    public Culture Language { get; set; } = Languages.English;
 
     /// <summary>
     ///     Gets or sets the <see cref="Songs.Song" /> identifier linked to this <see cref="Lyrics" />.

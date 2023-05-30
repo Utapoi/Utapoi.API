@@ -1,7 +1,11 @@
-﻿namespace Karaoke.Application.Identity.Tokens;
+﻿using Karaoke.Application.Auth.Commands.GetToken;
+using Karaoke.Application.Auth.Commands.RefreshToken;
+
+namespace Karaoke.Application.Identity.Tokens;
 
 public interface ITokenService
 {
-    Task<TokenResponse> GetTokenAsync(TokenRequest request, string ipAddress,
-        CancellationToken cancellationToken = default);
+    Task<GetToken.Response> GetTokenAsync(GetToken.Command request);
+
+    Task<RefreshToken.Response> RefreshTokenAsync(RefreshToken.Command request);
 }

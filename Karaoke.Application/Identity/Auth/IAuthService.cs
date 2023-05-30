@@ -1,17 +1,17 @@
-﻿using Karaoke.Application.Auth.Requests.LoginUser;
-using Karaoke.Application.Auth.Requests.RegisterUser;
-using Karaoke.Application.Identity.Tokens;
+﻿using Karaoke.Application.Auth.Commands.RegisterUser;
+using Karaoke.Application.Auth.Requests.LoginUser;
+using Karaoke.Application.Common.Models;
 
 namespace Karaoke.Application.Identity.Auth;
 
 public interface IAuthService
 {
-    Task<TokenResponse?> CreateUserAsync(
-        RegisterUser.Request request,
+    Task<Result> CreateUserAsync(
+        RegisterUser.Command request,
         CancellationToken cancellationToken = default
     );
 
-    Task<TokenResponse?> LoginUserAsync(
+    Task<Result> LoginUserAsync(
         LoginUser.Request request,
         CancellationToken cancellationToken = default
     );

@@ -8,8 +8,8 @@ public class CollectionEntityTypeConfiguration : IEntityTypeConfiguration<Collec
 {
     public void Configure(EntityTypeBuilder<Collection> builder)
     {
-        builder.OwnsMany(x => x.Names);
+        builder.HasMany(x => x.Names);
 
-        builder.OwnsMany(x => x.Tags);
+        builder.HasMany(x => x.Tags);
     }
 }

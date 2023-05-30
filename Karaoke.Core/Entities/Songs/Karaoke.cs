@@ -1,4 +1,6 @@
-﻿using Karaoke.Core.Entities.Users;
+﻿using Karaoke.Core.Common;
+using Karaoke.Core.Entities.Common;
+using Karaoke.Core.Entities.Users;
 
 namespace Karaoke.Core.Entities.Songs;
 
@@ -16,6 +18,8 @@ public sealed class Karaoke : AuditableEntity
     ///     Gets or sets the path.
     /// </summary>
     public string Path { get; set; } = string.Empty;
+
+    public Culture Language { get; set; } = Languages.English;
 
     /// <summary>
     ///     Gets an <see cref="ICollection{T}" /> of <see cref="User" /> who created the karaoke.

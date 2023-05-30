@@ -12,8 +12,8 @@ public class SongWriterEntityTypeConfiguration : IEntityTypeConfiguration<SongWr
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<SongWriter> builder)
     {
-        builder.OwnsMany(x => x.Names);
+        builder.HasMany(x => x.Names);
 
-        builder.OwnsMany(x => x.Nicknames);
+        builder.HasMany(x => x.Nicknames);
     }
 }

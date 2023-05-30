@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Karaoke.Core.Common;
+﻿using Karaoke.Core.Common;
 
 namespace Karaoke.Core.Entities.Common;
 
@@ -19,5 +18,5 @@ public sealed class LocalizedString : Entity
     /// <remarks>
     ///     The default language is <see cref="Languages.English" />.
     /// </remarks>
-    public CultureInfo Language { get; set; } = Languages.English;
+    public Culture Language { get; set; } = Languages.English;
 }

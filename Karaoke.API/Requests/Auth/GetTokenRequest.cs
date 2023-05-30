@@ -3,9 +3,9 @@
 namespace Karaoke.API.Requests.Auth;
 
 /// <summary>
-///     Represents a request to login.
+///     Represents a request to get a token.
 /// </summary>
-public sealed class LoginRequest
+public class GetTokenRequest
 {
     /// <summary>
     ///     The username of the user.

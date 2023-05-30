@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Karaoke.Core.Common;
+﻿using Karaoke.Core.Common;
 using Karaoke.Core.Entities.Artists;
 using Karaoke.Core.Entities.Common;
 
@@ -28,7 +27,7 @@ public sealed class Song : AuditableEntity
     /// <summary>
     ///     Gets or sets the original language of the song.
     /// </summary>
-    public CultureInfo OriginalLanguage { get; set; } = Languages.Japanese;
+    public Culture OriginalLanguage { get; set; } = Languages.Japanese;
 
     /// <summary>
     ///     Gets or sets the vocal file path of the song.
@@ -99,50 +98,4 @@ public sealed class Song : AuditableEntity
     ///     Gets an <see cref="ICollection{T}" /> of <see cref="Tag" />s the song is tagged with.
     /// </summary>
     public ICollection<Tag> Tags { get; } = new List<Tag>();
-
-    /// <summary>
-    ///     Adds a title to the song.
-    /// </summary>
-    /// <param name="title">
-    ///     The title.
-    /// </param>
-    /// <param name="culture">
-    ///     The culture.
-    /// </param>
-    public void AddTitle(string title, CultureInfo culture)
-    {
-        Titles.Add(new LocalizedString
-        {
-            Text = title,
-            Language = culture
-        });
-    }
-
-    /// <summary>
-    ///     Gets the title of the song in the specified culture.
-    /// </summary>
-    /// <param name="culture">
-    ///     The culture.
-    /// </param>
-    /// <returns>
-    ///     The title of the song in the specified culture or the default one if not found.
-    /// </returns>
-    public string GetTitle(CultureInfo culture)
-    {
-        return Titles.FirstOrDefault(t => Equals(t.Language, culture))?.Text
-               ?? Titles.FirstOrDefault()?.Text
-               ?? string.Empty;
-    }
-
-    /// <summary>
-    ///     Gets the default title of the song.
-    /// </summary>
-    /// <returns>
-    ///     The title of the song.
-    /// </returns>
-    public string GetTitle()
-    {
-        return Titles.FirstOrDefault()?.Text
-               ?? string.Empty;
-    }
 }

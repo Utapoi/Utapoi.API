@@ -12,8 +12,8 @@ public class SingerEntityTypeConfiguration : IEntityTypeConfiguration<Singer>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Singer> builder)
     {
-        builder.OwnsMany(x => x.Names);
+        builder.HasMany(x => x.Names);
 
-        builder.OwnsMany(x => x.Nicknames);
+        builder.HasMany(x => x.Nicknames);
     }
 }

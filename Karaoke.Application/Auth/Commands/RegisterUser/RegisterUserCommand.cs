@@ -1,14 +1,14 @@
 ﻿using FluentValidation;
 using JetBrains.Annotations;
+using Karaoke.Application.Common.Models;
 using Karaoke.Application.Identity.Auth;
-using Karaoke.Application.Identity.Tokens;
 using MediatR;
 
-namespace Karaoke.Application.Auth.Requests.RegisterUser;
+namespace Karaoke.Application.Auth.Commands.RegisterUser;
 
 public static class RegisterUser
 {
-    public sealed class Request : IRequest<TokenResponse?>
+    public sealed class Command : IRequest<Result>
     {
         public string Username { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ public static class RegisterUser
     }
 
     [UsedImplicitly]
-    internal sealed class Validator : AbstractValidator<Request>
+    internal sealed class Validator : AbstractValidator<Command>
     {
         public Validator()
         {
@@ -32,7 +32,7 @@ public static class RegisterUser
     }
 
     [UsedImplicitly]
-    internal sealed class Handler : IRequestHandler<Request, TokenResponse?>
+    internal sealed class Handler : IRequestHandler<Command, Result>
     {
         private readonly IAuthService _authService;
 
@@ -41,7 +41,7 @@ public static class RegisterUser
             _authService = authService;
         }
 
-        public Task<TokenResponse?> Handle(Request request, CancellationToken cancellationToken)
+        public Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             return _authService.CreateUserAsync(request, cancellationToken);
         }
