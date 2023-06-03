@@ -5,7 +5,8 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-	</PropertyGroup>
+		<UserSecretsId>853939fb-524a-4c96-b321-eb6f9dad44ea</UserSecretsId>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Karaoke.Application\Karaoke.Application.csproj" />

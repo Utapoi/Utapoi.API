@@ -11,9 +11,6 @@ public class GoogleAuthOptions
     public string ClientSecret { get; set; } = string.Empty;
 
     [Required]
-    public string AuthorizeUrl { get; set; } = string.Empty;
-
-    [Required]
     public string RedirectUrl { get; set; } = string.Empty;
 
     [Required]
