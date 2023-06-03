@@ -1,12 +1,13 @@
 using Karaoke.API.Services;
 using Karaoke.Application;
-using Karaoke.Application.Interfaces;
+using Karaoke.Application.Users.Interfaces;
 using Karaoke.Infrastructure;
-using Karaoke.Infrastructure.Persistence;
+using Karaoke.Infrastructure.Persistence.Initializers;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -53,6 +54,14 @@ using (var scope = app.Services.CreateScope())
     await initializer.SeedAsync(app.Configuration);
 }
 
+app.UseHttpsRedirection();
+app.UseCors(c =>
+{
+    c.WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+});
 app.UseInfrastructure();
 app.MapControllers();
 app.Run();

@@ -1,5 +1,6 @@
 ﻿using Karaoke.Application.DTO;
 using Karaoke.Application.Songs.Requests.GetSongs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Karaoke.API.Controllers.Songs;
@@ -45,5 +46,12 @@ public sealed class SongsController : ApiControllerBase
             _logger.LogError(ex, "Error getting songs.");
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+    }
+
+    [HttpPost("Create")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateAsync()
+    {
+        return Ok();
     }
 }

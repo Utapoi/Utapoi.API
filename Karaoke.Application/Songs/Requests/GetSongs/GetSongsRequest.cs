@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Karaoke.Application.DTO;
-using Karaoke.Application.Interfaces.Persistence;
+using Karaoke.Application.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

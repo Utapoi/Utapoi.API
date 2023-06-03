@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Karaoke.Application.Interfaces;
+using Karaoke.Application.Users.Interfaces;
 
 namespace Karaoke.API.Services;
 

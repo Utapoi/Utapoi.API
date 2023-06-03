@@ -2,12 +2,14 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Karaoke.Application.Auth.Commands.GetToken;
+using FluentResults;
 using Karaoke.Application.Auth.Commands.RefreshToken;
+using Karaoke.Application.Auth.Responses;
 using Karaoke.Application.Common.Exceptions;
 using Karaoke.Application.Identity.Extensions;
 using Karaoke.Application.Identity.Tokens;
-using Karaoke.Infrastructure.Identity.JWT;
+using Karaoke.Infrastructure.Identity.Entities;
+using Karaoke.Infrastructure.Options.JWT;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -16,31 +18,20 @@ namespace Karaoke.Infrastructure.Identity.Tokens;
 
 public class TokenService : ITokenService
 {
-    private readonly JwtSettings _jwtSettings;
+    private readonly JwtOptions _jwtOptions;
 
     private readonly UserManager<ApplicationUser> _userManager;
 
     public TokenService(
         UserManager<ApplicationUser> userManager,
-        IOptions<JwtSettings> jwtSettings
+        IOptions<JwtOptions> jwtOptions
     )
     {
         _userManager = userManager;
-        _jwtSettings = jwtSettings.Value;
+        _jwtOptions = jwtOptions.Value;
     }
 
-    public async Task<GetToken.Response> GetTokenAsync(GetToken.Command request)
-    {
-        if (await _userManager.FindByNameAsync(request.Username.Trim().Normalize()) is not { } user
-            || !await _userManager.CheckPasswordAsync(user, request.Password))
-        {
-            throw new ForbiddenAccessException();
-        }
-
-        return await GenerateTokensAndUpdateUser(user, request.IpAddress);
-    }
-
-    public async Task<RefreshToken.Response> RefreshTokenAsync(RefreshToken.Command request)
+    public async Task<TokenResponse> RefreshTokenAsync(RefreshToken.Command request)
     {
         var userPrincipal = GetPrincipalFromExpiredToken(request.Token);
         var userEmail = userPrincipal.GetEmail();
@@ -51,46 +42,68 @@ public class TokenService : ITokenService
             throw new ForbiddenAccessException();
         }
 
-        var r = await GenerateTokensAndUpdateUser(user, request.IpAddress);
-
-        return new RefreshToken.Response
-        {
-            Token = r.Token,
-            RefreshToken = r.RefreshToken,
-            RefreshTokenExpiryTime = r.RefreshTokenExpiryTime
-        };
+        return await GenerateTokensAndUpdateUser(user);
     }
 
-    private async Task<GetToken.Response> GenerateTokensAndUpdateUser(ApplicationUser user, string ipAddress)
+    public async Task<Result<TokenResponse>> GetTokenAsync(string loginProvider, string providerKey)
     {
-        var token = GenerateJwt(user, ipAddress);
+        var user = await _userManager.FindByLoginAsync(loginProvider, providerKey);
+
+        if (user == null)
+        {
+            return Result.Fail("User not found");
+        }
+
+        var token = await GenerateTokensAndUpdateUser(user);
+        token.TokenSource = GetTokenSource(loginProvider);
+
+        return Result.Ok(token);
+    }
+
+    private async Task<TokenResponse> GenerateTokensAndUpdateUser(ApplicationUser user)
+    {
+        var token = await GenerateJwt(user);
 
         user.RefreshToken = GenerateRefreshToken();
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
 
         await _userManager.UpdateAsync(user);
 
-        return new GetToken.Response
+        return new TokenResponse
         {
             Token = token,
             RefreshToken = user.RefreshToken,
+            TokenExpiryTime = DateTime.UtcNow.AddMinutes(_jwtOptions.TokenExpirationInMinutes),
             RefreshTokenExpiryTime = user.RefreshTokenExpiryTime
         };
     }
 
-    private string GenerateJwt(ApplicationUser user, string ipAddress)
+    private async Task<string> GenerateJwt(ApplicationUser user)
     {
-        return GenerateEncryptedToken(GetSigningCredentials(), GetClaims(user, ipAddress));
+        return GenerateEncryptedToken(GetSigningCredentials(), await GetClaims(user));
     }
 
-    private static IEnumerable<Claim> GetClaims(ApplicationUser user, string ipAddress)
+    private async Task<IEnumerable<Claim>> GetClaims(ApplicationUser user)
     {
+        var roles = await _userManager.GetRolesAsync(user);
+
         return new List<Claim>
         {
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Email, user.Email!),
             new(ClaimTypes.Name, user.UserName ?? string.Empty),
-            new("IpAddress", ipAddress)
+            new(ClaimTypes.Role, string.Join(',', roles))
+        };
+    }
+
+    private static TokenSource GetTokenSource(string loginProvider)
+    {
+        return loginProvider switch
+        {
+            "Google" => TokenSource.Google,
+            "Discord" => TokenSource.Discord,
+            _ => TokenSource.None
         };
     }
 
@@ -108,7 +121,9 @@ public class TokenService : ITokenService
     {
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.TokenExpirationInMinutes),
+            issuer: _jwtOptions.ValidIssuer,
+            audience: _jwtOptions.ValidAudience,
+            expires: DateTime.UtcNow.AddMinutes(_jwtOptions.TokenExpirationInMinutes),
             signingCredentials: signingCredentials);
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -121,9 +136,11 @@ public class TokenService : ITokenService
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(SHA512.HashData(Encoding.UTF8.GetBytes(_jwtSettings.Key))),
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            IssuerSigningKey = new SymmetricSecurityKey(SHA512.HashData(Encoding.UTF8.GetBytes(_jwtOptions.Key))),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = _jwtOptions.ValidAudience,
+            ValidIssuer = _jwtOptions.ValidIssuer,
             RoleClaimType = ClaimTypes.Role,
             ClockSkew = TimeSpan.Zero,
             ValidateLifetime = false
@@ -144,7 +161,7 @@ public class TokenService : ITokenService
 
     private SigningCredentials GetSigningCredentials()
     {
-        var key = SHA512.HashData(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+        var key = SHA512.HashData(Encoding.UTF8.GetBytes(_jwtOptions.Key));
 
         return new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
     }
