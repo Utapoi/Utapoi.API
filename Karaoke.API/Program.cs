@@ -3,12 +3,13 @@ using Karaoke.Application;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Users.Interfaces;
 using Karaoke.Infrastructure;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -67,5 +68,12 @@ app.UseCors(c =>
         .AllowCredentials();
 });
 app.UseInfrastructure();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "files")),
+    RequestPath = "/files"
+});
 app.MapControllers();
 app.Run();

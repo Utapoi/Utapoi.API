@@ -41,7 +41,7 @@ public class FilesService : IFilesService
             Hash = hash
         };
 
-        await CreatePhysicalFileAsync(file, request.File, cancellationToken);
+        await CreatePhysicalFileAsync(file, file.Extension, request.File, cancellationToken);
         await _context.Files.AddAsync(file, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -63,11 +63,12 @@ public class FilesService : IFilesService
 
     private async Task CreatePhysicalFileAsync(
         IFileInfo file,
+        string extension,
         byte[] bytes,
         CancellationToken cancellationToken = default
     )
     {
-        var path = file.GetStoragePath();
+        var path = file.GetStoragePath() + extension;
 
         if (CheckFileExistsAndMatchesHash(file))
         {
