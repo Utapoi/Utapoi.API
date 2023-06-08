@@ -27,6 +27,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Albums\" />
+	  <Folder Include="Files\" />
+	  <Folder Include="Karaoke\" />
+	  <Folder Include="Tags\" />
+	  <Folder Include="Singers\" />
+	  <Folder Include="Songs\" />
 	  <Folder Include="Users\" />
 	</ItemGroup>
 

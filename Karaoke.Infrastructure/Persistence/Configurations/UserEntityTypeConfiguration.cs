@@ -1,11 +1,11 @@
-﻿using Karaoke.Core.Entities.Users;
+﻿using Karaoke.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Karaoke.Infrastructure.Persistence.Configurations;
 
 /// <summary>
-///     Configuration for <see cref="User" /> entity.
+///     ///     Configuration for <see cref="User" /> entity.
 /// </summary>
 public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
 {

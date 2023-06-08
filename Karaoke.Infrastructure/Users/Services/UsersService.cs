@@ -3,7 +3,7 @@ using FluentResults;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Users.Interfaces;
 using Karaoke.Application.Users.Requests.GetCurrentUser;
-using Karaoke.Core.Entities.Users;
+using Karaoke.Core.Entities;
 using Karaoke.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 

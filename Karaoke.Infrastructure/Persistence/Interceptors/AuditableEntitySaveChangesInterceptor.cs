@@ -1,13 +1,10 @@
-﻿using Karaoke.Core.Entities;
+﻿using Karaoke.Core.Entities.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Karaoke.Infrastructure.Persistence.Interceptors;
 
-/// <summary>
-///     Interceptor for entities that implement <see cref="AuditableEntity" />.
-/// </summary>
 public class AuditableEntitySaveChangesInterceptor : SaveChangesInterceptor
 {
     /// <inheritdoc />

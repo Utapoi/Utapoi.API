@@ -1,4 +1,4 @@
-﻿using Karaoke.Core.Entities.Songs;
+﻿using Karaoke.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,6 +16,26 @@ public class SongEntityTypeConfiguration : IEntityTypeConfiguration<Song>
 
         builder.Property(x => x.Duration)
             .HasConversion<long>();
+
+        builder.HasOne(x => x.Vocal)
+            .WithMany()
+            .HasForeignKey(x => x.VocalId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Instrumental)
+            .WithMany()
+            .HasForeignKey(x => x.InstrumentalId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Thumbnail)
+            .WithMany()
+            .HasForeignKey(x => x.ThumbnailId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Preview)
+            .WithMany()
+            .HasForeignKey(x => x.PreviewId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.Lyrics)
             .WithOne(x => x.Song)

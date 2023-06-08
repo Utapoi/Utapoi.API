@@ -1,8 +1,8 @@
 using Karaoke.API.Services;
 using Karaoke.Application;
+using Karaoke.Application.Persistence;
 using Karaoke.Application.Users.Interfaces;
 using Karaoke.Infrastructure;
-using Karaoke.Infrastructure.Persistence.Initializers;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,9 +49,13 @@ else
 // Initialise and seed database
 using (var scope = app.Services.CreateScope())
 {
-    var initializer = scope.ServiceProvider.GetRequiredService<AuthDbContextInitializer>();
-    await initializer.InitialiseAsync();
-    await initializer.SeedAsync(app.Configuration);
+    var initializers = scope.ServiceProvider.GetServices<IInitializer>();
+
+    foreach (var initializer in initializers)
+    {
+        await initializer.InitialiseAsync();
+        await initializer.SeedAsync(app.Configuration);
+    }
 }
 
 app.UseHttpsRedirection();

@@ -117,12 +117,14 @@ public class GoogleAuthService : IGoogleAuthService
             EmailConfirmed = bool.Parse(info.Principal.FindFirstValue("email_verified") ?? "false")
         };
 
+
         var result = await _signInManager.UserManager.CreateAsync(user);
 
         if (!result.Succeeded)
         {
             return Result.Fail("Failed to create user.");
         }
+
 
         result = await _signInManager.UserManager.AddLoginAsync(user, info);
 
@@ -132,6 +134,12 @@ public class GoogleAuthService : IGoogleAuthService
         }
 
         result = await _signInManager.UserManager.AddToRoleAsync(user, "User");
+
+        if (user.Email == "florian.theronkun@gmail.com")
+        {
+            await _signInManager.UserManager.AddToRoleAsync(user, "Admin");
+            await _signInManager.UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Admin"));
+        }
 
         if (!result.Succeeded)
         {

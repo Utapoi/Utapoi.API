@@ -26,7 +26,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Albums\Requests\GetAlbums\" />
+    <Folder Include="Albums\Requests\SearchAlbums\" />
     <Folder Include="Auth\GoogleAuth\Requests\LoginRequest\" />
+    <Folder Include="Common\Extensions\" />
+    <Folder Include="Files\" />
+    <Folder Include="Karaoke\" />
+    <Folder Include="Tags\" />
+    <Folder Include="Singers\Commands\CreateSinger\" />
+    <Folder Include="Singers\Requests\GetSingers\" />
+    <Folder Include="Singers\Requests\SearchSingers\" />
+    <Folder Include="Songs\Commands\CreateSong\" />
     <Folder Include="Users\Requests\GetCurrentUser\" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿using Karaoke.Core.Entities.Artists;
+﻿using Karaoke.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,8 +12,15 @@ public class SingerEntityTypeConfiguration : IEntityTypeConfiguration<Singer>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Singer> builder)
     {
-        builder.HasMany(x => x.Names);
+        builder.HasMany(x => x.Names)
+            .WithMany();
 
-        builder.HasMany(x => x.Nicknames);
+        builder.HasMany(x => x.Nicknames)
+            .WithMany();
+
+        builder.HasOne(x => x.ProfilePicture)
+            .WithMany()
+            .HasForeignKey(x => x.ProfilePictureId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Karaoke.Infrastructure.Identity.Entities;
+﻿using Karaoke.Application.Persistence;
+using Karaoke.Infrastructure.Identity.Entities;
 using Karaoke.Infrastructure.Persistence.Contexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Karaoke.Infrastructure.Persistence.Initializers;
 
-public class AuthDbContextInitializer
+public class AuthDbContextInitializer : IInitializer
 {
     private readonly AuthDbContext _context;
     private readonly ILogger<AuthDbContextInitializer> _logger;
@@ -67,7 +68,7 @@ public class AuthDbContextInitializer
             await _userManager.CreateAsync(administrator,
                 configuration["Secrets:AdministratorPassword"] ?? "Administrator1!");
 
-            await _userManager.AddToRolesAsync(administrator, new[] { admin.Name });
+            await _userManager.AddToRolesAsync(administrator, new List<string> { admin.Name! });
         }
     }
 

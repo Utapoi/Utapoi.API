@@ -87,14 +87,17 @@ public class TokenService : ITokenService
     {
         var roles = await _userManager.GetRolesAsync(user);
 
-        return new List<Claim>
+        var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Email, user.Email!),
-            new(ClaimTypes.Name, user.UserName ?? string.Empty),
-            new(ClaimTypes.Role, string.Join(',', roles))
+            new(ClaimTypes.Name, user.UserName ?? string.Empty)
         };
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        return claims;
     }
 
     private static TokenSource GetTokenSource(string loginProvider)

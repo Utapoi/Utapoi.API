@@ -1,7 +1,20 @@
-﻿using Karaoke.Application.Users.Interfaces;
+﻿using Karaoke.Application.Albums;
+using Karaoke.Application.Files;
+using Karaoke.Application.Karaoke;
+using Karaoke.Application.Singers;
+using Karaoke.Application.Songs;
+using Karaoke.Application.Tags;
+using Karaoke.Application.Users.Interfaces;
+using Karaoke.Core.Storage;
+using Karaoke.Infrastructure.Albums;
+using Karaoke.Infrastructure.Files;
 using Karaoke.Infrastructure.Identity;
+using Karaoke.Infrastructure.Karaoke;
 using Karaoke.Infrastructure.Options;
 using Karaoke.Infrastructure.Persistence;
+using Karaoke.Infrastructure.Singers;
+using Karaoke.Infrastructure.Songs;
+using Karaoke.Infrastructure.Tags;
 using Karaoke.Infrastructure.Users.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -34,6 +47,15 @@ public static class DependencyInjection
             .AddPersistence(configuration);
 
         services.AddScoped<IUsersService, UsersService>();
+        services.AddSingleton<Storage, NativeStorage>(x => new NativeStorage(Directory.GetCurrentDirectory()));
+
+        // TODO: Add Reflection to register all services
+        services.AddScoped<IAlbumsService, AlbumsService>();
+        services.AddScoped<IFilesService, FilesService>();
+        services.AddScoped<IKaraokeService, KaraokeService>();
+        services.AddScoped<ISingersService, SingersService>();
+        services.AddScoped<ISongsService, SongsService>();
+        services.AddScoped<ITagsService, TagsService>();
 
         return services;
     }

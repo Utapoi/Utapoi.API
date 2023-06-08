@@ -50,6 +50,7 @@ public static class DependencyInjection
             x.LogTo(Console.WriteLine);
         });
 
+        services.AddScoped<IInitializer, KaraokeDbInitializer>();
         services.AddScoped<IKaraokeDbContext>(provider => provider.GetRequiredService<KaraokeDbContext>());
     }
 
@@ -82,7 +83,7 @@ public static class DependencyInjection
             x.LogTo(Console.WriteLine);
         });
 
-        services.AddScoped<AuthDbContextInitializer>();
+        services.AddScoped<IInitializer, AuthDbContextInitializer>();
     }
 
     /// <summary>

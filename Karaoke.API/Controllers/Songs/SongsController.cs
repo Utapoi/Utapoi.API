@@ -1,4 +1,5 @@
 ﻿using Karaoke.Application.DTO;
+using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSongs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,10 +49,29 @@ public sealed class SongsController : ApiControllerBase
         }
     }
 
-    [HttpPost("Create")]
+    /// <summary>
+    ///     Creates a new song.
+    /// </summary>
+    /// <param name="command">
+    ///     The command.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="IActionResult" /> containing the result of the operation.
+    /// </returns>
+    [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateAsync()
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateAsync([FromBody] CreateSong.Command command)
     {
-        return Ok();
+        var result = await Mediator.Send(command);
+
+        if (result.IsFailed)
+        {
+            return BadRequest();
+        }
+
+        return Ok(result.Value);
     }
 }

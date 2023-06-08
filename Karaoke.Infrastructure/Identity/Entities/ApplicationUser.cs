@@ -1,6 +1,6 @@
 ﻿using Karaoke.Application.Auth.Responses;
 using Karaoke.Application.Common.Mappings;
-using Karaoke.Core.Entities.Users;
+using Karaoke.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Karaoke.Infrastructure.Identity.Entities;
@@ -11,7 +11,7 @@ namespace Karaoke.Infrastructure.Identity.Entities;
 /// <remarks>
 ///     This class is used by ASP.NET Core Identity and has been extended to include a <see cref="Guid" /> as the primary
 ///     key.
-///     All entities that need to reference the user should use <see cref="Core.Entities.Users.User" /> since the
+///     All entities that need to reference the user should use <see cref="Karaoke.Core.Entities.User" /> since the
 ///     <see cref="ApplicationUser" /> will be only used for authentication and authorization.
 /// </remarks>
 public sealed class ApplicationUser : IdentityUser, IMap<ApplicationUser, User>

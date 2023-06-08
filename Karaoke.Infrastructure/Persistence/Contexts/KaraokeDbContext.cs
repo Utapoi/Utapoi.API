@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Karaoke.Application.Persistence;
-using Karaoke.Core.Entities.Songs;
+using Karaoke.Core.Entities;
 using Karaoke.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,7 @@ namespace Karaoke.Infrastructure.Persistence.Contexts;
 ///     We may want to consider using a separate database for community submitted songs.
 ///     This allow us to have a concept of "official" songs and "community" songs.
 /// </remarks>
-internal sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
+public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
 {
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
 
@@ -32,8 +32,35 @@ internal sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
 
+    public DbSet<KaraokeInfo> Karaoke => Set<KaraokeInfo>();
+
     /// <summary>
-    ///     Get///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Song" />./summary>
+    ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Singer" />.
+    /// </summary>
+    public DbSet<Singer> Singers => Set<Singer>();
+
+    /// <summary>
+    ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Tag" />.
+    /// </summary>
+    public DbSet<Tag> Tags => Set<Tag>();
+
+    /// <summary>
+    ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Album" />.
+    /// </summary>
+    public DbSet<Album> Albums => Set<Album>();
+
+    /// <summary>
+    ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Culture" />.
+    /// </summary>
+    public DbSet<Culture> Cultures => Set<Culture>();
+
+    public DbSet<NamedFile> Files => Set<NamedFile>();
+
+    public DbSet<KaraokeInfo> KaraokeInfos => Set<KaraokeInfo>();
+
+    /// <summary>
+    ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Song" />.
+    /// </summary>
     public DbSet<Song> Songs => Set<Song>();
 
     /// <inheritdoc />

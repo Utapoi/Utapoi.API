@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Karaoke.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Karaoke.Infrastructure.Persistence.Configurations;
 
-public class KaraokeEntityTypeConfiguration : IEntityTypeConfiguration<Core.Entities.Songs.Karaoke>
+public class KaraokeEntityTypeConfiguration : IEntityTypeConfiguration<KaraokeInfo>
 {
-    public void Configure(EntityTypeBuilder<Core.Entities.Songs.Karaoke> builder)
+    public void Configure(EntityTypeBuilder<KaraokeInfo> builder)
     {
         builder.HasMany(x => x.Creators)
             .WithMany(x => x.Karaoke);

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Karaoke.Application.Common.Mappings;
-using Karaoke.Core.Entities.Users;
+using Karaoke.Core.Entities;
 
 namespace Karaoke.Application.DTO;
 

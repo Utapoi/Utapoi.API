@@ -1,4 +1,4 @@
-﻿using Karaoke.Core.Entities.Common;
+﻿using Karaoke.Core.Entities;
 
 namespace Karaoke.Core.Common;
 
@@ -7,7 +7,7 @@ namespace Karaoke.Core.Common;
 /// </summary>
 public static class Languages
 {
-    public static readonly Culture English = new("en-US");
+    public static readonly string English = "English";
 
     public static readonly Culture French = new("fr-FR");
 

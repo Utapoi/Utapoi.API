@@ -1,5 +1,5 @@
 ﻿using Karaoke.Application.Common.Mappings;
-using Karaoke.Core.Entities.Songs;
+using Karaoke.Core.Entities;
 
 namespace Karaoke.Application.DTO;
 

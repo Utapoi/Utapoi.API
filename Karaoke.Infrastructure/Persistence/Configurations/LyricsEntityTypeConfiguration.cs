@@ -1,4 +1,4 @@
-﻿using Karaoke.Core.Entities.Songs;
+﻿using Karaoke.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
