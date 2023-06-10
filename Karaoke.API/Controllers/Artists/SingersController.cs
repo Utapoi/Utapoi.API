@@ -41,6 +41,7 @@ public class SingersController : ApiControllerBase
     [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(PaginatedResponse<SingerDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSingersAsync([FromQuery] PaginatedRequest request)
     {
         try
@@ -57,7 +58,7 @@ public class SingersController : ApiControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting singers.");
-            throw;
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 
