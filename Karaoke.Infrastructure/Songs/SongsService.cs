@@ -5,8 +5,10 @@ using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Songs;
 using Karaoke.Application.Songs.Commands.CreateSong;
+using Karaoke.Application.Songs.Requests.GetSongs;
 using Karaoke.Application.Tags;
 using Karaoke.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Karaoke.Infrastructure.Songs;
 
@@ -41,6 +43,7 @@ public sealed class SongsService : ISongsService
         _karaokeService = karaokeService;
     }
 
+    /// <inheritdoc cref="ISongsService.CreateAsync(CreateSong.Command, CancellationToken)" />
     public async Task<string> CreateAsync(CreateSong.Command command, CancellationToken cancellationToken = default)
     {
         var song = new Song
@@ -77,5 +80,27 @@ public sealed class SongsService : ISongsService
         await _context.SaveChangesAsync(cancellationToken);
 
         return song.Id.ToString();
+    }
+
+    /// <inheritdoc cref="ISongsService.GetSongsAsync(GetSongs.Request, CancellationToken)" />
+    public async Task<IReadOnlyCollection<Song>> GetSongsAsync(
+        GetSongs.Request request,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _context.Songs
+            .Include(x => x.Singers)
+            .Include(x => x.Albums)
+            .Include(x => x.Tags)
+            .Include(x => x.Karaoke)
+            .Skip(request.Skip)
+            .Take(request.Take)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc cref="ISongsService.CountAsync(CancellationToken)" />
+    public Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return _context.Songs.CountAsync(cancellationToken);
     }
 }

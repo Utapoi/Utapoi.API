@@ -9,6 +9,7 @@ public static class GetAlbums
 {
     public class Request : IRequest<Result<IEnumerable<AlbumDTO>>>
     {
+    }
 
     internal sealed class Handler : IRequestHandler<Request, Result<IEnumerable<AlbumDTO>>>
     {

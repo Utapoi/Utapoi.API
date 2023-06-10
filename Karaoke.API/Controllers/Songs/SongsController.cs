@@ -1,4 +1,5 @@
-﻿using Karaoke.Application.Common.Requests;
+﻿using Karaoke.Application.Common;
+using Karaoke.Application.Common.Requests;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSongs;
@@ -33,16 +34,21 @@ public sealed class SongsController : ApiControllerBase
     /// </returns>
     [HttpGet]
     [Authorize(Roles = "User")]
-    [ProducesResponseType(typeof(GetSongs.Response), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<SongDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllAsync([FromQuery] PaginatedRequest request)
     {
         try
         {
-            var m = new GetSongs.Request();
-            var response = await Mediator.Send(m);
+            var result = await Mediator.Send(new GetSongs.Request(request.Skip, request.Take));
 
-            return Ok(response);
+            if (result.IsFailed)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(result.Value);
         }
         catch (Exception ex)
         {
