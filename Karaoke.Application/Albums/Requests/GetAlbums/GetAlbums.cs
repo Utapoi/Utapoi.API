@@ -7,13 +7,13 @@ namespace Karaoke.Application.Albums.Requests.GetAlbums;
 
 public static class GetAlbums
 {
-    public record Request : IRequest<Result<IEnumerable<AlbumDTO>>>;
+    public class Request : IRequest<Result<IEnumerable<AlbumDTO>>>
+    {
 
     internal sealed class Handler : IRequestHandler<Request, Result<IEnumerable<AlbumDTO>>>
     {
-        private readonly IMapper _mapper;
-
         private readonly IAlbumsService _albumsService;
+        private readonly IMapper _mapper;
 
         public Handler(IMapper mapper, IAlbumsService albumsService)
         {

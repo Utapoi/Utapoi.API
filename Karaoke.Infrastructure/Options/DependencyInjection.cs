@@ -1,5 +1,6 @@
 ﻿using Karaoke.Infrastructure.Options.Google;
 using Karaoke.Infrastructure.Options.JWT;
+using Karaoke.Infrastructure.Options.Server;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,11 @@ public static class DependencyInjection
 
         services.AddOptions<GoogleAuthOptions>()
             .BindConfiguration($"GoogleOptions:{nameof(GoogleAuthOptions)}")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<ServerOptions>()
+            .BindConfiguration($"{nameof(ServerOptions)}")
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

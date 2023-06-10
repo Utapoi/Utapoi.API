@@ -2,6 +2,7 @@
 using Karaoke.Application.Albums.Requests.GetAlbums;
 using Karaoke.Application.Albums.Requests.SearchAlbums;
 using Karaoke.Application.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Karaoke.API.Controllers.Albums;
@@ -18,10 +19,11 @@ public class AlbumsController : ApiControllerBase
     ///     A <see cref="IEnumerable{T}" /> of <see cref="AlbumDTO" />.
     /// </returns>
     [HttpGet]
+    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(IEnumerable<AlbumDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAlbumsAsync()
+    public async Task<IActionResult> GetAllAsync()
     {
         var result = await Mediator.Send(new GetAlbums.Request());
 
@@ -43,6 +45,7 @@ public class AlbumsController : ApiControllerBase
     ///     A <see cref="IEnumerable{T}" /> of <see cref="AlbumDTO" />.
     /// </returns>
     [HttpPost("Search")]
+    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(IEnumerable<AlbumDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

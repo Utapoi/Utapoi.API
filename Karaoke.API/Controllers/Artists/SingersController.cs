@@ -25,6 +25,7 @@ public class SingersController : ApiControllerBase
     ///     A <see cref="PaginatedResponse{T}" /> containing the singers or an error.
     /// </returns>
     [HttpGet]
+    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(PaginatedResponse<SingerDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetSingersAsync([FromQuery] PaginatedRequest request)

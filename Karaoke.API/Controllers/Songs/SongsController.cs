@@ -1,4 +1,5 @@
-﻿using Karaoke.Application.DTO;
+﻿using Karaoke.Application.Common.Requests;
+using Karaoke.Application.DTO;
 using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSongs;
 using Microsoft.AspNetCore.Authorization;
@@ -31,9 +32,10 @@ public sealed class SongsController : ApiControllerBase
     ///     An <see cref="IEnumerable{T}" /> of <see cref="SongDTO" />.
     /// </returns>
     [HttpGet]
+    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(GetSongs.Response), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAsync()
+    public async Task<IActionResult> GetAllAsync([FromQuery] PaginatedRequest request)
     {
         try
         {

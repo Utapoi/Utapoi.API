@@ -10,6 +10,9 @@ public static class GetSongs
 {
     public sealed class Request : IRequest<Response>
     {
+        public int Skip { get; init; }
+
+        public int Take { get; init; }
     }
 
     public sealed class Response
@@ -31,8 +34,15 @@ public static class GetSongs
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
         {
+            // TODO: Move to ISongsService.
             var songs = await _context
                 .Songs
+                .Include(x => x.Titles)
+                .Include(x => x.Singers)
+                .Include(x => x.Albums)
+                .Include(x => x.Thumbnail)
+                .Skip(request.Skip)
+                .Take(request.Take)
                 .ToListAsync(cancellationToken);
 
             return new Response
