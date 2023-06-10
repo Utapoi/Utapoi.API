@@ -2,7 +2,9 @@
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Singers.Commands.CreateSinger;
+using Karaoke.Application.Singers.Requests.GetSingers;
 using Karaoke.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Karaoke.Infrastructure.Singers;
 
@@ -49,5 +51,23 @@ public class SingersService : ISingersService
         await _context.SaveChangesAsync(cancellationToken);
 
         return singer;
+    }
+
+    public async Task<IReadOnlyCollection<Singer>> GetAsync(
+        GetSingers.Request request,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _context.Singers
+            .Include(x => x.Names)
+            .Include(x => x.ProfilePicture)
+            .Skip(request.Skip)
+            .Take(request.Take)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return _context.Singers.CountAsync(cancellationToken);
     }
 }
