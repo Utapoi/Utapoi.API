@@ -69,7 +69,7 @@ public static class GetSongs
             CancellationToken cancellationToken
         )
         {
-            var songs = await _songsService.GetSongsAsync(request, cancellationToken);
+            var songs = await _songsService.GetAsync(request, cancellationToken);
 
             return Result.Ok(new PaginatedResponse<SongDTO>
             {

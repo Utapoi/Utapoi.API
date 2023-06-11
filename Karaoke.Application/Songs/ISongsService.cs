@@ -32,7 +32,7 @@ public interface ISongsService
     /// <returns>
     ///     An <see cref="IReadOnlyCollection{T}" /> of <see cref="Song" />s.
     /// </returns>
-    Task<IReadOnlyCollection<Song>> GetSongsAsync(
+    Task<IReadOnlyCollection<Song>> GetAsync(
         GetSongs.Request request,
         CancellationToken cancellationToken = default
     );
