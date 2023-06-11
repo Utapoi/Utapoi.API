@@ -15,6 +15,19 @@ namespace Karaoke.API.Controllers.Artists;
 [Authorize(Roles = "User")]
 public class SingersController : ApiControllerBase
 {
+    private readonly ILogger<SingersController> _logger;
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SingersController" /> class.
+    /// </summary>
+    /// <param name="logger">
+    ///     The <see cref="ILogger{TCategoryName}" />.
+    /// </param>
+    public SingersController(ILogger<SingersController> logger)
+    {
+        _logger = logger;
+    }
+
     /// <summary>
     ///     Gets a list of singers.
     /// </summary>
@@ -28,22 +41,25 @@ public class SingersController : ApiControllerBase
     [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(PaginatedResponse<SingerDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSingersAsync([FromQuery] PaginatedRequest request)
     {
-        var m = new GetSingers.Request
+        try
         {
-            Skip = request.Skip,
-            Take = request.Take
-        };
+            var result = await Mediator.Send(new GetSingers.Request(request.Skip, request.Take));
 
-        var result = await Mediator.Send(m);
+            if (result.IsFailed)
+            {
+                return BadRequest();
+            }
 
-        if (result.IsFailed)
-        {
-            return BadRequest();
+            return Ok(result.Value);
         }
-
-        return Ok(result.Value);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting singers.");
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
     /// <summary>
