@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Karaoke.API.Common;
 using Karaoke.Application.Albums.Requests.GetAlbums;
 using Karaoke.Application.Albums.Requests.SearchAlbums;
 using Karaoke.Application.Common;
@@ -12,6 +13,7 @@ namespace Karaoke.API.Controllers.Albums;
 /// <summary>
 ///     Albums controller.
 /// </summary>
+[Authorize(Roles = Roles.User)]
 public class AlbumsController : ApiControllerBase
 {
     private readonly ILogger<AlbumsController> _logger;
@@ -31,7 +33,6 @@ public class AlbumsController : ApiControllerBase
     ///     A <see cref="IEnumerable{T}" /> of <see cref="AlbumDTO" />.
     /// </returns>
     [HttpGet]
-    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(PaginatedResponse<AlbumDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -65,7 +66,6 @@ public class AlbumsController : ApiControllerBase
     ///     A <see cref="IEnumerable{T}" /> of <see cref="AlbumDTO" />.
     /// </returns>
     [HttpPost("Search")]
-    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(IEnumerable<AlbumDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

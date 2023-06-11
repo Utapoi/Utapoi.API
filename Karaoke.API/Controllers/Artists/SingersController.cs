@@ -1,4 +1,5 @@
-﻿using Karaoke.Application.Common;
+﻿using Karaoke.API.Common;
+using Karaoke.Application.Common;
 using Karaoke.Application.Common.Requests;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Singers.Commands.CreateSinger;
@@ -10,9 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Karaoke.API.Controllers.Artists;
 
 /// <summary>
-///     The controller for singers.
+///     Singers controller.
 /// </summary>
-[Authorize(Roles = "User")]
+[Authorize(Roles = Roles.User)]
 public class SingersController : ApiControllerBase
 {
     private readonly ILogger<SingersController> _logger;
@@ -38,7 +39,6 @@ public class SingersController : ApiControllerBase
     ///     A <see cref="PaginatedResponse{T}" /> containing the singers or an error.
     /// </returns>
     [HttpGet]
-    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(PaginatedResponse<SingerDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -117,6 +117,7 @@ public class SingersController : ApiControllerBase
     ///     A <see cref="IActionResult" /> containing the result of the operation.
     /// </returns>
     [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateSingerAsync([FromBody] CreateSinger.Command command)
