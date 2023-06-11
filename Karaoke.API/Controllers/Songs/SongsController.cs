@@ -1,4 +1,5 @@
-﻿using Karaoke.Application.Common;
+﻿using Karaoke.API.Common;
+using Karaoke.Application.Common;
 using Karaoke.Application.Common.Requests;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Songs.Commands.CreateSong;
@@ -11,6 +12,7 @@ namespace Karaoke.API.Controllers.Songs;
 /// <summary>
 ///     Songs controller.
 /// </summary>
+[Authorize(Roles = Roles.User)]
 public sealed class SongsController : ApiControllerBase
 {
     private readonly ILogger<SongsController> _logger;
@@ -30,10 +32,9 @@ public sealed class SongsController : ApiControllerBase
     ///     Gets all songs.
     /// </summary>
     /// <returns>
-    ///     An <see cref="IEnumerable{T}" /> of <see cref="SongDTO" />.
+    ///     A <see cref="PaginatedResponse{T}" /> of <see cref="SongDTO" />.
     /// </returns>
     [HttpGet]
-    [Authorize(Roles = "User")]
     [ProducesResponseType(typeof(PaginatedResponse<SongDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -67,7 +68,7 @@ public sealed class SongsController : ApiControllerBase
     ///     A <see cref="IActionResult" /> containing the result of the operation.
     /// </returns>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

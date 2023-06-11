@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Karaoke.API.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Karaoke.API.Controllers.Auth;
@@ -6,7 +7,7 @@ namespace Karaoke.API.Controllers.Auth;
 /// <summary>
 ///     The controller for admin actions.
 /// </summary>
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = Roles.Admin)]
 public class AdminController : ApiControllerBase
 {
     private readonly ILogger<AdminController> _logger;
