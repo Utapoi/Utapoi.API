@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using Karaoke.Application.Albums.Requests.GetAlbums;
 using Karaoke.Application.Albums.Requests.SearchAlbums;
+using Karaoke.Application.Common;
 using Karaoke.Application.Common.Requests;
 using Karaoke.Application.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +32,7 @@ public class AlbumsController : ApiControllerBase
     /// </returns>
     [HttpGet]
     [Authorize(Roles = "User")]
-    [ProducesResponseType(typeof(IEnumerable<AlbumDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<AlbumDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAlbumsAsync([FromQuery] PaginatedRequest request)
