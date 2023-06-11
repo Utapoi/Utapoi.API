@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using Karaoke.API.Common;
+using Karaoke.Application.Albums.Commands.CreateAlbum;
 using Karaoke.Application.Albums.Requests.GetAlbums;
 using Karaoke.Application.Albums.Requests.SearchAlbums;
 using Karaoke.Application.Common;
@@ -69,7 +70,7 @@ public class AlbumsController : ApiControllerBase
     [ProducesResponseType(typeof(IEnumerable<AlbumDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> SearchAsync([FromQuery] string query)
+    public async Task<IActionResult> SearchAlbumsAsync([FromQuery] string query)
     {
         var result = await Mediator.Send(new SearchAlbums.Request { Input = query });
 
@@ -79,5 +80,40 @@ public class AlbumsController : ApiControllerBase
         }
 
         return Ok(result.Value);
+    }
+
+    /// <summary>
+    ///     Creates an album.
+    /// </summary>
+    /// <param name="command">
+    ///     The command.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="string" /> of the album id.
+    /// </returns>
+    [HttpPost]
+    [Authorize(Roles = Roles.Admin)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateAlbumAsync([FromBody] CreateAlbum.Command command)
+    {
+        try
+        {
+            var result = await Mediator.Send(command);
+
+            if (result.IsFailed)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(result.Value);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating album");
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
     }
 }
