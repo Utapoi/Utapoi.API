@@ -82,8 +82,8 @@ public sealed class SongsService : ISongsService
         return song.Id.ToString();
     }
 
-    /// <inheritdoc cref="ISongsService.GetSongsAsync(GetSongs.Request, CancellationToken)" />
-    public async Task<IReadOnlyCollection<Song>> GetSongsAsync(
+    /// <inheritdoc cref="ISongsService.GetAsync(GetSongs.Request, CancellationToken)" />
+    public async Task<IReadOnlyCollection<Song>> GetAsync(
         GetSongs.Request request,
         CancellationToken cancellationToken = default
     )
