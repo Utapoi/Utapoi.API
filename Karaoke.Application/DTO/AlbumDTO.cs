@@ -1,11 +1,15 @@
-﻿using Karaoke.Application.Common.Mappings;
+﻿using AutoMapper;
+using Karaoke.Application.Common.Mappings;
 using Karaoke.Core.Entities;
 
 namespace Karaoke.Application.DTO;
 
-public class AlbumDTO : IMap<Album, AlbumDTO>
+/// <summary>
+///     Represents the data transfer object for <see cref="Album" />.
+/// </summary>
+public sealed class AlbumDTO : IMap<Album, AlbumDTO>
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     public IEnumerable<LocalizedString> Titles { get; set; } = new List<LocalizedString>();
 
@@ -14,4 +18,13 @@ public class AlbumDTO : IMap<Album, AlbumDTO>
     public ICollection<SingerDTO> Singers { get; set; } = new List<SingerDTO>();
 
     public ICollection<SongDTO> Songs { get; set; } = new List<SongDTO>();
+
+    /// <inheritdoc />
+    public void ConfigureMapping(IMappingExpression<Album, AlbumDTO> map)
+    {
+        map.ForMember(
+            d => d.Id,
+            opt => opt.MapFrom(s => s.Id.ToString())
+        );
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Karaoke.Application.Albums;
 using Karaoke.Application.Albums.Commands.CreateAlbum;
+using Karaoke.Application.Albums.Requests.GetAlbums;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Core.Entities;
@@ -56,12 +57,15 @@ public class AlbumsService : IAlbumsService
         return album;
     }
 
-    public async Task<IEnumerable<Album>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<Album>> GetAsync(GetAlbums.Request request, CancellationToken cancellationToken = default)
     {
         // Note(Mikyan): This is a very bad idea, but I'm too lazy to implement a proper pagination.
         // todo fix this.
         return await _context
             .Albums
+            .Include(x => x.Titles)
+            .Skip(request.Skip)
+            .Take(request.Take)
             .ToListAsync(cancellationToken);
     }
 
@@ -73,5 +77,12 @@ public class AlbumsService : IAlbumsService
             .Albums
             .Where(x => x.Titles.Any(y => y.Text.Contains(input)))
             .ToListAsync(cancellationToken);
+    }
+
+    public Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return _context
+            .Albums
+            .CountAsync(cancellationToken);
     }
 }
