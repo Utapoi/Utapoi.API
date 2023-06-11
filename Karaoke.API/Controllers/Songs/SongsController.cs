@@ -38,7 +38,7 @@ public sealed class SongsController : ApiControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<SongDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAllAsync([FromQuery] PaginatedRequest request)
+    public async Task<IActionResult> GetSongsAsync([FromQuery] PaginatedRequest request)
     {
         try
         {
@@ -72,7 +72,7 @@ public sealed class SongsController : ApiControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateSong.Command command)
+    public async Task<IActionResult> CreateSongAsync([FromBody] CreateSong.Command command)
     {
         var result = await Mediator.Send(command);
 

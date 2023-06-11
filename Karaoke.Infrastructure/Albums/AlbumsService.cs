@@ -1,6 +1,7 @@
 ﻿using Karaoke.Application.Albums;
 using Karaoke.Application.Albums.Commands.CreateAlbum;
 using Karaoke.Application.Albums.Requests.GetAlbums;
+using Karaoke.Application.Files;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Core.Entities;
@@ -14,10 +15,13 @@ public class AlbumsService : IAlbumsService
 
     private readonly ISingersService _singersService;
 
-    public AlbumsService(IKaraokeDbContext context, ISingersService singersService)
+    private readonly IFilesService _filesService;
+
+    public AlbumsService(IKaraokeDbContext context, ISingersService singersService, IFilesService filesService)
     {
         _context = context;
         _singersService = singersService;
+        _filesService = filesService;
     }
 
     public Album? GetById(Guid id)
@@ -45,6 +49,7 @@ public class AlbumsService : IAlbumsService
                     Language = x.Language
                 }).ToList(),
             ReleaseDate = command.ReleaseDate,
+            Cover = command.CoverFile != null ? await _filesService.CreateAsync(command.CoverFile, cancellationToken) : null,
             Singers = command.Singers
                 .Select(x => _singersService.GetById(Guid.Parse(x))!)
                 .ToList(),
@@ -59,8 +64,6 @@ public class AlbumsService : IAlbumsService
 
     public async Task<IReadOnlyCollection<Album>> GetAsync(GetAlbums.Request request, CancellationToken cancellationToken = default)
     {
-        // Note(Mikyan): This is a very bad idea, but I'm too lazy to implement a proper pagination.
-        // todo fix this.
         return await _context
             .Albums
             .Include(x => x.Titles)
