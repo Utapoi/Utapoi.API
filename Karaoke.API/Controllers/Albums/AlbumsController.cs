@@ -70,7 +70,7 @@ public class AlbumsController : ApiControllerBase
     [ProducesResponseType(typeof(IEnumerable<AlbumDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> SearchAlbumAsync([FromQuery] string query)
+    public async Task<IActionResult> SearchAlbumsAsync([FromQuery] string query)
     {
         var result = await Mediator.Send(new SearchAlbums.Request { Input = query });
 
