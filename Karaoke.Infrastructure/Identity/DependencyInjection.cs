@@ -46,13 +46,11 @@ public static class DependencyInjection
         {
             options.CheckConsentNeeded = context => true;
             options.MinimumSameSitePolicy = SameSiteMode.None;
+            options.Secure = CookieSecurePolicy.Always;
         });
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
-
-        // TODO: Remove.
-        services.AddScoped<TokenService>();
 
         return services;
     }

@@ -26,6 +26,6 @@ public class UsersController : ApiControllerBase
             return BadRequest(result.Errors);
         }
 
-        return Ok(result.Value);
+        return Ok(result.Value.User);
     }
 }

@@ -4,29 +4,37 @@ using Karaoke.Application.Persistence;
 using Karaoke.Application.Users.Interfaces;
 using Karaoke.Infrastructure;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors();
-builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddCors(x =>
 {
-    c.CustomSchemaIds(type => type?.FullName?.Replace("+", "."));
-
-    c.AddSecurityDefinition("OAuth2", new OpenApiSecurityScheme
+    x.AddDefaultPolicy(c =>
     {
-        Type = SecuritySchemeType.ApiKey,
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        BearerFormat = "Bearer {token}"
+        c.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+
+        c.WithOrigins("https://karaoke.utapoi.com")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
+
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(c => { c.CustomSchemaIds(type => type?.FullName?.Replace("+", ".")); });
 
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.AddApplication();
 
 var app = builder.Build();
@@ -60,13 +68,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
-app.UseCors(c =>
-{
-    c.WithOrigins("http://localhost:3000")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-});
+app.UseCors();
 app.UseInfrastructure();
 
 app.UseStaticFiles(new StaticFileOptions

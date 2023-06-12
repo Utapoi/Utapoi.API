@@ -1,4 +1,5 @@
-﻿using Karaoke.API.Requests.Auth;
+﻿using System.Security.Claims;
+using Karaoke.API.Requests.Auth;
 using Karaoke.Application.Auth.Commands.RefreshToken;
 using Karaoke.Application.Auth.GoogleAuth.Requests.GetAuthorizeUrl;
 using Karaoke.Application.Auth.GoogleAuth.Requests.LoginRequest;
@@ -18,6 +19,7 @@ namespace Karaoke.API.Controllers.Auth;
 /// </summary>
 public class AuthController : ApiControllerBase
 {
+    private readonly IWebHostEnvironment _environment;
     private readonly ILogger<AuthController> _logger;
 
     /// <summary>
@@ -26,9 +28,13 @@ public class AuthController : ApiControllerBase
     /// <param name="logger">
     ///     The logger.
     /// </param>
-    public AuthController(ILogger<AuthController> logger)
+    /// <param name="environment">
+    ///     The environment.
+    /// </param>
+    public AuthController(ILogger<AuthController> logger, IWebHostEnvironment environment)
     {
         _logger = logger;
+        _environment = environment;
     }
 
     /// <summary>
@@ -78,6 +84,38 @@ public class AuthController : ApiControllerBase
     }
 
     /// <summary>
+    ///     Verifies that a user has a role.
+    /// </summary>
+    /// <param name="role">
+    ///     The role to verify.
+    /// </param>
+    /// <returns>
+    ///     An <see cref="OkResult" /> if the user has the role, otherwise an <see cref="UnauthorizedResult" />.
+    /// </returns>
+    [Authorize]
+    [HttpPost("Verify/{role}")]
+    [ProducesResponseType(typeof(OkResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UnauthorizedResult), StatusCodes.Status401Unauthorized)]
+    public IActionResult VerifyAsync([FromRoute] string role)
+    {
+        if (string.IsNullOrWhiteSpace(role))
+        {
+            return BadRequest("Role cannot be null or empty.");
+        }
+
+        // Note(Mikyan): We must use the RoleManager to verify roles.
+        // This will do for now.
+        var roles = HttpContext.User.FindAll(ClaimTypes.Role);
+
+        if (roles.All(r => r.Value != role))
+        {
+            return Unauthorized();
+        }
+
+        return Ok();
+    }
+
+    /// <summary>
     ///     Generates an authorization url for a user using Google authentication.
     /// </summary>
     /// <returns>
@@ -120,10 +158,14 @@ public class AuthController : ApiControllerBase
             return BadRequest(result.Errors);
         }
 
+        // We have to adapt the cookie options based on the environment.
+        // In development, we can't send http-only cookies from the client side.
         var cookieOptions = new CookieOptions
         {
-            Expires = DateTime.UtcNow.AddMinutes(2),
-            IsEssential = true
+            IsEssential = true,
+            HttpOnly = _environment.IsProduction(),
+            SameSite = _environment.IsProduction() ? SameSiteMode.Strict : SameSiteMode.Lax,
+            Secure = _environment.IsProduction()
         };
 
         Response.Cookies.Append(
@@ -132,7 +174,7 @@ public class AuthController : ApiControllerBase
             {
                 ContractResolver = new DefaultContractResolver
                 {
-                    NamingStrategy = new CamelCaseNamingStrategy()
+                    NamingStrategy = new DefaultNamingStrategy()
                 },
                 Formatting = Formatting.Indented
             }), cookieOptions);

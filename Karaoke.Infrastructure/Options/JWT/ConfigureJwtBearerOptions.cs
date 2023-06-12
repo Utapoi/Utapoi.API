@@ -1,6 +1,8 @@
 ﻿using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
+using Karaoke.Application.Auth.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -46,6 +48,29 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
         };
         options.Events = new JwtBearerEvents
         {
+            OnMessageReceived = context =>
+            {
+                if (!context.Request.Cookies.TryGetValue("AuthToken", out var authToken))
+                {
+                    return Task.CompletedTask;
+                }
+
+                if (string.IsNullOrEmpty(authToken))
+                {
+                    return Task.CompletedTask;
+                }
+
+                var info = JsonSerializer.Deserialize<TokenResponse>(authToken);
+
+                if (info == null)
+                {
+                    return Task.CompletedTask;
+                }
+
+                context.Token = info.Token;
+
+                return Task.CompletedTask;
+            },
             OnAuthenticationFailed = context =>
             {
                 if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
