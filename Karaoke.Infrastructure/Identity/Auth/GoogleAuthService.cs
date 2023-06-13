@@ -97,6 +97,8 @@ public class GoogleAuthService : IGoogleAuthService
             cancellationToken
         );
 
+        await _signInManager.UserManager.UpdateAsync(user);
+
         return token;
     }
 
@@ -139,7 +141,7 @@ public class GoogleAuthService : IGoogleAuthService
 
         // TODO: Remove this and use something more secure and generic.
         // Probably have a list of emails that are allowed to be admins loaded from the app settings.
-        if (user.Email == "florian.theronkun@gmail.com")
+        if (user.Email == "mikyan0207@gmail.com")
         {
             await _signInManager.UserManager.AddToRoleAsync(user, Roles.Admin);
             await _signInManager.UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Roles.Admin));

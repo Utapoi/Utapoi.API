@@ -1,8 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using Karaoke.Application.Auth.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -50,24 +48,17 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
         {
             OnMessageReceived = context =>
             {
-                if (!context.Request.Cookies.TryGetValue("AuthToken", out var authToken))
+                if (!context.Request.Cookies.TryGetValue("Karaoke-Token", out var kToken))
                 {
                     return Task.CompletedTask;
                 }
 
-                if (string.IsNullOrEmpty(authToken))
+                if (string.IsNullOrEmpty(kToken))
                 {
                     return Task.CompletedTask;
                 }
 
-                var info = JsonSerializer.Deserialize<TokenResponse>(authToken);
-
-                if (info == null)
-                {
-                    return Task.CompletedTask;
-                }
-
-                context.Token = info.Token;
+                context.Token = kToken;
 
                 return Task.CompletedTask;
             },

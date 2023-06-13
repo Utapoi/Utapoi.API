@@ -1,16 +1,12 @@
 ﻿using System.Security.Claims;
-using Karaoke.API.Requests.Auth;
 using Karaoke.Application.Auth.Commands.GetRefreshToken;
 using Karaoke.Application.Auth.GoogleAuth.Requests.GetAuthorizeUrl;
 using Karaoke.Application.Auth.GoogleAuth.Requests.LoginRequest;
-using Karaoke.Application.Auth.Responses;
 using Karaoke.Application.Common.Exceptions;
 using Karaoke.Infrastructure.Options.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Karaoke.API.Controllers.Auth;
 
@@ -40,25 +36,37 @@ public class AuthController : ApiControllerBase
     /// <summary>
     ///     Refreshes a token.
     /// </summary>
-    /// <param name="request">
-    ///     The request.
-    /// </param>
     /// <returns>
-    ///     A <see cref="TokenResponse" /> containing the token or an error.
+    ///     An <see cref="OkResult" /> if the token was refreshed, otherwise an <see cref="BadRequestResult" />.
     /// </returns>
     [AllowAnonymous]
     [HttpPost("RefreshToken")]
-    [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest request)
+    public async Task<IActionResult> RefreshTokenAsync()
     {
+        if (!Request.Cookies.TryGetValue("Karaoke-Token", out var token))
+        {
+            return BadRequest("Token is missing.");
+        }
+
+        if (!Request.Cookies.TryGetValue("Karaoke-RefreshToken", out var refreshToken))
+        {
+            return BadRequest("RefreshToken is missing.");
+        }
+
+        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return BadRequest("Token or RefreshToken is missing.");
+        }
+
         try
         {
             var result = await Mediator.Send(new GetRefreshToken.Command
             {
-                Token = request.Token,
-                RefreshToken = request.RefreshToken,
+                Token = token,
+                RefreshToken = refreshToken,
                 IpAddress = GetIpAddressFromRequest()
             });
 
@@ -67,16 +75,22 @@ public class AuthController : ApiControllerBase
                 return BadRequest(result.Errors.Select(x => x.Message));
             }
 
-            return Ok(result.Value);
-        }
-        catch (ForbiddenAccessException ex)
-        {
-            _logger.LogError(ex, "Error refreshing token");
-            return StatusCode(StatusCodes.Status403Forbidden, ex.Message);
+            var cookieOptions = new CookieOptions
+            {
+                IsEssential = true,
+                HttpOnly = _environment.IsProduction(),
+                SameSite = _environment.IsProduction() ? SameSiteMode.Strict : SameSiteMode.Lax,
+                Secure = _environment.IsProduction()
+            };
+
+            Response.Cookies.Append("Karaoke-Token", result.Value.Token, cookieOptions);
+            Response.Cookies.Append("Karaoke-RefreshToken", result.Value.RefreshToken, cookieOptions);
+
+            return Ok();
         }
         catch (ValidationException ex)
         {
-            _logger.LogError(ex, "Failed to refresh token: {Token}", request.Token);
+            _logger.LogError(ex, "Failed to refresh token: {Token}", token);
             return BadRequest(ex.Errors);
         }
         catch (Exception ex)
@@ -174,16 +188,8 @@ public class AuthController : ApiControllerBase
             Secure = _environment.IsProduction()
         };
 
-        Response.Cookies.Append(
-            "AuthToken",
-            JsonConvert.SerializeObject(result.Value, new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new DefaultNamingStrategy()
-                },
-                Formatting = Formatting.Indented
-            }), cookieOptions);
+        Response.Cookies.Append("Karaoke-Token", result.Value.Token, cookieOptions);
+        Response.Cookies.Append("Karaoke-RefreshToken", result.Value.RefreshToken, cookieOptions);
 
         return Redirect($"{options.Value.WebClientUrl}auth/login-result");
     }

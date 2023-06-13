@@ -8,7 +8,6 @@ using Karaoke.Application.Auth.Responses;
 using Karaoke.Application.Common.Exceptions;
 using Karaoke.Application.Identity.Extensions;
 using Karaoke.Application.Identity.Tokens;
-using Karaoke.Core.Entities;
 using Karaoke.Infrastructure.Identity.Entities;
 using Karaoke.Infrastructure.Options.JWT;
 using Karaoke.Infrastructure.Persistence.Contexts;
@@ -52,10 +51,19 @@ public class TokenService : ITokenService
             return Result.Fail("User not found");
         }
 
-        var token = await GenerateTokensAndUpdateUser(user, ipAddress);
-        token.TokenSource = GetTokenSource(loginProvider);
+        if (TryGetValidTokenForUser(user, ipAddress, out var token) &&
+            TryGetValidRefreshTokenForUser(user, ipAddress, out var refreshToken))
+        {
+            return Result.Ok(new TokenResponse
+            {
+                Token = token!.AccessToken,
+                RefreshToken = refreshToken!.Token,
+                TokenExpiryTime = token!.ExpiresAt,
+                RefreshTokenExpiryTime = refreshToken!.ExpiresAt
+            });
+        }
 
-        return Result.Ok(token);
+        return await GenerateTokensAndUpdateUser(user, ipAddress);
     }
 
     public async Task<Result<TokenResponse>> GetRefreshTokenAsync(GetRefreshToken.Command request)
@@ -127,27 +135,65 @@ public class TokenService : ITokenService
         return await GenerateTokensAndUpdateUser(user, request.IpAddress);
     }
 
+    private bool TryGetValidTokenForUser(
+        ApplicationUser user,
+        string ipAddress,
+        out Token? token
+    )
+    {
+        token = _context.Tokens
+            .FirstOrDefault(
+                x => x.UserId == user.Id
+                     && x.IpAddress == ipAddress
+                     && x.ExpiresAt >= DateTime.UtcNow
+            );
+
+        return token != null;
+    }
+
+    private bool TryGetValidRefreshTokenForUser(
+        ApplicationUser user,
+        string ipAddress,
+        out RefreshToken? refreshToken
+    )
+    {
+        refreshToken = _context.RefreshTokens
+            .Include(x => x.AccessToken)
+            .FirstOrDefault(
+                x => x.UserId == user.Id
+                     && x.IpAddress == ipAddress
+                     && x.ExpiresAt >= DateTime.UtcNow
+                     && x.UsageCount == 0
+            );
+
+        return refreshToken != null;
+    }
+
     private async Task<TokenResponse> GenerateTokensAndUpdateUser(ApplicationUser user, string ipAddress)
     {
-        var token = new Token
+        var token = _context.Tokens.Add(new Token
         {
             AccessToken = await GenerateJwt(user),
             ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtOptions.TokenExpirationInMinutes),
-            IpAddress = ipAddress
-        };
+            IpAddress = ipAddress,
+            User = user,
+            UserId = user.Id
+        }).Entity;
 
-        var refreshToken = new RefreshToken
+        var refreshToken = _context.RefreshTokens.Add(new RefreshToken
         {
             AccessToken = token,
             Token = GenerateRefreshToken(),
             ExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays),
-            IpAddress = ipAddress
-        };
+            IpAddress = ipAddress,
+            User = user,
+            UserId = user.Id
+        }).Entity;
+
+        await _context.SaveChangesAsync();
 
         user.Tokens.Add(token);
         user.RefreshTokens.Add(refreshToken);
-
-        await _userManager.UpdateAsync(user);
 
         return new TokenResponse
         {
