@@ -27,4 +27,15 @@ public class ApiControllerBase : ControllerBase
     {
         return $"{Request.Scheme}://{Request.Host.Value}{Request.PathBase.Value}";
     }
+
+    /// <summary>
+    ///     Gets the IP address from the request.
+    /// </summary>
+    /// <returns>
+    ///     The IP address from the request or an empty string if it cannot be found.
+    /// </returns>
+    protected string GetIpAddressFromRequest()
+    {
+        return Request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
+    }
 }

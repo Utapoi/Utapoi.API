@@ -1,9 +1,9 @@
-﻿using Karaoke.API.Common;
-using Karaoke.Application.Common;
+﻿using Karaoke.Application.Common;
 using Karaoke.Application.Common.Requests;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSongs;
+using Karaoke.Core.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

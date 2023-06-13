@@ -3,6 +3,7 @@ using Karaoke.Application;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Users.Interfaces;
 using Karaoke.Infrastructure;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +70,12 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 app.UseCors();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 app.UseInfrastructure();
 
 app.UseStaticFiles(new StaticFileOptions

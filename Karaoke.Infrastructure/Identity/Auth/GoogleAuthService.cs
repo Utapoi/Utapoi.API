@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
 using FluentResults;
+using Karaoke.Application.Auth.GoogleAuth.Requests.LoginRequest;
 using Karaoke.Application.Auth.Responses;
 using Karaoke.Application.Identity.GoogleAuth;
 using Karaoke.Application.Identity.Tokens;
+using Karaoke.Core.Common;
 using Karaoke.Infrastructure.Identity.Entities;
 using Karaoke.Infrastructure.Options.Google;
 using Microsoft.AspNetCore.Authentication;
@@ -54,7 +56,10 @@ public class GoogleAuthService : IGoogleAuthService
         return p;
     }
 
-    public async Task<Result<TokenResponse>> LoginAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<TokenResponse>> LoginAsync(
+        GoogleLogin.Request request,
+        CancellationToken cancellationToken = default
+    )
     {
         var info = await _signInManager.GetExternalLoginInfoAsync();
 
@@ -72,7 +77,7 @@ public class GoogleAuthService : IGoogleAuthService
         if (!result.Succeeded)
         {
             // Try to register the user.
-            return await RegisterAsync();
+            return await RegisterAsync(request, cancellationToken);
         }
 
         var user = await _signInManager.UserManager.FindByLoginAsync(
@@ -85,22 +90,18 @@ public class GoogleAuthService : IGoogleAuthService
             return Result.Fail("Failed to find user.");
         }
 
-        var token = await _tokenService.GetTokenAsync(info.LoginProvider, info.ProviderKey);
-
-        // ReSharper disable once InvertIf
-        if (token.IsSuccess)
-        {
-            user.RefreshToken = token.Value.RefreshToken;
-            user.RefreshTokenExpiryTime = token.Value.RefreshTokenExpiryTime;
-            user.TokenSource = token.Value.TokenSource;
-
-            await _signInManager.UserManager.UpdateAsync(user);
-        }
+        var token = await _tokenService.GetTokenAsync(
+            info.LoginProvider,
+            info.ProviderKey,
+            request.IpAddress,
+            cancellationToken
+        );
 
         return token;
     }
 
-    public async Task<Result<TokenResponse>> RegisterAsync()
+    public async Task<Result<TokenResponse>> RegisterAsync(GoogleLogin.Request request,
+        CancellationToken cancellationToken = default)
     {
         var info = await _signInManager.GetExternalLoginInfoAsync();
 
@@ -133,12 +134,15 @@ public class GoogleAuthService : IGoogleAuthService
             return Result.Fail("Failed to add login.");
         }
 
-        result = await _signInManager.UserManager.AddToRoleAsync(user, "User");
+        await _signInManager.UserManager.AddToRoleAsync(user, Roles.User);
+        await _signInManager.UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Roles.User));
 
+        // TODO: Remove this and use something more secure and generic.
+        // Probably have a list of emails that are allowed to be admins loaded from the app settings.
         if (user.Email == "florian.theronkun@gmail.com")
         {
-            await _signInManager.UserManager.AddToRoleAsync(user, "Admin");
-            await _signInManager.UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Admin"));
+            await _signInManager.UserManager.AddToRoleAsync(user, Roles.Admin);
+            await _signInManager.UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Roles.Admin));
         }
 
         if (!result.Succeeded)
@@ -146,18 +150,11 @@ public class GoogleAuthService : IGoogleAuthService
             return Result.Fail("Failed to add user to role.");
         }
 
-        var token = await _tokenService.GetTokenAsync(info.LoginProvider, info.ProviderKey);
-
-        // ReSharper disable once InvertIf
-        if (token.IsSuccess)
-        {
-            user.RefreshToken = token.Value.RefreshToken;
-            user.RefreshTokenExpiryTime = token.Value.RefreshTokenExpiryTime;
-            user.TokenSource = token.Value.TokenSource;
-
-            await _signInManager.UserManager.UpdateAsync(user);
-        }
-
-        return token;
+        return await _tokenService.GetTokenAsync(
+            info.LoginProvider,
+            info.ProviderKey,
+            request.IpAddress,
+            cancellationToken
+        );
     }
 }

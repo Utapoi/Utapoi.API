@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using Karaoke.API.Requests.Auth;
-using Karaoke.Application.Auth.Commands.RefreshToken;
+using Karaoke.Application.Auth.Commands.GetRefreshToken;
 using Karaoke.Application.Auth.GoogleAuth.Requests.GetAuthorizeUrl;
 using Karaoke.Application.Auth.GoogleAuth.Requests.LoginRequest;
 using Karaoke.Application.Auth.Responses;
@@ -46,7 +46,7 @@ public class AuthController : ApiControllerBase
     /// <returns>
     ///     A <see cref="TokenResponse" /> containing the token or an error.
     /// </returns>
-    [Authorize]
+    [AllowAnonymous]
     [HttpPost("RefreshToken")]
     [ProducesResponseType(typeof(TokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -55,16 +55,19 @@ public class AuthController : ApiControllerBase
     {
         try
         {
-            var m = new RefreshToken.Command
+            var result = await Mediator.Send(new GetRefreshToken.Command
             {
                 Token = request.Token,
                 RefreshToken = request.RefreshToken,
-                IpAddress = GetOriginFromRequest()
-            };
+                IpAddress = GetIpAddressFromRequest()
+            });
 
-            var response = await Mediator.Send(m);
+            if (result.IsFailed)
+            {
+                return BadRequest(result.Errors.Select(x => x.Message));
+            }
 
-            return Ok(response);
+            return Ok(result.Value);
         }
         catch (ForbiddenAccessException ex)
         {
@@ -151,7 +154,10 @@ public class AuthController : ApiControllerBase
         [FromServices] IOptions<GoogleAuthOptions> options
     )
     {
-        var result = await Mediator.Send(new GoogleLogin.Request());
+        var result = await Mediator.Send(new GoogleLogin.Request
+        {
+            IpAddress = GetIpAddressFromRequest()
+        });
 
         if (result.IsFailed)
         {

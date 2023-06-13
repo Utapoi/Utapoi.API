@@ -1,4 +1,4 @@
-namespace Karaoke.API.Common;
+namespace Karaoke.Core.Common;
 
 /// <summary>
 ///     Represents the roles.
@@ -18,5 +18,8 @@ public static class Roles
     /// <summary>
     ///     Concatenates multiple roles into a single string.
     /// </summary>
-    public static string Concat(params string[] roles) => string.Join(",", roles);
+    public static string Concat(params string[] roles)
+    {
+        return string.Join(",", roles);
+    }
 }

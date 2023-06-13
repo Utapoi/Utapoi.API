@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Karaoke.Application.Auth.GoogleAuth.Requests.LoginRequest;
 using Karaoke.Application.Auth.Responses;
 using Microsoft.AspNetCore.Authentication;
 
@@ -8,5 +9,5 @@ public interface IGoogleAuthService
 {
     AuthenticationProperties GetAuthorizeUrl();
 
-    Task<Result<TokenResponse>> LoginAsync(CancellationToken cancellationToken = default);
+    Task<Result<TokenResponse>> LoginAsync(GoogleLogin.Request request, CancellationToken cancellationToken = default);
 }

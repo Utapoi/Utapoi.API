@@ -1,11 +1,11 @@
 ﻿using FluentResults;
-using Karaoke.API.Common;
 using Karaoke.Application.Albums.Commands.CreateAlbum;
 using Karaoke.Application.Albums.Requests.GetAlbums;
 using Karaoke.Application.Albums.Requests.SearchAlbums;
 using Karaoke.Application.Common;
 using Karaoke.Application.Common.Requests;
 using Karaoke.Application.DTO;
+using Karaoke.Core.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,7 +39,7 @@ public class AlbumsController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAlbumsAsync([FromQuery] PaginatedRequest request)
     {
-        try 
+        try
         {
             var result = await Mediator.Send(new GetAlbums.Request(request.Skip, request.Take));
 
@@ -114,6 +114,5 @@ public class AlbumsController : ApiControllerBase
             _logger.LogError(ex, "Error creating album");
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
     }
 }

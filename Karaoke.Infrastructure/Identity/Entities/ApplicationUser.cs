@@ -1,5 +1,4 @@
-﻿using Karaoke.Application.Auth.Responses;
-using Karaoke.Application.Common.Mappings;
+﻿using Karaoke.Application.Common.Mappings;
 using Karaoke.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,9 +20,7 @@ public sealed class ApplicationUser : IdentityUser, IMap<ApplicationUser, User>
     /// </summary>
     public string ProfilePicture { get; set; } = string.Empty;
 
-    public string RefreshToken { get; set; } = string.Empty;
+    public ICollection<Token> Tokens { get; set; } = new List<Token>();
 
-    public DateTime RefreshTokenExpiryTime { get; set; } = DateTime.Now;
-
-    public TokenSource TokenSource { get; set; } = TokenSource.None;
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

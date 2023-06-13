@@ -1,14 +1,15 @@
-﻿using FluentValidation;
+﻿using FluentResults;
+using FluentValidation;
 using JetBrains.Annotations;
 using Karaoke.Application.Auth.Responses;
 using Karaoke.Application.Identity.Tokens;
 using MediatR;
 
-namespace Karaoke.Application.Auth.Commands.RefreshToken;
+namespace Karaoke.Application.Auth.Commands.GetRefreshToken;
 
-public static class RefreshToken
+public static class GetRefreshToken
 {
-    public sealed class Command : IRequest<TokenResponse>
+    public sealed class Command : IRequest<Result<TokenResponse>>
     {
         public string Token { get; init; } = string.Empty;
 
@@ -29,7 +30,7 @@ public static class RefreshToken
     }
 
     [UsedImplicitly]
-    internal sealed class Handler : IRequestHandler<Command, TokenResponse>
+    internal sealed class Handler : IRequestHandler<Command, Result<TokenResponse>>
     {
         private readonly ITokenService _tokenService;
 
@@ -38,9 +39,9 @@ public static class RefreshToken
             _tokenService = tokenService;
         }
 
-        public Task<TokenResponse> Handle(Command request, CancellationToken cancellationToken)
+        public Task<Result<TokenResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
-            return _tokenService.RefreshTokenAsync(request);
+            return _tokenService.GetRefreshTokenAsync(request);
         }
     }
 }

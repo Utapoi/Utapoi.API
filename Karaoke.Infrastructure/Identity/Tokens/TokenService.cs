@@ -3,14 +3,17 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using FluentResults;
-using Karaoke.Application.Auth.Commands.RefreshToken;
+using Karaoke.Application.Auth.Commands.GetRefreshToken;
 using Karaoke.Application.Auth.Responses;
 using Karaoke.Application.Common.Exceptions;
 using Karaoke.Application.Identity.Extensions;
 using Karaoke.Application.Identity.Tokens;
+using Karaoke.Core.Entities;
 using Karaoke.Infrastructure.Identity.Entities;
 using Karaoke.Infrastructure.Options.JWT;
+using Karaoke.Infrastructure.Persistence.Contexts;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,34 +21,29 @@ namespace Karaoke.Infrastructure.Identity.Tokens;
 
 public class TokenService : ITokenService
 {
+    private readonly AuthDbContext _context;
+
     private readonly JwtOptions _jwtOptions;
 
     private readonly UserManager<ApplicationUser> _userManager;
 
     public TokenService(
         UserManager<ApplicationUser> userManager,
-        IOptions<JwtOptions> jwtOptions
+        IOptions<JwtOptions> jwtOptions,
+        AuthDbContext context
     )
     {
         _userManager = userManager;
+        _context = context;
         _jwtOptions = jwtOptions.Value;
     }
 
-    public async Task<TokenResponse> RefreshTokenAsync(RefreshToken.Command request)
-    {
-        var userPrincipal = GetPrincipalFromExpiredToken(request.Token);
-        var userEmail = userPrincipal.GetEmail();
-        var user = await _userManager.FindByEmailAsync(userEmail!);
-
-        if (user is null || user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-        {
-            throw new ForbiddenAccessException();
-        }
-
-        return await GenerateTokensAndUpdateUser(user);
-    }
-
-    public async Task<Result<TokenResponse>> GetTokenAsync(string loginProvider, string providerKey)
+    public async Task<Result<TokenResponse>> GetTokenAsync(
+        string loginProvider,
+        string providerKey,
+        string ipAddress,
+        CancellationToken cancellationToken = default
+    )
     {
         var user = await _userManager.FindByLoginAsync(loginProvider, providerKey);
 
@@ -54,27 +52,109 @@ public class TokenService : ITokenService
             return Result.Fail("User not found");
         }
 
-        var token = await GenerateTokensAndUpdateUser(user);
+        var token = await GenerateTokensAndUpdateUser(user, ipAddress);
         token.TokenSource = GetTokenSource(loginProvider);
 
         return Result.Ok(token);
     }
 
-    private async Task<TokenResponse> GenerateTokensAndUpdateUser(ApplicationUser user)
+    public async Task<Result<TokenResponse>> GetRefreshTokenAsync(GetRefreshToken.Command request)
     {
-        var token = await GenerateJwt(user);
+        var userPrincipal = GetPrincipalFromExpiredToken(request.Token);
+        var userEmail = userPrincipal.GetEmail();
+        var user = await _context.Users
+            .Include(x => x.Tokens)
+            .Include(x => x.RefreshTokens)
+            .ThenInclude(r => r.AccessToken)
+            .FirstOrDefaultAsync(
+                x => x.Email == userEmail
+                     || x.NormalizedEmail == userEmail
+            );
 
-        user.RefreshToken = GenerateRefreshToken();
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
+        if (user is null)
+        {
+            return Result.Fail("User not found");
+        }
+
+        var refreshToken = user.RefreshTokens
+            .SingleOrDefault(
+                x => x.Token == request.RefreshToken
+                     && x.IpAddress == request.IpAddress
+            );
+
+        var token = user.Tokens
+            .SingleOrDefault(
+                x => x.AccessToken == request.Token
+                     && x.IpAddress == request.IpAddress
+            );
+
+        if (refreshToken is null || token is null)
+        {
+            return Result.Fail("Invalid token");
+        }
+
+        if (refreshToken.AccessToken.AccessToken != token.AccessToken)
+        {
+            // Be sure that the refresh token and the access token are related.
+            // If they are not, we delete them both.
+            await RemoveTokens(token, refreshToken, user);
+
+            return Result.Fail("Invalid token");
+        }
+
+        if (refreshToken.IsExpired)
+        {
+            // If the refresh token is expired, we should delete it and the associated access token.
+            await RemoveTokens(token, refreshToken, user);
+
+            return Result.Fail("Refresh token has expired");
+        }
+
+        if (!refreshToken.IsValid)
+        {
+            // If the refresh token is invalid, we should delete it and the associated access token.
+            // This could be because the user has his credentials stolen.
+            // We maybe should also delete all tokens that were created after this one.
+            await RemoveTokens(token, refreshToken, user);
+
+            return Result.Fail("Refresh token is invalid");
+        }
+
+        // At this point, the refresh token should be valid.
+        // We can remove the old tokens and generate a new one.
+        await RemoveTokens(token, refreshToken, user);
+
+        return await GenerateTokensAndUpdateUser(user, request.IpAddress);
+    }
+
+    private async Task<TokenResponse> GenerateTokensAndUpdateUser(ApplicationUser user, string ipAddress)
+    {
+        var token = new Token
+        {
+            AccessToken = await GenerateJwt(user),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtOptions.TokenExpirationInMinutes),
+            IpAddress = ipAddress
+        };
+
+        var refreshToken = new RefreshToken
+        {
+            AccessToken = token,
+            Token = GenerateRefreshToken(),
+            ExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays),
+            IpAddress = ipAddress
+        };
+
+        user.Tokens.Add(token);
+        user.RefreshTokens.Add(refreshToken);
 
         await _userManager.UpdateAsync(user);
 
         return new TokenResponse
         {
-            Token = token,
-            RefreshToken = user.RefreshToken,
-            TokenExpiryTime = DateTime.UtcNow.AddMinutes(_jwtOptions.TokenExpirationInMinutes),
-            RefreshTokenExpiryTime = user.RefreshTokenExpiryTime
+            Token = token.AccessToken,
+            RefreshToken = refreshToken.Token,
+            TokenExpiryTime = token.ExpiresAt,
+            RefreshTokenExpiryTime = refreshToken.ExpiresAt
         };
     }
 
@@ -167,5 +247,13 @@ public class TokenService : ITokenService
         var key = SHA512.HashData(Encoding.UTF8.GetBytes(_jwtOptions.Key));
 
         return new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+    }
+
+    private async Task RemoveTokens(Token token, RefreshToken refreshToken, ApplicationUser user)
+    {
+        user.RefreshTokens.Remove(refreshToken);
+        user.Tokens.Remove(token);
+
+        await _context.SaveChangesAsync();
     }
 }
