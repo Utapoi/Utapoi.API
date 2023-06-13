@@ -28,6 +28,7 @@
   <ItemGroup>
     <Folder Include="Albums\Requests\GetAlbums\" />
     <Folder Include="Albums\Requests\SearchAlbums\" />
+    <Folder Include="Auth\Commands\VerifyRole\" />
     <Folder Include="Auth\GoogleAuth\Requests\LoginRequest\" />
     <Folder Include="Common\Extensions\" />
     <Folder Include="Files\" />

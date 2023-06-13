@@ -1,8 +1,9 @@
-﻿using System.Security.Claims;
-using Karaoke.Application.Auth.Commands.GetRefreshToken;
+﻿using Karaoke.Application.Auth.Commands.GetRefreshToken;
+using Karaoke.Application.Auth.Commands.VerifyRole;
 using Karaoke.Application.Auth.GoogleAuth.Requests.GetAuthorizeUrl;
 using Karaoke.Application.Auth.GoogleAuth.Requests.LoginRequest;
 using Karaoke.Application.Common.Exceptions;
+using Karaoke.Application.Users.Interfaces;
 using Karaoke.Infrastructure.Options.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,22 +16,26 @@ namespace Karaoke.API.Controllers.Auth;
 /// </summary>
 public class AuthController : ApiControllerBase
 {
+    private readonly ICurrentUserService _currentUserService;
     private readonly IWebHostEnvironment _environment;
+
     private readonly ILogger<AuthController> _logger;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="AuthController" /> class.
     /// </summary>
-    /// <param name="logger">
-    ///     The logger.
-    /// </param>
-    /// <param name="environment">
-    ///     The environment.
-    /// </param>
-    public AuthController(ILogger<AuthController> logger, IWebHostEnvironment environment)
+    /// <param name="logger">The logger.</param>
+    /// <param name="environment">The environment.</param>
+    /// <param name="currentUserService">The current user service.</param>
+    public AuthController(
+        ILogger<AuthController> logger,
+        IWebHostEnvironment environment,
+        ICurrentUserService currentUserService
+    )
     {
         _logger = logger;
         _environment = environment;
+        _currentUserService = currentUserService;
     }
 
     /// <summary>
@@ -113,23 +118,39 @@ public class AuthController : ApiControllerBase
     [HttpPost("Verify/{role}")]
     [ProducesResponseType(typeof(OkResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(UnauthorizedResult), StatusCodes.Status401Unauthorized)]
-    public IActionResult VerifyAsync([FromRoute] string role)
+    public async Task<IActionResult> VerifyAsync([FromRoute] string role)
     {
         if (string.IsNullOrWhiteSpace(role))
-        {
-            return BadRequest("Role cannot be null or empty.");
-        }
-
-        // Note(Mikyan): We must use the RoleManager to verify roles.
-        // This will do for now.
-        var roles = HttpContext.User.FindAll(ClaimTypes.Role);
-
-        if (roles.All(r => r.Value != role))
         {
             return Unauthorized();
         }
 
-        return Ok();
+        if (string.IsNullOrWhiteSpace(_currentUserService.UserId))
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            var result = await Mediator.Send(new VerifyRole.Command
+            {
+                // The validator will throw if UserId is empty anyway.
+                UserId = _currentUserService.UserId ?? string.Empty,
+                Role = role
+            });
+
+            if (result.IsFailed)
+            {
+                return Unauthorized();
+            }
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error verifying role: {Role}", role);
+            return Unauthorized();
+        }
     }
 
     /// <summary>
