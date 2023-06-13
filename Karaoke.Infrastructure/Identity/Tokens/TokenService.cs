@@ -227,16 +227,6 @@ public class TokenService : ITokenService
         return claims;
     }
 
-    private static TokenSource GetTokenSource(string loginProvider)
-    {
-        return loginProvider switch
-        {
-            "Google" => TokenSource.Google,
-            "Discord" => TokenSource.Discord,
-            _ => TokenSource.None
-        };
-    }
-
     private static string GenerateRefreshToken()
     {
         using var rng = RandomNumberGenerator.Create();

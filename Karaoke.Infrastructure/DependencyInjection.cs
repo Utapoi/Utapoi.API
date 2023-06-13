@@ -15,7 +15,7 @@ using Karaoke.Infrastructure.Persistence;
 using Karaoke.Infrastructure.Singers;
 using Karaoke.Infrastructure.Songs;
 using Karaoke.Infrastructure.Tags;
-using Karaoke.Infrastructure.Users.Services;
+using Karaoke.Infrastructure.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;

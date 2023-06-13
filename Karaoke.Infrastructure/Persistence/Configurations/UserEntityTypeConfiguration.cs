@@ -12,5 +12,6 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        // No configuration for now.
     }
 }
