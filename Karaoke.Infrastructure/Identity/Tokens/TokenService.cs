@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -56,9 +57,9 @@ public class TokenService : ITokenService
         {
             return Result.Ok(new TokenResponse
             {
-                Token = token!.AccessToken,
+                Token = token.AccessToken,
                 RefreshToken = refreshToken!.Token,
-                TokenExpiryTime = token!.ExpiresAt,
+                TokenExpiryTime = token.ExpiresAt,
                 RefreshTokenExpiryTime = refreshToken!.ExpiresAt
             });
         }
@@ -138,7 +139,7 @@ public class TokenService : ITokenService
     private bool TryGetValidTokenForUser(
         ApplicationUser user,
         string ipAddress,
-        out Token? token
+        [MaybeNullWhen(false)] out Token token
     )
     {
         token = _context.Tokens
@@ -154,7 +155,7 @@ public class TokenService : ITokenService
     private bool TryGetValidRefreshTokenForUser(
         ApplicationUser user,
         string ipAddress,
-        out RefreshToken? refreshToken
+        [MaybeNullWhen(false)] out RefreshToken refreshToken
     )
     {
         refreshToken = _context.RefreshTokens
