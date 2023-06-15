@@ -129,5 +129,5 @@ Please ensure that your code adheres to the project's coding standards and inclu
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/Utapoi/Karaoke.API/blob/main/LICENSE) file for more details.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). For more information, please refer to the [LICENSE](LICENSE) file.
 
