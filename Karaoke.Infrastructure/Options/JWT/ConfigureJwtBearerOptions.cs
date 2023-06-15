@@ -66,7 +66,14 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
             {
                 if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                 {
-                    context.Response.Headers.Add("Token-Expired", "true");
+                    context.Response.Headers.Add("X-Token-Expired", "true");
+                    context.Response.StatusCode = 401;
+                }
+                else
+                {
+                    // Note(Mikyan): We assume that the user does not have access to the resource.
+                    // Maybe this will change in the future.
+                    context.Response.StatusCode = 403;
                 }
 
                 return Task.CompletedTask;
