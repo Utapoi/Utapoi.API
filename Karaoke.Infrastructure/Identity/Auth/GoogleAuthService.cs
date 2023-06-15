@@ -6,8 +6,9 @@ using Karaoke.Application.Identity.GoogleAuth;
 using Karaoke.Application.Identity.Tokens;
 using Karaoke.Core.Common;
 using Karaoke.Infrastructure.Identity.Entities;
+using Karaoke.Infrastructure.Identity.Extensions;
+using Karaoke.Infrastructure.Options.Admin;
 using Karaoke.Infrastructure.Options.Google;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -15,6 +16,8 @@ namespace Karaoke.Infrastructure.Identity.Auth;
 
 public class GoogleAuthService : IGoogleAuthService
 {
+    private readonly AdminOptions _adminOptions;
+
     private readonly GoogleAuthOptions _googleAuthOptions;
 
     private readonly SignInManager<ApplicationUser> _signInManager;
@@ -27,6 +30,9 @@ public class GoogleAuthService : IGoogleAuthService
     /// <param name="signInManager">
     ///     The sign in manager.
     /// </param>
+    /// <param name="adminOptions">
+    ///     The admin options.
+    /// </param>
     /// <param name="googleAuthOptions">
     ///     The google auth options.
     /// </param>
@@ -34,26 +40,31 @@ public class GoogleAuthService : IGoogleAuthService
     ///     The token service.
     /// </param>
     public GoogleAuthService(
-        SignInManager<ApplicationUser> signInManager,
+        IOptions<AdminOptions> adminOptions,
         IOptions<GoogleAuthOptions> googleAuthOptions,
+        SignInManager<ApplicationUser> signInManager,
         ITokenService tokenService
     )
     {
+        _adminOptions = adminOptions.Value;
+        _googleAuthOptions = googleAuthOptions.Value;
         _signInManager = signInManager;
         _tokenService = tokenService;
-        _googleAuthOptions = googleAuthOptions.Value;
     }
 
-    public AuthenticationProperties GetAuthorizeUrl()
+    public GoogleAuthProperties GetAuthorizeUrl()
     {
         var p = _signInManager.ConfigureExternalAuthenticationProperties(
             "Google",
             $"{_googleAuthOptions.RedirectUrl}Auth/Google/AuthorizeCallback"
         );
 
-        p.AllowRefresh = true;
-
-        return p;
+        return new GoogleAuthProperties
+        {
+            Items = p.Items,
+            Parameters = p.Parameters,
+            AllowRefresh = true
+        };
     }
 
     public async Task<Result<TokenResponse>> LoginAsync(
@@ -116,8 +127,8 @@ public class GoogleAuthService : IGoogleAuthService
         {
             UserName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
             Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-            ProfilePicture = info.Principal.FindFirstValue("picture") ?? string.Empty,
-            EmailConfirmed = bool.Parse(info.Principal.FindFirstValue("email_verified") ?? "false")
+            ProfilePicture = info.Principal.FindFirstValue(GoogleClaimTypes.ProfilePicture),
+            EmailConfirmed = info.Principal.FindFirstValue<bool>(GoogleClaimTypes.EmailVerified)
         };
 
 
@@ -139,9 +150,7 @@ public class GoogleAuthService : IGoogleAuthService
         await _signInManager.UserManager.AddToRoleAsync(user, Roles.User);
         await _signInManager.UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Roles.User));
 
-        // TODO: Remove this and use something more secure and generic.
-        // Probably have a list of emails that are allowed to be admins loaded from the app settings.
-        if (user.Email == "mikyan0207@gmail.com")
+        if (_adminOptions.AllowedEmails.Contains(user.Email))
         {
             await _signInManager.UserManager.AddToRoleAsync(user, Roles.Admin);
             await _signInManager.UserManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Roles.Admin));

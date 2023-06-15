@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Google;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -32,8 +33,6 @@ public class ConfigureGoogleOptions : IConfigureNamedOptions<GoogleOptions>
         options.Scope.Add("profile");
         options.SignInScheme = IdentityConstants.ExternalScheme;
 
-        options.AuthorizationEndpoint += "?prompt=consent";
-
         foreach (var scope in _googleAuthOptions.Scopes)
         {
             if (!options.Scope.Contains(scope))
@@ -41,5 +40,8 @@ public class ConfigureGoogleOptions : IConfigureNamedOptions<GoogleOptions>
                 options.Scope.Add(scope);
             }
         }
+
+        options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
+        options.ClaimActions.MapJsonKey("urn:google:locale", "locale", "string");
     }
 }

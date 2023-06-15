@@ -8,7 +8,7 @@ namespace Karaoke.Application.Singers.Requests.SearchSingers;
 
 public static class SearchSingers
 {
-    public record Request : IRequest<Result<IEnumerable<SingerDTO>>>
+    public sealed class Request : IRequest<Result<IEnumerable<SingerDTO>>>
     {
         public string Input { get; init; } = string.Empty;
     }
@@ -26,7 +26,6 @@ public static class SearchSingers
         {
             var singers = await _context.Singers
                 .Include(x => x.Names)
-                .ThenInclude(n => n.Language)
                 .Where(s => s.Names.Any(
                     x => x.Text.Contains(request.Input, StringComparison.InvariantCultureIgnoreCase)))
                 .Select(s => new SingerDTO

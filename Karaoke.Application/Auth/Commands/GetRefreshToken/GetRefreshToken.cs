@@ -7,6 +7,10 @@ using MediatR;
 
 namespace Karaoke.Application.Auth.Commands.GetRefreshToken;
 
+// TODO: Rename this class to something more meaningful.
+// We don't actually get a refresh token here, we get a new token.
+// So maybe something like GetNewToken.Command / UpdateToken.Command / RegenerateToken.Command
+
 public static class GetRefreshToken
 {
     public sealed class Command : IRequest<Result<TokenResponse>>

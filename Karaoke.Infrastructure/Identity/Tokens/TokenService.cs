@@ -7,9 +7,9 @@ using FluentResults;
 using Karaoke.Application.Auth.Commands.GetRefreshToken;
 using Karaoke.Application.Auth.Responses;
 using Karaoke.Application.Common.Exceptions;
-using Karaoke.Application.Identity.Extensions;
 using Karaoke.Application.Identity.Tokens;
 using Karaoke.Infrastructure.Identity.Entities;
+using Karaoke.Infrastructure.Identity.Extensions;
 using Karaoke.Infrastructure.Options.JWT;
 using Karaoke.Infrastructure.Persistence.Contexts;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +27,12 @@ public class TokenService : ITokenService
 
     private readonly UserManager<ApplicationUser> _userManager;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TokenService" /> class.
+    /// </summary>
+    /// <param name="userManager">The <see cref="UserManager{TUser}" />.</param>
+    /// <param name="jwtOptions">The <see cref="JwtOptions" />.</param>
+    /// <param name="context">The <see cref="AuthDbContext" />.</param>
     public TokenService(
         UserManager<ApplicationUser> userManager,
         IOptions<JwtOptions> jwtOptions,
@@ -38,6 +44,7 @@ public class TokenService : ITokenService
         _jwtOptions = jwtOptions.Value;
     }
 
+    /// <inheritdoc cref="ITokenService.GetTokenAsync(string, string, string, CancellationToken)" />
     public async Task<Result<TokenResponse>> GetTokenAsync(
         string loginProvider,
         string providerKey,
@@ -67,6 +74,7 @@ public class TokenService : ITokenService
         return await GenerateTokensAndUpdateUser(user, ipAddress);
     }
 
+    /// <inheritdoc cref="ITokenService.GetRefreshTokenAsync(GetRefreshToken.Command)" />
     public async Task<Result<TokenResponse>> GetRefreshTokenAsync(GetRefreshToken.Command request)
     {
         var userPrincipal = GetPrincipalFromExpiredToken(request.Token);

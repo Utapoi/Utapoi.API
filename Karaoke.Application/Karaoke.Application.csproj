@@ -7,10 +7,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-
-	<ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="FluentResults" Version="3.15.2" />
     <PackageReference Include="FluentValidation" Version="11.5.2" />
@@ -18,27 +14,12 @@
     <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
     <PackageReference Include="MediatR" Version="12.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Karaoke.Core\Karaoke.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Albums\Requests\GetAlbums\" />
-    <Folder Include="Albums\Requests\SearchAlbums\" />
-    <Folder Include="Auth\Commands\VerifyRole\" />
-    <Folder Include="Auth\GoogleAuth\Requests\LoginRequest\" />
-    <Folder Include="Common\Extensions\" />
-    <Folder Include="Files\" />
-    <Folder Include="Karaoke\" />
-    <Folder Include="Tags\" />
-    <Folder Include="Singers\Commands\CreateSinger\" />
-    <Folder Include="Singers\Requests\GetSingers\" />
-    <Folder Include="Singers\Requests\SearchSingers\" />
-    <Folder Include="Songs\Commands\CreateSong\" />
-    <Folder Include="Users\Requests\GetCurrentUser\" />
   </ItemGroup>
 
 </Project>

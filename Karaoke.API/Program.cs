@@ -17,6 +17,11 @@ builder.Services.AddCors(x =>
             .AllowAnyMethod()
             .AllowCredentials();
 
+        c.WithOrigins("https://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+
         c.WithOrigins("https://karaoke.utapoi.com")
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -50,6 +55,7 @@ if (app.Environment.IsDevelopment())
         c.OAuthUsePkce();
     });
     app.UseDeveloperExceptionPage();
+    app.UseHttpsRedirection();
 }
 else
 {
@@ -68,7 +74,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseHttpsRedirection();
+
 app.UseCors();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions

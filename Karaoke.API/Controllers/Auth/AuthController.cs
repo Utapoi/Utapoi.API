@@ -5,6 +5,7 @@ using Karaoke.Application.Auth.GoogleAuth.Requests.LoginRequest;
 using Karaoke.Application.Common.Exceptions;
 using Karaoke.Application.Users.Interfaces;
 using Karaoke.Infrastructure.Options.Google;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -17,7 +18,6 @@ namespace Karaoke.API.Controllers.Auth;
 public class AuthController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUserService;
-    private readonly IWebHostEnvironment _environment;
 
     private readonly ILogger<AuthController> _logger;
 
@@ -25,16 +25,13 @@ public class AuthController : ApiControllerBase
     ///     Initializes a new instance of the <see cref="AuthController" /> class.
     /// </summary>
     /// <param name="logger">The logger.</param>
-    /// <param name="environment">The environment.</param>
     /// <param name="currentUserService">The current user service.</param>
     public AuthController(
         ILogger<AuthController> logger,
-        IWebHostEnvironment environment,
         ICurrentUserService currentUserService
     )
     {
         _logger = logger;
-        _environment = environment;
         _currentUserService = currentUserService;
     }
 
@@ -61,11 +58,6 @@ public class AuthController : ApiControllerBase
             return BadRequest("RefreshToken is missing.");
         }
 
-        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
-        {
-            return BadRequest("Token or RefreshToken is missing.");
-        }
-
         try
         {
             var result = await Mediator.Send(new GetRefreshToken.Command
@@ -80,18 +72,7 @@ public class AuthController : ApiControllerBase
                 return BadRequest(result.Errors.Select(x => x.Message));
             }
 
-            var cookieOptions = new CookieOptions
-            {
-                IsEssential = true,
-                HttpOnly = _environment.IsProduction(),
-                SameSite = _environment.IsProduction() ? SameSiteMode.Strict : SameSiteMode.Lax,
-                Secure = _environment.IsProduction()
-            };
-
-            Response.Cookies.Append("Karaoke-Token", result.Value.Token, cookieOptions);
-            Response.Cookies.Append("Karaoke-RefreshToken", result.Value.RefreshToken, cookieOptions);
-
-            return Ok();
+            return Ok(result.Value);
         }
         catch (ValidationException ex)
         {
@@ -171,7 +152,12 @@ public class AuthController : ApiControllerBase
             return BadRequest(result.Errors);
         }
 
-        return new ChallengeResult("Google", result.Value);
+        var p = new AuthenticationProperties(result.Value.Items, result.Value.Parameters)
+        {
+            AllowRefresh = result.Value.AllowRefresh
+        };
+
+        return new ChallengeResult("Google", p);
     }
 
     /// <summary>
@@ -199,14 +185,12 @@ public class AuthController : ApiControllerBase
             return BadRequest(result.Errors);
         }
 
-        // We have to adapt the cookie options based on the environment.
-        // In development, we can't send http-only cookies from the client side.
         var cookieOptions = new CookieOptions
         {
             IsEssential = true,
-            HttpOnly = _environment.IsProduction(),
-            SameSite = _environment.IsProduction() ? SameSiteMode.Strict : SameSiteMode.Lax,
-            Secure = _environment.IsProduction()
+            SameSite = SameSiteMode.Lax,
+            Secure = true,
+            HttpOnly = true
         };
 
         Response.Cookies.Append("Karaoke-Token", result.Value.Token, cookieOptions);

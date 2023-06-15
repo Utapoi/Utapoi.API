@@ -1,4 +1,5 @@
-﻿using Karaoke.Infrastructure.Options.Google;
+﻿using Karaoke.Infrastructure.Options.Admin;
+using Karaoke.Infrastructure.Options.Google;
 using Karaoke.Infrastructure.Options.JWT;
 using Karaoke.Infrastructure.Options.Server;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -25,6 +26,11 @@ public static class DependencyInjection
 
         services.AddOptions<ServerOptions>()
             .BindConfiguration($"{nameof(ServerOptions)}")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<AdminOptions>()
+            .BindConfiguration($"SecurityOptions:{nameof(AdminOptions)}")
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

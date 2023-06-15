@@ -18,7 +18,7 @@ public sealed class ApplicationUser : IdentityUser, IMap<ApplicationUser, User>
     /// <summary>
     ///     Gets or sets the profile picture.
     /// </summary>
-    public string ProfilePicture { get; set; } = string.Empty;
+    public string? ProfilePicture { get; set; } = string.Empty;
 
     public ICollection<Token> Tokens { get; set; } = new List<Token>();
 
