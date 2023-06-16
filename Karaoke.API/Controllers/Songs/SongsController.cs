@@ -1,7 +1,9 @@
-﻿using Karaoke.Application.Common;
+﻿using Karaoke.API.Extensions;
+using Karaoke.Application.Common;
 using Karaoke.Application.Common.Requests;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Songs.Commands.CreateSong;
+using Karaoke.Application.Songs.Requests.GetSong;
 using Karaoke.Application.Songs.Requests.GetSongs;
 using Karaoke.Core.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -15,19 +17,6 @@ namespace Karaoke.API.Controllers.Songs;
 [Authorize(Roles = Roles.User)]
 public sealed class SongsController : ApiControllerBase
 {
-    private readonly ILogger<SongsController> _logger;
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="SongsController" /> class.
-    /// </summary>
-    /// <param name="logger">
-    ///     The logger.
-    /// </param>
-    public SongsController(ILogger<SongsController> logger)
-    {
-        _logger = logger;
-    }
-
     /// <summary>
     ///     Gets all songs.
     /// </summary>
@@ -39,33 +28,30 @@ public sealed class SongsController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSongsAsync([FromQuery] PaginatedRequest request)
-    {
-        try
-        {
-            var result = await Mediator.Send(new GetSongs.Request(request.Skip, request.Take));
+        => await Mediator.ProcessAsync(new GetSongs.Request(request.Skip, request.Take));
 
-            if (result.IsFailed)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            return Ok(result.Value);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting songs.");
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
+    /// <summary>
+    ///    Gets a song by id.
+    /// </summary>
+    /// <param name="id">The id of the song.</param>
+    /// <returns>
+    ///    A <see cref="SongDTO" /> containing the song information.
+    /// </returns>
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(SongDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetSongAsync([FromRoute] Guid id)
+        => await Mediator.ProcessAsync(new GetSong.Request(id));
 
     /// <summary>
     ///     Creates a new song.
     /// </summary>
     /// <param name="command">
-    ///     The command.
+    ///    The <see cref="CreateSong.Command" /> containing the song information.
     /// </param>
     /// <returns>
-    ///     A <see cref="IActionResult" /> containing the result of the operation.
+    ///     A <see cref="IActionResult" /> containing the id of the created song.
     /// </returns>
     [HttpPost]
     [Authorize(Roles = Roles.Admin)]
@@ -73,14 +59,24 @@ public sealed class SongsController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateSongAsync([FromBody] CreateSong.Command command)
+        => await Mediator.ProcessAsync(command);
+
+    /// <summary>
+    ///     Updates a song.
+    /// </summary>
+    /// <param name="id">
+    ///     The song id.
+    /// </param>
+    /// <returns>
+    ///     A <see cref="IActionResult" /> containing the result of the operation.
+    /// </returns>
+    [HttpPatch("{id:guid}")]
+    [Authorize(Roles = Roles.Admin)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateSongAsync([FromRoute] Guid id)
     {
-        var result = await Mediator.Send(command);
-
-        if (result.IsFailed)
-        {
-            return BadRequest();
-        }
-
-        return Ok(result.Value);
+        return Ok();
     }
 }

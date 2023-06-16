@@ -8,10 +8,14 @@ using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSongs;
 using Karaoke.Application.Tags;
 using Karaoke.Core.Entities;
+using Karaoke.Core.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Karaoke.Infrastructure.Songs;
 
+/// <summary>
+///     The <see cref="SongsService" /> class that implements <see cref="ISongsService" />.
+/// </summary>
 public sealed class SongsService : ISongsService
 {
     private readonly IAlbumsService _albumsService;
@@ -26,6 +30,15 @@ public sealed class SongsService : ISongsService
 
     private readonly ITagsService _tagsService;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="SongsService" /> class.
+    /// </summary>
+    /// <param name="context">The <see cref="IKaraokeDbContext" /> context.</param>
+    /// <param name="singersService">The singers service.</param>
+    /// <param name="albumsService">The albums service.</param>
+    /// <param name="tagsService">The tags service.</param>
+    /// <param name="filesService">The files service.</param>
+    /// <param name="karaokeService">The karaoke service.</param>
     public SongsService(
         IKaraokeDbContext context,
         ISingersService singersService,
@@ -95,12 +108,29 @@ public sealed class SongsService : ISongsService
             .Include(x => x.Karaoke)
             .Skip(request.Skip)
             .Take(request.Take)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
+    }
+
+    /// <inheritdoc cref="ISongsService.GetAsync(Guid, CancellationToken)" />
+    public async Task<Song> GetAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var song = await _context.Songs
+            .Include(x => x.Singers)
+            .Include(x => x.Albums)
+            .Include(x => x.Tags)
+            .Include(x => x.Karaoke)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        return song ?? throw new EntityNotFoundException<Song>(id);
     }
 
     /// <inheritdoc cref="ISongsService.CountAsync(CancellationToken)" />
     public Task<int> CountAsync(CancellationToken cancellationToken = default)
     {
-        return _context.Songs.CountAsync(cancellationToken);
+        return _context.Songs
+            .AsNoTracking()
+            .CountAsync(cancellationToken);
     }
 }

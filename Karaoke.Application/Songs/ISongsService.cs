@@ -1,9 +1,13 @@
 ﻿using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSongs;
 using Karaoke.Core.Entities;
+using Karaoke.Core.Exceptions;
 
 namespace Karaoke.Application.Songs;
 
+/// <summary>
+///     The <see cref="ISongsService" /> interface.
+/// </summary>
 public interface ISongsService
 {
     /// <summary>
@@ -34,6 +38,22 @@ public interface ISongsService
     /// </returns>
     Task<IReadOnlyCollection<Song>> GetAsync(
         GetSongs.Request request,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    ///     Gets a <see cref="Song" /> by Id.
+    /// </summary>
+    /// <param name="id">The id of the song.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    ///     The <see cref="Song" />.
+    /// </returns>
+    /// <exception cref="EntityNotFoundException{Song}">
+    ///     Thrown when the <see cref="Song" /> is not found.
+    /// </exception>
+    Task<Song> GetAsync(
+        Guid id,
         CancellationToken cancellationToken = default
     );
 

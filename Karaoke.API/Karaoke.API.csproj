@@ -24,8 +24,4 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Requests\Singers\" />
-	</ItemGroup>
-
 </Project>
