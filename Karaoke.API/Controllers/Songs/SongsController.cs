@@ -14,7 +14,6 @@ namespace Karaoke.API.Controllers.Songs;
 /// <summary>
 ///     Songs controller.
 /// </summary>
-[Authorize(Roles = Roles.User)]
 public sealed class SongsController : ApiControllerBase
 {
     /// <summary>
@@ -54,7 +53,6 @@ public sealed class SongsController : ApiControllerBase
     ///     A <see cref="IActionResult" /> containing the id of the created song.
     /// </returns>
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
