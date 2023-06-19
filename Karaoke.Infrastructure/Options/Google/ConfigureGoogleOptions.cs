@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
+using OpenIddict.Client.WebIntegration;
 
 namespace Karaoke.Infrastructure.Options.Google;
 
-public class ConfigureGoogleOptions : IConfigureNamedOptions<GoogleOptions>
+public class ConfigureGoogleOptions : IConfigureNamedOptions<OpenIddictClientWebIntegrationOptions.Google>
 {
     private readonly GoogleAuthOptions _googleAuthOptions;
 
@@ -15,33 +12,23 @@ public class ConfigureGoogleOptions : IConfigureNamedOptions<GoogleOptions>
         _googleAuthOptions = googleAuthOptions.Value;
     }
 
-    public void Configure(GoogleOptions options)
+    public void Configure(OpenIddictClientWebIntegrationOptions.Google options)
     {
         Configure(string.Empty, options);
     }
 
-    public void Configure(string? name, GoogleOptions options)
+    public void Configure(string? name, OpenIddictClientWebIntegrationOptions.Google options)
     {
-        if (name != JwtBearerDefaults.AuthenticationScheme && name != GoogleDefaults.AuthenticationScheme)
-        {
-            return;
-        }
-
         options.ClientId = _googleAuthOptions.ClientId;
         options.ClientSecret = _googleAuthOptions.ClientSecret;
 
-        options.Scope.Add("profile");
-        options.SignInScheme = IdentityConstants.ExternalScheme;
-
+        options.Scopes.Add("profile");
+        
         foreach (var scope in _googleAuthOptions.Scopes)
         {
-            if (!options.Scope.Contains(scope))
-            {
-                options.Scope.Add(scope);
-            }
+            options.Scopes.Add(scope);
         }
 
-        options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
-        options.ClaimActions.MapJsonKey("urn:google:locale", "locale", "string");
+        options.RedirectUri = new Uri("Auth/Google/AuthorizeCallback", UriKind.Relative);
     }
 }

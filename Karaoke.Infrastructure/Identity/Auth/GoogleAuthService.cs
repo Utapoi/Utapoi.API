@@ -11,6 +11,7 @@ using Karaoke.Infrastructure.Options.Admin;
 using Karaoke.Infrastructure.Options.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using OpenIddict.Client.WebIntegration;
 
 namespace Karaoke.Infrastructure.Identity.Auth;
 
@@ -54,15 +55,10 @@ public class GoogleAuthService : IGoogleAuthService
 
     public GoogleAuthProperties GetAuthorizeUrl()
     {
-        var p = _signInManager.ConfigureExternalAuthenticationProperties(
-            "Google",
-            $"{_googleAuthOptions.RedirectUrl}Auth/Google/AuthorizeCallback"
-        );
-
         return new GoogleAuthProperties
         {
-            Items = p.Items,
-            Parameters = p.Parameters,
+            Provider = OpenIddictClientWebIntegrationConstants.Providers.Google,
+            RedirectUrl = _googleAuthOptions.RedirectUrl,
             AllowRefresh = true
         };
     }

@@ -9,19 +9,12 @@
 /// </remarks>
 public sealed class GoogleAuthProperties
 {
-    /// <summary>
-    ///     State values about the authentication session.
-    /// </summary>
-    public IDictionary<string, string?> Items { get; set; } = new Dictionary<string, string?>();
+    public string Provider { get; init; } = string.Empty;
 
-    /// <summary>
-    ///     Collection of parameters that are passed to the authentication handler. These are not intended for
-    ///     serialization or persistence, only for flowing data between call sites.
-    /// </summary>
-    public IDictionary<string, object?> Parameters { get; set; } = new Dictionary<string, object?>();
-
+    public string RedirectUrl { get; init; } = string.Empty;
+    
     /// <summary>
     ///     Allow refreshing the authentication session.
     /// </summary>
-    public bool AllowRefresh { get; set; }
+    public bool AllowRefresh { get; init; }
 }

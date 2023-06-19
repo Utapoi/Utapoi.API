@@ -44,7 +44,7 @@ public class SingersService : ISingersService
                     Language = x.Language
                 }).ToList(),
             Birthday = command.Birthday ?? DateTime.MinValue,
-            ProfilePicture = await _filesService.CreateAsync(command.Image, cancellationToken)
+            ProfilePicture = await _filesService.CreateAsync(command.ProfilePicture, cancellationToken)
         };
 
         await _context.Singers.AddAsync(singer, cancellationToken);

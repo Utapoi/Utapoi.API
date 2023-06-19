@@ -78,6 +78,7 @@ public static class DependencyInjection
                     builder => { builder.MigrationsAssembly(typeof(AuthDbContext).Assembly.FullName); });
             }
 
+            x.UseOpenIddict();
             x.EnableSensitiveDataLogging();
             x.EnableDetailedErrors();
             x.LogTo(Console.WriteLine);

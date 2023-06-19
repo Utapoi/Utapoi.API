@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using OpenIddict.Client.AspNetCore;
 
 namespace Karaoke.API.Controllers.Auth;
 
@@ -140,7 +141,6 @@ public class AuthController : ApiControllerBase
     /// <returns>
     ///     A <see cref="ChallengeResult" /> containing the authorization url.
     /// </returns>
-    [AllowAnonymous]
     [HttpGet("Google/Authorize")]
     [ProducesResponseType(typeof(ChallengeResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GoogleAuth()
@@ -152,50 +152,52 @@ public class AuthController : ApiControllerBase
             return BadRequest(result.Errors);
         }
 
-        var p = new AuthenticationProperties(result.Value.Items, result.Value.Parameters)
+        var p = new AuthenticationProperties(new Dictionary<string, string?>
         {
+            [OpenIddictClientAspNetCoreConstants.Properties.ProviderName] = result.Value.Provider,
+        })
+        {
+            RedirectUri = result.Value.RedirectUrl,
             AllowRefresh = result.Value.AllowRefresh
         };
 
-        return new ChallengeResult("Google", p);
+        return Challenge(p, OpenIddictClientAspNetCoreDefaults.AuthenticationScheme);
     }
 
     /// <summary>
     ///     Authorization callback for Google authentication.
     /// </summary>
-    /// <param name="options">
-    ///     The Google authentication options.
-    /// </param>
     /// <returns>
     ///     A <see cref="RedirectResult" /> to the login success page.
     /// </returns>
-    [AllowAnonymous]
     [HttpGet("Google/AuthorizeCallback")]
-    public async Task<IActionResult> GoogleAuthCallbackAsync(
-        [FromServices] IOptions<GoogleAuthOptions> options
-    )
+    public async Task<IActionResult> GoogleAuthCallbackAsync()
     {
-        var result = await Mediator.Send(new GoogleLogin.Request
-        {
-            IpAddress = GetIpAddressFromRequest()
-        });
+        var result = await HttpContext.AuthenticateAsync(OpenIddictClientAspNetCoreDefaults.AuthenticationScheme);
 
-        if (result.IsFailed)
-        {
-            return BadRequest(result.Errors);
-        }
+        return Ok();
 
-        var cookieOptions = new CookieOptions
-        {
-            IsEssential = true,
-            SameSite = SameSiteMode.Lax,
-            Secure = true,
-            HttpOnly = true
-        };
-
-        Response.Cookies.Append("Karaoke-Token", result.Value.Token, cookieOptions);
-        Response.Cookies.Append("Karaoke-RefreshToken", result.Value.RefreshToken, cookieOptions);
-
-        return Redirect($"{options.Value.WebClientUrl}auth/login-result");
+        // var result = await Mediator.Send(new GoogleLogin.Request
+        // {
+        //     IpAddress = GetIpAddressFromRequest()
+        // });
+        //
+        // if (result.IsFailed)
+        // {
+        //     return BadRequest(result.Errors);
+        // }
+        //
+        // var cookieOptions = new CookieOptions
+        // {
+        //     IsEssential = true,
+        //     SameSite = SameSiteMode.Lax,
+        //     Secure = true,
+        //     HttpOnly = true
+        // };
+        //
+        // Response.Cookies.Append("Karaoke-Token", result.Value.Token, cookieOptions);
+        // Response.Cookies.Append("Karaoke-RefreshToken", result.Value.RefreshToken, cookieOptions);
+        //
+        // return Redirect($"{options.Value.WebClientUrl}auth/login-result");
     }
 }

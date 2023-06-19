@@ -92,7 +92,7 @@ public class AlbumsController : ApiControllerBase
     ///     A <see cref="string" /> of the album id.
     /// </returns>
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
+    //[Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

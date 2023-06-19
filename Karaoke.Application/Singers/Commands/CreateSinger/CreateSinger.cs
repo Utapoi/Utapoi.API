@@ -14,7 +14,7 @@ public static class CreateSinger
 
         public DateTime? Birthday { get; set; } = DateTime.MinValue;
 
-        public FileRequest Image { get; set; } = null!;
+        public FileRequest ProfilePicture { get; set; } = null!;
     }
 
     internal sealed class Handler : IRequestHandler<Command, Result<string>>

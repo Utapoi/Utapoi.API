@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OpenIddict.Client.WebIntegration;
 
 namespace Karaoke.Infrastructure.Options;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
+    // Note(Mikyan): Avoid name clash with default AddOptions.
+    public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration _)
     {
         services.AddOptions<JwtOptions>()
             .BindConfiguration($"SecurityOptions:{nameof(JwtOptions)}")
@@ -20,7 +22,7 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddOptions<GoogleAuthOptions>()
-            .BindConfiguration($"GoogleOptions:{nameof(GoogleAuthOptions)}")
+            .BindConfiguration($"GoogleOptions:Auth")
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
@@ -35,7 +37,7 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
-        services.AddSingleton<IConfigureOptions<GoogleOptions>, ConfigureGoogleOptions>();
+        services.AddSingleton<IConfigureOptions<OpenIddictClientWebIntegrationOptions.Google>, ConfigureGoogleOptions>();
 
         return services;
     }

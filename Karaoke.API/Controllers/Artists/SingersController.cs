@@ -13,7 +13,7 @@ namespace Karaoke.API.Controllers.Artists;
 /// <summary>
 ///     Singers controller.
 /// </summary>
-[Authorize(Roles = Roles.User)]
+//[Authorize(Roles = Roles.User)]
 public class SingersController : ApiControllerBase
 {
     private readonly ILogger<SingersController> _logger;
@@ -117,7 +117,7 @@ public class SingersController : ApiControllerBase
     ///     A <see cref="IActionResult" /> containing the result of the operation.
     /// </returns>
     [HttpPost]
-    [Authorize(Roles = Roles.Admin)]
+    //[Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateSingerAsync([FromBody] CreateSinger.Command command)
