@@ -41,7 +41,7 @@ public class FilesService : IFilesService
             Hash = hash
         };
 
-        await CreatePhysicalFileAsync(file, file.Extension, request.File, cancellationToken);
+        await CreatePhysicalFileAsync(file, request.File, cancellationToken);
         await _context.Files.AddAsync(file, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -63,12 +63,11 @@ public class FilesService : IFilesService
 
     private async Task CreatePhysicalFileAsync(
         IFileInfo file,
-        string extension,
         byte[] bytes,
         CancellationToken cancellationToken = default
     )
     {
-        var path = file.GetStoragePath() + extension;
+        var path = file.GetStoragePath();
 
         if (CheckFileExistsAndMatchesHash(file))
         {
@@ -114,7 +113,7 @@ public class FilesService : IFilesService
             "audio/ogg" => ".ogg",
             "audio/wav" => ".wav",
             "audio/flac" => ".flac",
-            "text/" => ".txt",
+            "text/plain" => ".txt",
             "subtitle/ass" => ".ass",
             _ => throw new ArgumentOutOfRangeException(nameof(mimeType), mimeType, null)
         };

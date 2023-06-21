@@ -14,7 +14,7 @@ namespace Karaoke.API.Controllers.Albums;
 /// <summary>
 ///     Albums controller.
 /// </summary>
-[Authorize(Roles = Roles.User)]
+//[Authorize(Roles = Roles.User)]
 public class AlbumsController : ApiControllerBase
 {
     private readonly ILogger<AlbumsController> _logger;
