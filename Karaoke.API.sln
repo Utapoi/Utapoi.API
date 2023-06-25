@@ -3,13 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karaoke.API", "Karaoke.API\Karaoke.API.csproj", "{B2AEEAFD-6456-418F-9ACA-898FC3FCBE6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karaoke.API", "Karaoke.API\Karaoke.API.csproj", "{B2AEEAFD-6456-418F-9ACA-898FC3FCBE6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karaoke.Core", "Karaoke.Core\Karaoke.Core.csproj", "{ABC8AAF6-1939-4712-AFC6-39DF753E864E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karaoke.Core", "Karaoke.Core\Karaoke.Core.csproj", "{ABC8AAF6-1939-4712-AFC6-39DF753E864E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karaoke.Infrastructure", "Karaoke.Infrastructure\Karaoke.Infrastructure.csproj", "{7A135EBF-1D09-4128-8DE4-0170D4A795B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karaoke.Infrastructure", "Karaoke.Infrastructure\Karaoke.Infrastructure.csproj", "{7A135EBF-1D09-4128-8DE4-0170D4A795B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karaoke.Application", "Karaoke.Application\Karaoke.Application.csproj", "{25599C9F-AB89-4C86-B21B-64D534B8CFD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Karaoke.Application", "Karaoke.Application\Karaoke.Application.csproj", "{25599C9F-AB89-4C86-B21B-64D534B8CFD6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9CEA9EA3-BC2F-4237-98AF-FEC44245D076}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,12 +8,12 @@ namespace Karaoke.Application.Singers.Requests.SearchSingers;
 
 public static class SearchSingers
 {
-    public sealed class Request : IRequest<Result<IEnumerable<SingerDTO>>>
+    public sealed class Request : IRequest<Result<List<SingerDTO>>>
     {
         public string Input { get; init; } = string.Empty;
     }
 
-    internal sealed class Handler : IRequestHandler<Request, Result<IEnumerable<SingerDTO>>>
+    internal sealed class Handler : IRequestHandler<Request, Result<List<SingerDTO>>>
     {
         private readonly IKaraokeDbContext _context;
 
@@ -22,12 +22,13 @@ public static class SearchSingers
             _context = context;
         }
 
-        public async Task<Result<IEnumerable<SingerDTO>>> Handle(Request request, CancellationToken cancellationToken)
+        public async Task<Result<List<SingerDTO>>> Handle(Request request, CancellationToken cancellationToken)
         {
             var singers = await _context.Singers
                 .Include(x => x.Names)
                 .Where(s => s.Names.Any(
-                    x => x.Text.Contains(request.Input, StringComparison.InvariantCultureIgnoreCase)))
+                    x => x.Text.Contains(request.Input))
+                )
                 .Select(s => new SingerDTO
                 {
                     Id = s.Id.ToString(),
@@ -35,7 +36,7 @@ public static class SearchSingers
                 })
                 .ToListAsync(cancellationToken);
 
-            return Result.Ok(singers.AsEnumerable());
+            return Result.Ok(singers);
         }
     }
 }

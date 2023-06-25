@@ -67,6 +67,10 @@ public class AlbumsService : IAlbumsService
         return await _context
             .Albums
             .Include(x => x.Titles)
+            .Include(x => x.Cover)
+            .Include(x => x.Singers)
+                .ThenInclude(s => s.Names)
+            .Include(x => x.Songs)
             .Skip(request.Skip)
             .Take(request.Take)
             .ToListAsync(cancellationToken);

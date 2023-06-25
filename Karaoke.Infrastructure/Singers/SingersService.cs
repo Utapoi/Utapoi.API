@@ -61,6 +61,8 @@ public class SingersService : ISingersService
         return await _context.Singers
             .Include(x => x.Names)
             .Include(x => x.ProfilePicture)
+            .Include(x => x.Albums)
+            .Include(x => x.Songs)
             .Skip(request.Skip)
             .Take(request.Take)
             .ToListAsync(cancellationToken);
