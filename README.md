@@ -113,13 +113,13 @@ dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --s
 #### Auth Context
 
 ```sh
-dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/KaraokeDb" --context "AuthDbContext"
+dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/AuthDb" --context "AuthDbContext"
 ```
 
 #### Stats Context
 
 ```sh
-dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/KaraokeDb" --context "StatsDbContext"
+dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/StatsDb" --context "StatsDbContext"
 ```
 
 <br>
