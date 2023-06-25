@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 Karaoke.API/files/
 .idea/
+*.db
+*-shm
+*-wal

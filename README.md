@@ -100,18 +100,50 @@ The application will start running on `https://localhost:7215/`.
 
 ## EF Core
 
-### Update database
-This command is not required since the project automatically updates the database on start.
 
-```sh
-dotnet ef database update --project Karaoke.Infrastructure --startup-project Karaoke.API
-```
 
 ### Add a migration
 
+#### Karaoke Context
+
 ```sh
-dotnet ef migrations add "SampleMigration" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir Persistence/Migrations
+dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/KaraokeDb" --context "KaraokeDbContext"
 ```
+
+#### Auth Context
+
+```sh
+dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/KaraokeDb" --context "AuthDbContext"
+```
+
+#### Stats Context
+
+```sh
+dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/KaraokeDb" --context "StatsDbContext"
+```
+
+<br>
+
+### Update database
+
+#### Karaoke Context
+
+```sh
+dotnet ef database update --project Karaoke.Infrastructure --startup-project Karaoke.API --context "KaraokeDbContext"
+```
+
+#### Auth Context
+
+```sh
+dotnet ef database update --project Karaoke.Infrastructure --startup-project Karaoke.API --context "AuthDbContext"
+```
+
+#### Stats Context
+
+```sh
+dotnet ef database update --project Karaoke.Infrastructure --startup-project Karaoke.API --context "StatsDbContext"
+```
+
 <br>
 
 ## Contributing

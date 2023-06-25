@@ -32,12 +32,19 @@ public static class DependencyInjection
     /// </param>
     private static void AddKaraokeDbContext(IServiceCollection services, IConfiguration configuration)
     {
+        var r = configuration.GetConnectionString("KaraokeDb");
+
         services.AddDbContext<KaraokeDbContext>(x =>
         {
             if (configuration.GetValue<bool>("UseInMemoryDatabase"))
             {
                 // Note(Mikyan): Switch to SQLite or MSSQL for testing?
                 x.UseInMemoryDatabase("KaraokeDb");
+            }
+            else if (configuration.GetValue<bool>("UseSQLiteDatabase"))
+            {
+                x.UseSqlite(configuration.GetConnectionString("KaraokeDb"),
+                    builder => { builder.MigrationsAssembly(typeof(KaraokeDbContext).Assembly.FullName); });
             }
             else
             {
@@ -72,6 +79,11 @@ public static class DependencyInjection
                 // Note(Mikyan): Switch to SQLite or MSSQL for testing?
                 x.UseInMemoryDatabase("AuthDb");
             }
+            else if (configuration.GetValue<bool>("UseSQLiteDatabase"))
+            {
+                x.UseSqlite(configuration.GetConnectionString("AuthDb"),
+                    builder => { builder.MigrationsAssembly(typeof(AuthDbContext).Assembly.FullName); });
+            }
             else
             {
                 x.UseSqlServer(configuration.GetConnectionString("AuthDb"),
@@ -104,6 +116,11 @@ public static class DependencyInjection
             {
                 // Note(Mikyan): Switch to SQLite or MSSQL for testing?
                 x.UseInMemoryDatabase("StatsDb");
+            }
+            else if (configuration.GetValue<bool>("UseSQLiteDatabase"))
+            {
+                x.UseSqlite(configuration.GetConnectionString("StatsDb"),
+                    builder => { builder.MigrationsAssembly(typeof(StatsDbContext).Assembly.FullName); });
             }
             else
             {

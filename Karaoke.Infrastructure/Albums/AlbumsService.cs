@@ -74,10 +74,12 @@ public class AlbumsService : IAlbumsService
 
     public async Task<IEnumerable<Album>> SearchAsync(string input, CancellationToken cancellationToken)
     {
-        // Note(Mikyan): This is a very bad idea, but I'm too lazy to implement a proper pagination.
-        // todo fix this.
         return await _context
             .Albums
+            .Include(x => x.Titles)
+            .Include(x => x.Cover)
+            .Include(x => x.Singers)
+            .Include(x => x.Songs)
             .Where(x => x.Titles.Any(y => y.Text.Contains(input)))
             .ToListAsync(cancellationToken);
     }
