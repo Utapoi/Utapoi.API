@@ -1,5 +1,5 @@
 ﻿using Karaoke.Application.Albums.Commands.CreateAlbum;
-using Karaoke.Application.Albums.Requests.GetAlbums;
+using Karaoke.Application.Albums.Requests.GetAlbumsForAdmin;
 using Karaoke.Core.Entities;
 
 namespace Karaoke.Application.Albums;
@@ -12,7 +12,10 @@ public interface IAlbumsService
 
     Task<Album> CreateAsync(CreateAlbum.Command command, CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<Album>> GetAsync(GetAlbums.Request request, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<GetAlbumsForAdmin.Response>> GetForAdminAsync(
+        GetAlbumsForAdmin.Request request,
+        CancellationToken cancellationToken = default
+    );
 
     Task<IEnumerable<Album>> SearchAsync(string input, CancellationToken cancellationToken);
 

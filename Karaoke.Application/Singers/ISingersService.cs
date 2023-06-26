@@ -1,5 +1,6 @@
 ﻿using Karaoke.Application.Singers.Commands.CreateSinger;
-using Karaoke.Application.Singers.Requests.GetSingers;
+using Karaoke.Application.Singers.Requests.GetSingersForAdmin;
+using Karaoke.Application.Singers.Requests.SearchSingers;
 using Karaoke.Core.Entities;
 
 namespace Karaoke.Application.Singers;
@@ -10,8 +11,13 @@ public interface ISingersService
 
     Task<Singer> CreateAsync(CreateSinger.Command command, CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<Singer>> GetAsync(
-        GetSingers.Request request,
+    Task<IReadOnlyCollection<GetSingersForAdmin.Response>> GetForAdminAsync(
+        GetSingersForAdmin.Request request,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyCollection<Singer>> SearchAsync(
+        SearchSingers.Request request,
         CancellationToken cancellationToken = default
     );
 

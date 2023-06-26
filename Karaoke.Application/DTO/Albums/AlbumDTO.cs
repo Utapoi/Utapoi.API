@@ -2,7 +2,7 @@
 using Karaoke.Application.Common.Mappings;
 using Karaoke.Core.Entities;
 
-namespace Karaoke.Application.DTO;
+namespace Karaoke.Application.DTO.Albums;
 
 /// <summary>
 ///     Represents the data transfer object for <see cref="Album" />.

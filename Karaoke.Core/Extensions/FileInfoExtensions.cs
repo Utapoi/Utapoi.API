@@ -11,6 +11,6 @@ public static class FileInfoExtensions
 
     public static string GetUrl(this IFileInfo info)
     {
-        return $"/files/{info.GetStoragePath()}";
+        return $"/files/{info.GetStoragePath().Replace("\\", "/")}";
     }
 }

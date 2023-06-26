@@ -15,28 +15,22 @@ public static class SearchSingers
 
     internal sealed class Handler : IRequestHandler<Request, Result<List<SingerDTO>>>
     {
-        private readonly IKaraokeDbContext _context;
+        private readonly ISingersService _singersService;
 
-        public Handler(IKaraokeDbContext context)
+        public Handler(ISingersService singersService)
         {
-            _context = context;
+            _singersService = singersService;
         }
 
         public async Task<Result<List<SingerDTO>>> Handle(Request request, CancellationToken cancellationToken)
         {
-            var singers = await _context.Singers
-                .Include(x => x.Names)
-                .Where(s => s.Names.Any(
-                    x => x.Text.Contains(request.Input))
-                )
-                .Select(s => new SingerDTO
-                {
-                    Id = s.Id.ToString(),
-                    Names = s.Names
-                })
-                .ToListAsync(cancellationToken);
+            var singers = await _singersService.SearchAsync(request, cancellationToken);
 
-            return Result.Ok(singers);
+            return Result.Ok(singers.Select(x => new SingerDTO
+            {
+                Id = x.Id.ToString(),
+                Names = x.Names,
+            }).ToList());
         }
     }
 }

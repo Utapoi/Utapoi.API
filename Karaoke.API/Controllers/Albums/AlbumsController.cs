@@ -1,12 +1,7 @@
 ﻿using FluentResults;
 using Karaoke.Application.Albums.Commands.CreateAlbum;
-using Karaoke.Application.Albums.Requests.GetAlbums;
 using Karaoke.Application.Albums.Requests.SearchAlbums;
-using Karaoke.Application.Common;
-using Karaoke.Application.Common.Requests;
-using Karaoke.Application.DTO;
-using Karaoke.Core.Common;
-using Microsoft.AspNetCore.Authorization;
+using Karaoke.Application.DTO.Albums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Karaoke.API.Controllers.Albums;
@@ -25,36 +20,6 @@ public class AlbumsController : ApiControllerBase
     public AlbumsController(ILogger<AlbumsController> logger)
     {
         _logger = logger;
-    }
-
-    /// <summary>
-    ///     Gets all albums.
-    /// </summary>
-    /// <returns>
-    ///     A <see cref="IEnumerable{T}" /> of <see cref="AlbumDTO" />.
-    /// </returns>
-    [HttpGet]
-    [ProducesResponseType(typeof(PaginatedResponse<AlbumDTO>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAlbumsAsync([FromQuery] PaginatedRequest request)
-    {
-        try
-        {
-            var result = await Mediator.Send(new GetAlbums.Request(request.Skip, request.Take));
-
-            if (result.IsFailed)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            return Ok(result.Value);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting albums");
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
     }
 
     /// <summary>

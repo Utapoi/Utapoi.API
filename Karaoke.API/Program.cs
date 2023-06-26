@@ -5,6 +5,7 @@ using Karaoke.Application.Users.Interfaces;
 using Karaoke.Infrastructure;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,12 @@ builder.Services.AddCors(x =>
 
 builder.Services
     .AddControllers()
-    .AddJsonOptions(x => x.JsonSerializerOptions.PropertyNamingPolicy = null);
+    .AddJsonOptions(x => { 
+        x.JsonSerializerOptions.PropertyNamingPolicy = null;
+        x.JsonSerializerOptions.WriteIndented = false;
+        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 

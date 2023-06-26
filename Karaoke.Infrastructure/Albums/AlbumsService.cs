@@ -1,6 +1,8 @@
-﻿using Karaoke.Application.Albums;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Karaoke.Application.Albums;
 using Karaoke.Application.Albums.Commands.CreateAlbum;
-using Karaoke.Application.Albums.Requests.GetAlbums;
+using Karaoke.Application.Albums.Requests.GetAlbumsForAdmin;
 using Karaoke.Application.Files;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
@@ -17,11 +19,14 @@ public class AlbumsService : IAlbumsService
 
     private readonly IFilesService _filesService;
 
-    public AlbumsService(IKaraokeDbContext context, ISingersService singersService, IFilesService filesService)
+    private readonly IMapper _mapper;
+
+    public AlbumsService(IKaraokeDbContext context, ISingersService singersService, IFilesService filesService, IMapper mapper)
     {
         _context = context;
         _singersService = singersService;
         _filesService = filesService;
+        _mapper = mapper;
     }
 
     public Album? GetById(Guid id)
@@ -62,19 +67,30 @@ public class AlbumsService : IAlbumsService
         return album;
     }
 
-    public async Task<IReadOnlyCollection<Album>> GetAsync(GetAlbums.Request request, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<GetAlbumsForAdmin.Response>> GetForAdminAsync(
+        GetAlbumsForAdmin.Request request,
+        CancellationToken cancellationToken = default
+    )
     {
         return await _context
             .Albums
-            .Include(x => x.Titles)
-            .Include(x => x.Cover)
-            .Include(x => x.Singers)
-                .ThenInclude(s => s.Names)
-            .Include(x => x.Songs)
             .Skip(request.Skip)
             .Take(request.Take)
+            .ProjectTo<GetAlbumsForAdmin.Response>(_mapper.ConfigurationProvider)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
+
+    //public async Task<IReadOnlyCollection<AlbumDTO>> GetAsync(GetAlbumsForAdmin.Request request, CancellationToken cancellationToken = default)
+    //{
+    //    return await _context
+    //        .Albums
+    //        .Skip(request.Skip)
+    //        .Take(request.Take)
+    //        .ProjectTo<AlbumDTO>(_mapper.ConfigurationProvider)
+    //        .AsNoTracking()
+    //        .ToListAsync(cancellationToken);
+    //}
 
     public async Task<IEnumerable<Album>> SearchAsync(string input, CancellationToken cancellationToken)
     {
@@ -85,6 +101,7 @@ public class AlbumsService : IAlbumsService
             .Include(x => x.Singers)
             .Include(x => x.Songs)
             .Where(x => x.Titles.Any(y => y.Text.Contains(input)))
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 

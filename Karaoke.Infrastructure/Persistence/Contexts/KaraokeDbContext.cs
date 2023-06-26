@@ -30,6 +30,8 @@ public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
         AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor) : base(options)
     {
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
+
+        ChangeTracker.LazyLoadingEnabled = false;
     }
 
     public DbSet<KaraokeInfo> Karaoke => Set<KaraokeInfo>();

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Karaoke.Application.Common.Mappings;
+using Karaoke.Application.DTO.Albums;
 using Karaoke.Core.Entities;
 using Karaoke.Core.Extensions;
 
@@ -15,6 +16,8 @@ public sealed class SingerDTO : IMap<Singer, SingerDTO>
     public IEnumerable<LocalizedString> Names { get; set; } = new List<LocalizedString>();
 
     public IEnumerable<LocalizedString> Nicknames { get; set; } = new List<LocalizedString>();
+
+    public IEnumerable<AlbumDTO> Albums { get; set; } = new List<AlbumDTO>();
 
     public IEnumerable<SongDTO> Songs { get; set; } = new List<SongDTO>();
 

@@ -1,8 +1,12 @@
-﻿using Karaoke.Application.Files;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Karaoke.Application.DTO;
+using Karaoke.Application.Files;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Singers.Commands.CreateSinger;
-using Karaoke.Application.Singers.Requests.GetSingers;
+using Karaoke.Application.Singers.Requests.GetSingersForAdmin;
+using Karaoke.Application.Singers.Requests.SearchSingers;
 using Karaoke.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,10 +18,13 @@ public class SingersService : ISingersService
 
     private readonly IFilesService _filesService;
 
-    public SingersService(IKaraokeDbContext context, IFilesService filesService)
+    private readonly IMapper _mapper;
+
+    public SingersService(IKaraokeDbContext context, IFilesService filesService, IMapper mapper)
     {
         _context = context;
         _filesService = filesService;
+        _mapper = mapper;
     }
 
     public Singer? GetById(Guid id)
@@ -53,18 +60,30 @@ public class SingersService : ISingersService
         return singer;
     }
 
-    public async Task<IReadOnlyCollection<Singer>> GetAsync(
-        GetSingers.Request request,
+    public async Task<IReadOnlyCollection<GetSingersForAdmin.Response>> GetForAdminAsync(
+        GetSingersForAdmin.Request request,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _context
+            .Singers
+            .Skip(request.Skip)
+            .Take(request.Take)
+            .ProjectTo<GetSingersForAdmin.Response>(_mapper.ConfigurationProvider)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<Singer>> SearchAsync(
+        SearchSingers.Request request,
         CancellationToken cancellationToken = default
     )
     {
         return await _context.Singers
             .Include(x => x.Names)
-            .Include(x => x.ProfilePicture)
-            .Include(x => x.Albums)
-            .Include(x => x.Songs)
-            .Skip(request.Skip)
-            .Take(request.Take)
+            .Where(s => s.Names.Any(
+                x => x.Text.ToLower().Contains(request.Input.ToLower()))
+            )
             .ToListAsync(cancellationToken);
     }
 

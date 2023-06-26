@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
-using Karaoke.Application.DTO;
+using Karaoke.Application.DTO.Albums;
 using MediatR;
 
 namespace Karaoke.Application.Albums.Requests.SearchAlbums;
