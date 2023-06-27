@@ -28,6 +28,10 @@ public sealed class Song : AuditableEntity
     /// </summary>
     public Culture OriginalLanguage { get; set; } = Languages.Japanese;
 
+    public Guid? OriginalFileId { get; set; }
+
+    public NamedFile? OriginalFile { get; set; }
+
     public Guid? ThumbnailId { get; set; }
 
     /// <summary>
