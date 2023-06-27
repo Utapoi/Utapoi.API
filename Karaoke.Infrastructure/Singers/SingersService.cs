@@ -5,6 +5,8 @@ using Karaoke.Application.Files;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Singers.Commands.CreateSinger;
+using Karaoke.Application.Singers.Requests.GetSinger;
+using Karaoke.Application.Singers.Requests.GetSingers;
 using Karaoke.Application.Singers.Requests.GetSingersForAdmin;
 using Karaoke.Application.Singers.Requests.SearchSingers;
 using Karaoke.Core.Entities;
@@ -25,13 +27,6 @@ public class SingersService : ISingersService
         _context = context;
         _filesService = filesService;
         _mapper = mapper;
-    }
-
-    public Singer? GetById(Guid id)
-    {
-        return _context
-            .Singers
-            .FirstOrDefault(x => x.Id == id);
     }
 
     public async Task<Singer> CreateAsync(CreateSinger.Command command, CancellationToken cancellationToken)
@@ -58,6 +53,36 @@ public class SingersService : ISingersService
         await _context.SaveChangesAsync(cancellationToken);
 
         return singer;
+    }
+
+    public Singer? GetById(Guid id)
+    {
+        return _context
+            .Singers
+            .FirstOrDefault(x => x.Id == id);
+    }
+
+    public Task<GetSinger.Response?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return _context
+            .Singers
+            .ProjectTo<GetSinger.Response>(_mapper.ConfigurationProvider)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<GetSingers.Response>> GetAsync(
+        GetSingers.Request request,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _context
+            .Singers
+            .Skip(request.Skip)
+            .Take(request.Take)
+            .ProjectTo<GetSingers.Response>(_mapper.ConfigurationProvider)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<GetSingersForAdmin.Response>> GetForAdminAsync(

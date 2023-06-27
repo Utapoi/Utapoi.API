@@ -42,6 +42,9 @@ public static partial class GetAlbumsForAdmin
         }
     }
 
+    /// <summary>
+    /// Response for a <see cref="GetAlbumsForAdmin.Request"/> request.
+    /// </summary>
     public sealed class Response : IProjection<Album, Response>
     {
         public string Id { get; set; } = string.Empty;

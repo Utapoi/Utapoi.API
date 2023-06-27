@@ -1,5 +1,5 @@
 ﻿using Karaoke.Application.Songs.Commands.CreateSong;
-using Karaoke.Application.Songs.Requests.GetSongs;
+using Karaoke.Application.Songs.Requests.GetSongsForAdmin;
 using Karaoke.Core.Entities;
 using Karaoke.Core.Exceptions;
 
@@ -28,7 +28,7 @@ public interface ISongsService
     ///     Gets all <see cref="Song" />s.
     /// </summary>
     /// <param name="request">
-    ///     The <see cref="GetSongs.Request" /> containing the pagination request.
+    ///     The <see cref="GetSongsForAdmin.Request" /> containing the pagination request.
     /// </param>
     /// <param name="cancellationToken">
     ///     The <see cref="CancellationToken" /> used to cancel the operation.
@@ -36,8 +36,8 @@ public interface ISongsService
     /// <returns>
     ///     An <see cref="IReadOnlyCollection{T}" /> of <see cref="Song" />s.
     /// </returns>
-    Task<IReadOnlyCollection<Song>> GetAsync(
-        GetSongs.Request request,
+    Task<IReadOnlyCollection<GetSongsForAdmin.Response>> GetForAdminAsync(
+        GetSongsForAdmin.Request request,
         CancellationToken cancellationToken = default
     );
 

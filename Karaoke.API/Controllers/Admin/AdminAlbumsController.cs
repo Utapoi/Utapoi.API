@@ -4,6 +4,7 @@ using Karaoke.Application.DTO.Albums;
 using Microsoft.AspNetCore.Mvc;
 using Karaoke.Application.Albums.Requests.GetAlbumsForAdmin;
 using FluentResults;
+using Karaoke.API.Extensions;
 
 namespace Karaoke.API.Controllers.Admin;
 
@@ -35,23 +36,6 @@ public sealed class AdminAlbumsController : ApiControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<GetAlbumsForAdmin.Response>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(IEnumerable<Error>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAlbumsForAdminAsync([FromQuery] PaginatedRequest request)
-    {
-        try
-        {
-            var result = await Mediator.Send(new GetAlbumsForAdmin.Request(request.Skip, request.Take));
-
-            if (result.IsFailed)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            return Ok(result.Value);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting albums");
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
+    public Task<IActionResult> GetAlbumsForAdminAsync([FromQuery] PaginatedRequest request)
+        => Mediator.ProcessRequestAsync(new GetAlbumsForAdmin.Request(request.Skip, request.Take));
 }

@@ -1,11 +1,13 @@
-﻿using Karaoke.Application.Albums;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Karaoke.Application.Albums;
 using Karaoke.Application.Files;
 using Karaoke.Application.Karaoke;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Songs;
 using Karaoke.Application.Songs.Commands.CreateSong;
-using Karaoke.Application.Songs.Requests.GetSongs;
+using Karaoke.Application.Songs.Requests.GetSongsForAdmin;
 using Karaoke.Application.Tags;
 using Karaoke.Core.Entities;
 using Karaoke.Core.Exceptions;
@@ -30,6 +32,8 @@ public sealed class SongsService : ISongsService
 
     private readonly ITagsService _tagsService;
 
+    private readonly IMapper _mapper;
+
     /// <summary>
     ///     Initializes a new instance of the <see cref="SongsService" /> class.
     /// </summary>
@@ -39,6 +43,7 @@ public sealed class SongsService : ISongsService
     /// <param name="tagsService">The tags service.</param>
     /// <param name="filesService">The files service.</param>
     /// <param name="karaokeService">The karaoke service.</param>
+    /// <param name="mapper">The mapper.</param>
     public SongsService(
         IKaraokeDbContext context,
         ISingersService singersService,
@@ -46,7 +51,8 @@ public sealed class SongsService : ISongsService
         ITagsService tagsService,
         IFilesService filesService,
         IKaraokeService karaokeService
-    )
+,
+        IMapper mapper)
     {
         _context = context;
         _singersService = singersService;
@@ -54,6 +60,7 @@ public sealed class SongsService : ISongsService
         _tagsService = tagsService;
         _filesService = filesService;
         _karaokeService = karaokeService;
+        _mapper = mapper;
     }
 
     /// <inheritdoc cref="ISongsService.CreateAsync(CreateSong.Command, CancellationToken)" />
@@ -95,19 +102,16 @@ public sealed class SongsService : ISongsService
         return song.Id.ToString();
     }
 
-    /// <inheritdoc cref="ISongsService.GetAsync(GetSongs.Request, CancellationToken)" />
-    public async Task<IReadOnlyCollection<Song>> GetAsync(
-        GetSongs.Request request,
+    /// <inheritdoc cref="ISongsService.GetForAdminAsync(GetSongsForAdmin.Request, CancellationToken)" />
+    public async Task<IReadOnlyCollection<GetSongsForAdmin.Response>> GetForAdminAsync(
+        GetSongsForAdmin.Request request,
         CancellationToken cancellationToken = default
     )
     {
         return await _context.Songs
-            .Include(x => x.Singers)
-            .Include(x => x.Albums)
-            .Include(x => x.Tags)
-            .Include(x => x.Karaoke)
             .Skip(request.Skip)
             .Take(request.Take)
+            .ProjectTo<GetSongsForAdmin.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }

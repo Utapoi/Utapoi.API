@@ -1,5 +1,8 @@
-﻿using Karaoke.Application.DTO;
-using Karaoke.Application.Singers.Commands.CreateSinger;
+﻿using Karaoke.API.Extensions;
+using Karaoke.API.Requests.Singers;
+using Karaoke.Application.DTO;
+using Karaoke.Application.Singers.Requests.GetSinger;
+using Karaoke.Application.Singers.Requests.GetSingers;
 using Karaoke.Application.Singers.Requests.SearchSingers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +26,36 @@ public class SingersController : ApiControllerBase
     {
         _logger = logger;
     }
+
+    /// <summary>
+    ///    Gets a list of singers.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    ///    A <see cref="IActionResult" /> containing the result of the operation.
+    /// </returns>
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<GetSingers.Response>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public Task<IActionResult> GetSingersAsync([FromQuery] GetSingersRequest request, CancellationToken cancellationToken = default)
+        => Mediator.ProcessRequestAsync(new GetSingers.Request(request.Skip, request.Take));
+
+    /// <summary>
+    ///     Gets a singer by id.
+    /// </summary>
+    /// <param name="id">The id.</param>
+    /// <returns>
+    ///     A <see cref="IActionResult" /> containing the result of the operation.
+    /// </returns>
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(GetSinger.Response), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public Task<IActionResult> GetSingerAsync(Guid id)
+        => Mediator.ProcessRequestAsync(new GetSinger.Request(id));
 
     /// <summary>
     ///     Search a singer by name.
@@ -52,45 +85,5 @@ public class SingersController : ApiControllerBase
         }
 
         return Ok(result.Value);
-    }
-
-    /// <summary>
-    ///     Gets a singer by id.
-    /// </summary>
-    /// <param name="id">
-    ///     The id.
-    /// </param>
-    /// <returns>
-    ///     A <see cref="IActionResult" /> containing the result of the operation.
-    /// </returns>
-    [HttpGet("{id:guid}")]
-    public IActionResult GetSingerAsync(Guid id)
-    {
-        return Ok();
-    }
-
-    /// <summary>
-    ///     Creates a new singer.
-    /// </summary>
-    /// <param name="command">
-    ///     The request.
-    /// </param>
-    /// <returns>
-    ///     A <see cref="IActionResult" /> containing the result of the operation.
-    /// </returns>
-    [HttpPost]
-    //[Authorize(Roles = Roles.Admin)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateSingerAsync([FromBody] CreateSinger.Command command)
-    {
-        var result = await Mediator.Send(command);
-
-        if (result.IsFailed)
-        {
-            return BadRequest();
-        }
-
-        return CreatedAtAction("GetSinger", new { id = result.Value }, result.Value);
     }
 }

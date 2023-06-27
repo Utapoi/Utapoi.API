@@ -1,13 +1,15 @@
 ﻿using FluentResults;
 using Karaoke.Application.Common;
+using Karaoke.Application.DTO;
+using Karaoke.Core.Entities;
 using MediatR;
 
-namespace Karaoke.Application.Singers.Requests.GetSingersForAdmin;
+namespace Karaoke.Application.Songs.Requests.GetSongsForAdmin;
 
-public static partial class GetSingersForAdmin
+public static partial class GetSongsForAdmin
 {
     /// <summary>
-    ///     Represents a request to get a paginated list of singers.
+    ///     The request for getting all <see cref="Song" />s.
     /// </summary>
     public sealed class Request : IRequest<Result<PaginatedResponse<Response>>>
     {
@@ -27,12 +29,12 @@ public static partial class GetSingersForAdmin
         }
 
         /// <summary>
-        ///     Gets the number of items to skip.
+        ///     The number of items to skip.
         /// </summary>
         public int Skip { get; init; }
 
         /// <summary>
-        ///     Gets the number of items to take.
+        ///     The number of items to take.
         /// </summary>
         public int Take { get; init; }
     }

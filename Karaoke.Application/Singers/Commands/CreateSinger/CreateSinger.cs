@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Karaoke.Application.Common;
 using Karaoke.Application.Common.Requests;
 using MediatR;
 
@@ -6,7 +7,7 @@ namespace Karaoke.Application.Singers.Commands.CreateSinger;
 
 public static class CreateSinger
 {
-    public record Command : IRequest<Result<string>>
+    public record Command : ICommand<Result<string>>
     {
         public IEnumerable<LocalizedStringRequest> Names { get; set; } = new List<LocalizedStringRequest>();
 
