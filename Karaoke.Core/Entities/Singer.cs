@@ -17,10 +17,26 @@ public sealed class Singer : AuditableEntity
     /// </summary>
     public ICollection<LocalizedString> Nicknames { get; set; } = new List<LocalizedString>();
 
+    /// <summary>
+    ///   Gets an <see cref="ICollection{T}" /> of <see cref="LocalizedString" />s representing the descriptions of the singer.
+    /// </summary>
+    public ICollection<LocalizedString> Descriptions { get; set; } = new List<LocalizedString>();
+
+    /// <summary>
+    ///    Gets an <see cref="ICollection{T}" /> of <see cref="LocalizedString" />s representing the activities of the singer.
+    /// </summary>
+    public ICollection<LocalizedString> Activities { get; set; } = new List<LocalizedString>();
+
     public Guid ProfilePictureId { get; set; }
 
+    /// <summary>
+    ///    Gets or sets the profile picture.
+    /// </summary>
     public NamedFile ProfilePicture { get; set; } = null!;
 
+    /// <summary>
+    ///    Gets an <see cref="ICollection{T}" /> of <see cref="Album" />s.
+    /// </summary>
     public ICollection<Album> Albums { get; set; } = new List<Album>();
 
     /// <summary>

@@ -11,7 +11,7 @@ public sealed class Song : AuditableEntity
     /// <summary>
     ///     Gets the titles of the song.
     /// </summary>
-    public ICollection<LocalizedString> Titles { get; set; } = new List<LocalizedString>();
+    public ICollection<LocalizedString> Titles { get; set; }  = new List<LocalizedString>();
 
     /// <summary>
     ///     Gets or sets the duration of the song.
@@ -30,6 +30,9 @@ public sealed class Song : AuditableEntity
 
     public Guid? OriginalFileId { get; set; }
 
+    /// <summary>
+    ///    Gets or sets the original song file.
+    /// </summary>
     public NamedFile? OriginalFile { get; set; }
 
     public Guid? ThumbnailId { get; set; }
@@ -55,6 +58,9 @@ public sealed class Song : AuditableEntity
 
     public Guid? PreviewId { get; set; }
 
+    /// <summary>
+    ///    Gets or sets the preview file of the song.
+    /// </summary>
     public NamedFile? Preview { get; set; }
 
     /// <summary>

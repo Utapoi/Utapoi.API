@@ -5,9 +5,15 @@ using Karaoke.Core.Extensions;
 
 namespace Karaoke.Application.Singers.Requests.GetSinger;
 
+// Note(Mikyan): This is more of a global concern, but I'll write it here.
+// I don't know if this is the best solution but at least we have separated objects for each request.
+// I think this is better than having a single object with a lot of properties that are not used.
+// But this may not be the best implementation.
+// Using AutoMapper's projection may have some constraints in the future.
+
 public static partial class GetSinger
 {
-    public struct SongDTO : IProjection<Song, SongDTO>
+    public struct SongDTO : IProjection<Song, SongDTO>, IProjection<Song?, SongDTO?>
     {
         public Guid Id { get; set; } = Guid.Empty;
 
@@ -64,9 +70,15 @@ public static partial class GetSinger
 
         public IReadOnlyCollection<LocalizedString> Nicknames { get; set; } = new List<LocalizedString>();
 
+        public IReadOnlyCollection<LocalizedString> Descriptions { get; set; } = new List<LocalizedString>();
+
+        public IReadOnlyCollection<LocalizedString> Activities { get; set; } = new List<LocalizedString>();
+
+        public DateTime Birthday { get; set; }
+
         public string ProfilePicture { get; set; } = string.Empty;
 
-        //public SongDTO? PopularSong { get; set; }
+        public SongDTO? PopularSong { get; set; }
 
         public IReadOnlyCollection<AlbumDTO> Albums { get; set; } = new List<AlbumDTO>();
 
@@ -86,10 +98,12 @@ public static partial class GetSinger
                 opt => opt.MapFrom(s => s.Albums.OrderBy(x => x.ReleaseDate))
             );
 
-            //projection.ForMember(
-            //    d => d.PopularSong,
-            //    opt => opt.MapFrom(s => s.Songs.OrderByDescending(x => x.ReleaseDate).FirstOrDefault())
-            //);
+            projection.ForMember(
+                d => d.PopularSong,
+                opt => opt.MapFrom(
+                    s => s.Songs.FirstOrDefault()
+                )
+            );
 
             projection.ForMember(
                 d => d.AlbumsCount,
