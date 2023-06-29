@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Karaoke.Application.DTO;
 using Karaoke.Application.Files;
 using Karaoke.Application.LocalizedStrings.Interfaces;
 using Karaoke.Application.Persistence;
@@ -50,6 +49,9 @@ public class SingersService : ISingersService
             Activities = command.Activities
                 .Select(x => _localizedStringsService.Add(x.Text, x.Language)).ToList(),
             Birthday = command.Birthday ?? DateTime.MinValue,
+            BloodType = command.BloodType,
+            Height = command.Height,
+            Nationality = command.Nationality,
             ProfilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken)
         };
 
@@ -116,6 +118,21 @@ public class SingersService : ISingersService
         if (command.Birthday != null && command.Birthday > DateTime.MinValue)
         {
             singer.Birthday = command.Birthday.Value;
+        }
+
+        if (!string.IsNullOrWhiteSpace(command.BloodType))
+        {
+            singer.BloodType = command.BloodType;
+        }
+
+        if (command.Height > 0)
+        {
+            singer.Height = command.Height;
+        }
+
+        if (!string.IsNullOrWhiteSpace(command.Nationality))
+        {
+            singer.Nationality = command.Nationality;
         }
 
         if (command.ProfilePictureFile != null)

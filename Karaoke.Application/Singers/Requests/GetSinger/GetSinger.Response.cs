@@ -76,6 +76,12 @@ public static partial class GetSinger
 
         public DateTime Birthday { get; set; }
 
+        public string BloodType { get; set; } = string.Empty;
+
+        public string Nationality { get; set; } = string.Empty;
+
+        public float Height { get; set; }
+
         public string ProfilePicture { get; set; } = string.Empty;
 
         public SongDTO? PopularSong { get; set; }
@@ -88,6 +94,16 @@ public static partial class GetSinger
 
         public void ConfigureProjection(IProjectionExpression<Singer, Response> projection)
         {
+            projection.ForMember(
+                d => d.Names,
+                opt => opt.MapFrom(s => s.Names.OrderBy(x => x.Text))
+            );
+
+            projection.ForMember(
+                d => d.Nicknames,
+                opt => opt.MapFrom(s => s.Nicknames.OrderBy(x => x.Text))
+            );
+
             projection.ForMember(
                 d => d.ProfilePicture,
                 opt => opt.MapFrom(s => s.ProfilePicture.GetUrl())

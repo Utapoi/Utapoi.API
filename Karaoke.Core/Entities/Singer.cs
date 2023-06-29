@@ -1,4 +1,5 @@
-﻿using Karaoke.Core.Entities.Common;
+﻿using Karaoke.Core.Common;
+using Karaoke.Core.Entities.Common;
 
 namespace Karaoke.Core.Entities;
 
@@ -48,4 +49,22 @@ public sealed class Singer : AuditableEntity
     ///     Gets or sets the date of birth of the singer.
     /// </summary>
     public DateTime Birthday { get; set; } = DateTime.MinValue;
+
+    /// <summary>
+    ///    Gets or sets the blood type of the singer.
+    /// </summary>
+    public string BloodType { get; set; } = string.Empty;
+
+    /// <summary>
+    ///   Gets or sets the height of the singer.
+    /// </summary>
+    public float Height { get; set; }
+
+    /// <summary>
+    /// Gets or sets the nationality of the singer.
+    /// </summary>
+    /// <remarks>
+    /// Same values as <see cref="Languages" />.
+    /// </remarks>
+    public string Nationality { get; set; } = string.Empty;
 }

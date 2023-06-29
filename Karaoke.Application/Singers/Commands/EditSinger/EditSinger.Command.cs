@@ -20,6 +20,12 @@ public static partial class EditSinger
 
         public DateTime? Birthday { get; set; }
 
+        public string BloodType { get; set; } = string.Empty;
+
+        public float Height { get; set; }
+
+        public string Nationality { get; set; } = string.Empty;
+
         public FileRequest? ProfilePictureFile { get; set; }
     }
 }
