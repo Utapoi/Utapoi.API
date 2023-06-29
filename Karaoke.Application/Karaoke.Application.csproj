@@ -22,4 +22,9 @@
     <ProjectReference Include="..\Karaoke.Core\Karaoke.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="LocalizedStrings\Interfaces\" />
+    <Folder Include="Singers\Commands\EditSinger\" />
+  </ItemGroup>
+
 </Project>

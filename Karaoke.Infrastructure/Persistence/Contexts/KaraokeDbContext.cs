@@ -53,6 +53,8 @@ public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
 
     public DbSet<NamedFile> Files => Set<NamedFile>();
 
+    public DbSet<LocalizedString> LocalizedStrings => Set<LocalizedString>();
+
     public DbSet<KaraokeInfo> KaraokeInfos => Set<KaraokeInfo>();
 
     /// <summary>

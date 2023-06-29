@@ -3,6 +3,7 @@ using System;
 using Karaoke.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
 {
     [DbContext(typeof(KaraokeDbContext))]
-    partial class KaraokeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230629101024_AddLocalizedStrings")]
+    partial class AddLocalizedStrings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
@@ -680,37 +683,7 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                     b.ToTable("KaraokeInfoUser");
                 });
 
-            modelBuilder.Entity("SingerActivitiesLocalizedString", b =>
-                {
-                    b.Property<Guid>("ActivitiesId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("Singer3Id")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ActivitiesId", "Singer3Id");
-
-                    b.HasIndex("Singer3Id");
-
-                    b.ToTable("SingerActivitiesLocalizedString");
-                });
-
-            modelBuilder.Entity("SingerDescriptionsLocalizedString", b =>
-                {
-                    b.Property<Guid>("DescriptionsId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("Singer2Id")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("DescriptionsId", "Singer2Id");
-
-                    b.HasIndex("Singer2Id");
-
-                    b.ToTable("SingerDescriptionsLocalizedString");
-                });
-
-            modelBuilder.Entity("SingerNamesLocalizedString", b =>
+            modelBuilder.Entity("LocalizedStringSinger", b =>
                 {
                     b.Property<Guid>("NamesId")
                         .HasColumnType("TEXT");
@@ -722,10 +695,10 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
 
                     b.HasIndex("SingerId");
 
-                    b.ToTable("SingerNamesLocalizedString");
+                    b.ToTable("LocalizedStringSinger");
                 });
 
-            modelBuilder.Entity("SingerNicknamesLocalizedString", b =>
+            modelBuilder.Entity("LocalizedStringSinger1", b =>
                 {
                     b.Property<Guid>("NicknamesId")
                         .HasColumnType("TEXT");
@@ -737,7 +710,37 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
 
                     b.HasIndex("Singer1Id");
 
-                    b.ToTable("SingerNicknamesLocalizedString");
+                    b.ToTable("LocalizedStringSinger1");
+                });
+
+            modelBuilder.Entity("LocalizedStringSinger2", b =>
+                {
+                    b.Property<Guid>("DescriptionsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("Singer2Id")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DescriptionsId", "Singer2Id");
+
+                    b.HasIndex("Singer2Id");
+
+                    b.ToTable("LocalizedStringSinger2");
+                });
+
+            modelBuilder.Entity("LocalizedStringSinger3", b =>
+                {
+                    b.Property<Guid>("ActivitiesId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("Singer3Id")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ActivitiesId", "Singer3Id");
+
+                    b.HasIndex("Singer3Id");
+
+                    b.ToTable("LocalizedStringSinger3");
                 });
 
             modelBuilder.Entity("SingerSong", b =>
@@ -1020,37 +1023,7 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SingerActivitiesLocalizedString", b =>
-                {
-                    b.HasOne("Karaoke.Core.Entities.LocalizedString", null)
-                        .WithMany()
-                        .HasForeignKey("ActivitiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Karaoke.Core.Entities.Singer", null)
-                        .WithMany()
-                        .HasForeignKey("Singer3Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SingerDescriptionsLocalizedString", b =>
-                {
-                    b.HasOne("Karaoke.Core.Entities.LocalizedString", null)
-                        .WithMany()
-                        .HasForeignKey("DescriptionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Karaoke.Core.Entities.Singer", null)
-                        .WithMany()
-                        .HasForeignKey("Singer2Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SingerNamesLocalizedString", b =>
+            modelBuilder.Entity("LocalizedStringSinger", b =>
                 {
                     b.HasOne("Karaoke.Core.Entities.LocalizedString", null)
                         .WithMany()
@@ -1065,7 +1038,7 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SingerNicknamesLocalizedString", b =>
+            modelBuilder.Entity("LocalizedStringSinger1", b =>
                 {
                     b.HasOne("Karaoke.Core.Entities.LocalizedString", null)
                         .WithMany()
@@ -1076,6 +1049,36 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                     b.HasOne("Karaoke.Core.Entities.Singer", null)
                         .WithMany()
                         .HasForeignKey("Singer1Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LocalizedStringSinger2", b =>
+                {
+                    b.HasOne("Karaoke.Core.Entities.LocalizedString", null)
+                        .WithMany()
+                        .HasForeignKey("DescriptionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Karaoke.Core.Entities.Singer", null)
+                        .WithMany()
+                        .HasForeignKey("Singer2Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LocalizedStringSinger3", b =>
+                {
+                    b.HasOne("Karaoke.Core.Entities.LocalizedString", null)
+                        .WithMany()
+                        .HasForeignKey("ActivitiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Karaoke.Core.Entities.Singer", null)
+                        .WithMany()
+                        .HasForeignKey("Singer3Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

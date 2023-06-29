@@ -2,9 +2,11 @@
 using AutoMapper.QueryableExtensions;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Files;
+using Karaoke.Application.LocalizedStrings.Interfaces;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Singers.Commands.CreateSinger;
+using Karaoke.Application.Singers.Commands.EditSinger;
 using Karaoke.Application.Singers.Requests.GetSinger;
 using Karaoke.Application.Singers.Requests.GetSingers;
 using Karaoke.Application.Singers.Requests.GetSingersForAdmin;
@@ -20,43 +22,33 @@ public class SingersService : ISingersService
 
     private readonly IFilesService _filesService;
 
+    private readonly ILocalizedStringsService _localizedStringsService;
+
     private readonly IMapper _mapper;
 
-    public SingersService(IKaraokeDbContext context, IFilesService filesService, IMapper mapper)
+    public SingersService(IKaraokeDbContext context, IFilesService filesService, IMapper mapper, ILocalizedStringsService localizedStringsService)
     {
         _context = context;
         _filesService = filesService;
         _mapper = mapper;
+        _localizedStringsService = localizedStringsService;
     }
 
-    public async Task<CreateSinger.Response> CreateAsync(CreateSinger.Command command, CancellationToken cancellationToken)
+    public async Task<CreateSinger.Response> CreateAsync(
+        CreateSinger.Command command,
+        CancellationToken cancellationToken = default
+    )
     {
         var singer = new Singer
         {
             Names = command.Names
-                .Select(x => new LocalizedString
-                {
-                    Text = x.Text,
-                    Language = x.Language
-                }).ToList(),
+                .Select(x => _localizedStringsService.Add(x.Text, x.Language)).ToList(),
             Nicknames = command.Nicknames
-                .Select(x => new LocalizedString
-                {
-                    Text = x.Text,
-                    Language = x.Language
-                }).ToList(),
+                .Select(x => _localizedStringsService.Add(x.Text, x.Language)).ToList(),
             Descriptions = command.Descriptions
-                .Select(x => new LocalizedString
-                {
-                    Text = x.Text,
-                    Language = x.Language
-                }).ToList(),
+                .Select(x => _localizedStringsService.Add(x.Text, x.Language)).ToList(),
             Activities = command.Activities
-                .Select(x => new LocalizedString
-                {
-                    Text = x.Text,
-                    Language = x.Language
-                }).ToList(),
+                .Select(x => _localizedStringsService.Add(x.Text, x.Language)).ToList(),
             Birthday = command.Birthday ?? DateTime.MinValue,
             ProfilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken)
         };
@@ -65,6 +57,76 @@ public class SingersService : ISingersService
         await _context.SaveChangesAsync(cancellationToken);
 
         return new CreateSinger.Response
+        {
+            Id = singer.Id
+        };
+    }
+
+    public async Task<EditSinger.Response?> EditAsync(
+        EditSinger.Command command,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var singer = await _context
+            .Singers
+            .Include(x => x.Names)
+            .Include(x => x.Nicknames)
+            .Include(x => x.Descriptions)
+            .Include(x => x.Activities)
+            .Include(x => x.ProfilePicture)
+            .FirstOrDefaultAsync(x => x.Id == command.SingerId, cancellationToken);
+
+        if (singer == null)
+        {
+            return null;
+        }
+
+        if (command.Names.Any())
+        {
+            _localizedStringsService.RemoveRange(singer.Names);
+            singer.Names = command.Names
+                .Select(x => _localizedStringsService.Add(x.Text, x.Language))
+                .ToList();
+        }
+
+        if (command.Nicknames.Any())
+        {
+            _localizedStringsService.RemoveRange(singer.Nicknames);
+            singer.Nicknames = command.Nicknames
+                .Select(x => _localizedStringsService.Add(x.Text, x.Language))
+                .ToList();
+        }
+
+        if (command.Descriptions.Any())
+        {
+            _localizedStringsService.RemoveRange(singer.Descriptions);
+            singer.Descriptions = command.Descriptions
+                .Select(x => _localizedStringsService.Add(x.Text, x.Language))
+                .ToList();
+        }
+
+        if (command.Activities.Any())
+        {
+            _localizedStringsService.RemoveRange(singer.Activities);
+            singer.Activities = command.Activities
+                .Select(x => _localizedStringsService.Add(x.Text, x.Language))
+                .ToList();
+        }
+
+        if (command.Birthday != null && command.Birthday > DateTime.MinValue)
+        {
+            singer.Birthday = command.Birthday.Value;
+        }
+
+        if (command.ProfilePictureFile != null)
+        {
+            await _filesService.DeleteAsync(singer.ProfilePicture, cancellationToken);
+            singer.ProfilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return new EditSinger.Response
         {
             Id = singer.Id
         };

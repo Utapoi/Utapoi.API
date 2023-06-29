@@ -11,6 +11,8 @@ public interface IKaraokeDbContext
 
     DbSet<KaraokeInfo> KaraokeInfos { get; }
 
+    DbSet<LocalizedString> LocalizedStrings { get; }
+
     DbSet<Singer> Singers { get; }
 
     DbSet<Song> Songs { get; }

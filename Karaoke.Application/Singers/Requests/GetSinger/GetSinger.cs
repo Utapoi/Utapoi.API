@@ -19,12 +19,9 @@ public static partial class GetSinger
         {
             var singer = await _singersService.GetByIdAsync(request.Id, cancellationToken);
 
-            if (singer is null)
-            {
-                return Result.Fail(new EntityNotFoundError("Singer not found", request.Id));
-            }
-
-            return Result.Ok(singer);
+            return singer is null
+                ? Result.Fail(new EntityNotFoundError("Singer not found", request.Id))
+                : Result.Ok(singer);
         }
     }
 }

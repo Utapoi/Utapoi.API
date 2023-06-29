@@ -13,16 +13,32 @@ public class SingerEntityTypeConfiguration : IEntityTypeConfiguration<Singer>
     public void Configure(EntityTypeBuilder<Singer> builder)
     {
         builder.HasMany(x => x.Names)
-            .WithMany();
+            .WithMany()
+            .UsingEntity("SingerNamesLocalizedString");
+            //.UsingEntity(
+            //    "SingerNamesLocalizedString",
+            //    l => l.HasOne(typeof(LocalizedString))
+            //        .WithMany()
+            //        .HasForeignKey("NamesId")
+            //        .HasPrincipalKey(nameof(LocalizedString.Id)),
+            //    r => r.HasOne(typeof(Singer))
+            //        .WithMany()
+            //        .HasForeignKey("SingerNamesId")
+            //        .HasPrincipalKey(nameof(Singer.Id))
+            //);
 
         builder.HasMany(x => x.Nicknames)
-            .WithMany();
+            .WithMany()
+            .UsingEntity("SingerNicknamesLocalizedString");
 
-        builder.HasMany(x => x.Descriptions)
-            .WithMany();
+        builder
+            .HasMany(x => x.Descriptions)
+            .WithMany()
+            .UsingEntity("SingerDescriptionsLocalizedString");
 
         builder.HasMany(x => x.Activities)
-            .WithMany();
+            .WithMany()
+            .UsingEntity("SingerActivitiesLocalizedString");
 
         builder.HasOne(x => x.ProfilePicture)
             .WithMany()

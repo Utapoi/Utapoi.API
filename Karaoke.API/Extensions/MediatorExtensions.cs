@@ -45,13 +45,45 @@ public static class MediatorExtensions
     }
 
     /// <summary>
+    ///     Processes the command and returns an <see cref="IActionResult" />.
+    /// </summary>
+    /// <typeparam name="T">
+    ///     The type of the result.
+    /// </typeparam>
+    /// <param name="mediator">
+    ///     The <see cref="ISender" />.
+    /// </param>
+    /// <param name="command">
+    ///     The <see cref="ICommand{T}" />.
+    /// </param>
+    /// <returns>
+    ///     An <see cref="IActionResult" />.
+    /// </returns>
+    public static async Task<IActionResult> ProcessCommandAsync<T>(this ISender mediator, ICommand<Result<T>> command)
+    {
+        var result = await mediator.Send(command);
+
+        if (result.HasError<EntityNotFoundError>())
+        {
+            return new NotFoundObjectResult(result.GetValueFromError<EntityNotFoundError>("Id"));
+        }
+
+        if (result.IsFailed)
+        {
+            return new BadRequestObjectResult(result.Errors.Select(x => x.Message));
+        }
+
+        return new OkObjectResult(result.Value);
+    }
+
+    /// <summary>
     ///    Processes the command and returns an <see cref="IActionResult" />.
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <param name="mediator">The <see cref="ISender"/>.</param>
     /// <param name="command">The <see cref="IRequest{T}"/>.</param>
     /// <param name="controllerName">The name of the controller that initiated the command.</param>
-    /// <param name="actionName">The name of the action that initiated the commnad.</param>
+    /// <param name="actionName">The name of the action that initiated the command.</param>
     /// <returns>
     ///    An <see cref="IActionResult" />.
     /// </returns>
