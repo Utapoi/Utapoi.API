@@ -26,7 +26,7 @@ public sealed class Song : AuditableEntity
     /// <summary>
     ///     Gets or sets the original language of the song.
     /// </summary>
-    public Culture OriginalLanguage { get; set; } = Languages.Japanese;
+    public string OriginalLanguage { get; set; } = Languages.Japanese;
 
     public Guid? OriginalFileId { get; set; }
 

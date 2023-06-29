@@ -9,7 +9,7 @@ namespace Karaoke.Application.Singers;
 
 public interface ISingersService
 {
-    Task<Singer> CreateAsync(CreateSinger.Command command, CancellationToken cancellationToken);
+    Task<CreateSinger.Response> CreateAsync(CreateSinger.Command command, CancellationToken cancellationToken);
 
     Singer? GetById(Guid id);
 

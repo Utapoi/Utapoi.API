@@ -24,7 +24,7 @@ public sealed class User : AuditableEntity
     ///     The default language is <see cref="Core.Common.Languages.English" />.
     ///     They are sorted by preference.
     /// </remarks>
-    public ICollection<Culture> Languages { get; } = new List<Culture>();
+    public ICollection<string> Languages { get; } = new List<string>();
 
     /// <summary>
     ///     Gets an <see cref="ICollection{T}" /> of <see cref="KaraokeInfo" /> created by the user.

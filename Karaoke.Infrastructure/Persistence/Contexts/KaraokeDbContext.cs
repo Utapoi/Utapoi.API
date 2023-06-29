@@ -51,11 +51,6 @@ public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
     /// </summary>
     public DbSet<Album> Albums => Set<Album>();
 
-    /// <summary>
-    ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Culture" />.
-    /// </summary>
-    public DbSet<Culture> Cultures => Set<Culture>();
-
     public DbSet<NamedFile> Files => Set<NamedFile>();
 
     public DbSet<KaraokeInfo> KaraokeInfos => Set<KaraokeInfo>();

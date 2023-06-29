@@ -18,6 +18,12 @@ public class SingerEntityTypeConfiguration : IEntityTypeConfiguration<Singer>
         builder.HasMany(x => x.Nicknames)
             .WithMany();
 
+        builder.HasMany(x => x.Descriptions)
+            .WithMany();
+
+        builder.HasMany(x => x.Activities)
+            .WithMany();
+
         builder.HasOne(x => x.ProfilePicture)
             .WithMany()
             .HasForeignKey(x => x.ProfilePictureId)

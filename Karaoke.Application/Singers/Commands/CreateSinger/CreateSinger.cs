@@ -1,24 +1,14 @@
 ﻿using FluentResults;
-using Karaoke.Application.Common;
-using Karaoke.Application.Common.Requests;
 using MediatR;
 
 namespace Karaoke.Application.Singers.Commands.CreateSinger;
 
-public static class CreateSinger
+public static partial class CreateSinger
 {
-    public record Command : ICommand<Result<string>>
-    {
-        public IEnumerable<LocalizedStringRequest> Names { get; set; } = new List<LocalizedStringRequest>();
-
-        public IEnumerable<LocalizedStringRequest> Nicknames { get; set; } = new List<LocalizedStringRequest>();
-
-        public DateTime? Birthday { get; set; } = DateTime.MinValue;
-
-        public FileRequest ProfilePictureFile { get; set; } = null!;
-    }
-
-    internal sealed class Handler : IRequestHandler<Command, Result<string>>
+    /// <summary>
+    /// The handler of the command to create a singer.
+    /// </summary>
+    internal sealed class Handler : IRequestHandler<Command, Result<Response>>
     {
         private readonly ISingersService _singersService;
 
@@ -27,11 +17,11 @@ public static class CreateSinger
             _singersService = singersService;
         }
 
-        public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<Response>> Handle(Command request, CancellationToken cancellationToken)
         {
-            var singer = await _singersService.CreateAsync(request, cancellationToken);
+            var response = await _singersService.CreateAsync(request, cancellationToken);
 
-            return Result.Ok(singer.Id.ToString());
+            return Result.Ok(response);
         }
     }
 }

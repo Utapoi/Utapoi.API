@@ -2,7 +2,6 @@
 using Karaoke.Application.Common;
 using Karaoke.Application.Singers.Requests.GetSingersForAdmin;
 using Microsoft.AspNetCore.Mvc;
-using Karaoke.Application.DTO;
 using Karaoke.API.Extensions;
 using Karaoke.Application.Singers.Commands.CreateSinger;
 using Karaoke.API.Controllers.Artists;
@@ -26,7 +25,7 @@ public sealed class AdminSingersController : ApiControllerBase
     ///     A <see cref="IActionResult" /> containing the result of the operation.
     /// </returns>
     [HttpPost]
-    [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(CreateSinger.Response), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<IActionResult> CreateSingerAsync([FromBody] CreateSinger.Command command)
@@ -44,7 +43,7 @@ public sealed class AdminSingersController : ApiControllerBase
     ///     A <see cref="PaginatedResponse{T}" /> containing the singers.
     /// </returns>
     [HttpGet]
-    [ProducesResponseType(typeof(PaginatedResponse<SingerDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetSingersForAdmin.Response), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<IActionResult> GetSingersAsync([FromQuery] PaginatedRequest request)

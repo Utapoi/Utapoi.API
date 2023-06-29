@@ -47,7 +47,7 @@ public class UsersService : IUsersService
         {
             Id = Guid.Parse(user.Id),
             Username = user.UserName ?? string.Empty,
-            ProfilePicture = user.ProfilePicture
+            ProfilePicture = user.ProfilePicture ?? string.Empty
         });
 
         u.Roles = await _userManager.GetRolesAsync(user);

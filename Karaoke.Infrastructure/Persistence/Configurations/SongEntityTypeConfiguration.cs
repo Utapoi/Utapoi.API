@@ -17,6 +17,11 @@ public class SongEntityTypeConfiguration : IEntityTypeConfiguration<Song>
         builder.Property(x => x.Duration)
             .HasConversion<long>();
 
+        builder.HasOne(x => x.OriginalFile)
+            .WithMany()
+            .HasForeignKey(x => x.OriginalFileId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(x => x.Vocal)
             .WithMany()
             .HasForeignKey(x => x.VocalId)

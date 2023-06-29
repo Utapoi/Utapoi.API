@@ -29,7 +29,7 @@ public class SingersService : ISingersService
         _mapper = mapper;
     }
 
-    public async Task<Singer> CreateAsync(CreateSinger.Command command, CancellationToken cancellationToken)
+    public async Task<CreateSinger.Response> CreateAsync(CreateSinger.Command command, CancellationToken cancellationToken)
     {
         var singer = new Singer
         {
@@ -45,6 +45,18 @@ public class SingersService : ISingersService
                     Text = x.Text,
                     Language = x.Language
                 }).ToList(),
+            Descriptions = command.Descriptions
+                .Select(x => new LocalizedString
+                {
+                    Text = x.Text,
+                    Language = x.Language
+                }).ToList(),
+            Activities = command.Activities
+                .Select(x => new LocalizedString
+                {
+                    Text = x.Text,
+                    Language = x.Language
+                }).ToList(),
             Birthday = command.Birthday ?? DateTime.MinValue,
             ProfilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken)
         };
@@ -52,7 +64,10 @@ public class SingersService : ISingersService
         await _context.Singers.AddAsync(singer, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return singer;
+        return new CreateSinger.Response
+        {
+            Id = singer.Id
+        };
     }
 
     public Singer? GetById(Guid id)

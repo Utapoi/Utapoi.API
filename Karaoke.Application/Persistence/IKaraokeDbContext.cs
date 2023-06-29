@@ -7,8 +7,6 @@ public interface IKaraokeDbContext
 {
     DbSet<Album> Albums { get; }
 
-    DbSet<Culture> Cultures { get; }
-
     DbSet<NamedFile> Files { get; }
 
     DbSet<KaraokeInfo> KaraokeInfos { get; }
