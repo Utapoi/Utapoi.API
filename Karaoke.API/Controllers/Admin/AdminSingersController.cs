@@ -4,7 +4,7 @@ using Karaoke.Application.Singers.Requests.GetSingersForAdmin;
 using Microsoft.AspNetCore.Mvc;
 using Karaoke.API.Extensions;
 using Karaoke.Application.Singers.Commands.CreateSinger;
-using Karaoke.API.Controllers.Artists;
+using Karaoke.Application.Singers.Commands.DeleteSinger;
 using Karaoke.Application.Singers.Commands.EditSinger;
 
 namespace Karaoke.API.Controllers.Admin;
@@ -29,12 +29,43 @@ public sealed class AdminSingersController : ApiControllerBase
     [ProducesResponseType(typeof(CreateSinger.Response), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<IActionResult> CreateSingerAsync([FromBody] CreateSinger.Command command)
-        => Mediator.ProcessCreateCommandAsync(
-            command,
-            nameof(SingersController),
-            nameof(SingersController.GetSingerAsync)
-        );
+    public async Task<IActionResult> CreateSingerAsync([FromBody] CreateSinger.Command command)
+    {
+        var result = await Mediator.Send(command);
+
+        if (result.IsFailed)
+        {
+            return BadRequest();
+        }
+
+        return StatusCode(StatusCodes.Status201Created, new { result.Value.Id });
+    }
+
+    /// <summary>
+    ///    Deletes a singer.
+    /// </summary>
+    /// <param name="id">The id of the singer to delete.</param>
+    /// <returns>
+    ///    A <see cref="IActionResult" /> containing the result of the operation.
+    /// </returns>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteSingerAsync([FromRoute] Guid id)
+    {
+        var result = await Mediator.Send(new DeleteSinger.Command
+        {
+            Id = id
+        });
+
+        if (result.IsFailed)
+        {
+            return BadRequest();
+        }
+
+        return Ok();
+    }
 
     /// <summary>
     ///    Edits a singer.

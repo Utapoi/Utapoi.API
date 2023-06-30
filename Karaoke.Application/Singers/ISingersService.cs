@@ -1,4 +1,5 @@
 ﻿using Karaoke.Application.Singers.Commands.CreateSinger;
+using Karaoke.Application.Singers.Commands.DeleteSinger;
 using Karaoke.Application.Singers.Commands.EditSinger;
 using Karaoke.Application.Singers.Requests.GetSinger;
 using Karaoke.Application.Singers.Requests.GetSingers;
@@ -19,6 +20,8 @@ public interface ISingersService
     /// A <see cref="CreateSinger.Response"/> containing the created singer.
     /// </returns>
     Task<CreateSinger.Response> CreateAsync(CreateSinger.Command command, CancellationToken cancellationToken = default);
+
+    Task<bool> DeleteAsync(DeleteSinger.Command command, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Edits an existing singer.

@@ -171,6 +171,9 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     ProfilePictureId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Birthday = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    BloodType = table.Column<string>(type: "TEXT", nullable: false),
+                    Height = table.Column<float>(type: "REAL", nullable: false),
+                    Nationality = table.Column<string>(type: "TEXT", nullable: false),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "TEXT", nullable: false),
                     LastModified = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -188,22 +191,56 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Cultures",
+                name: "Songs",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Tag = table.Column<string>(type: "TEXT", nullable: false),
-                    UserId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    Duration = table.Column<long>(type: "INTEGER", nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    OriginalLanguage = table.Column<string>(type: "TEXT", nullable: false),
+                    OriginalFileId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    ThumbnailId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    VocalId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    InstrumentalId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    PreviewId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "TEXT", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    LastModifiedBy = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cultures", x => x.Id);
+                    table.PrimaryKey("PK_Songs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Cultures_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "Id");
+                        name: "FK_Songs_Files_InstrumentalId",
+                        column: x => x.InstrumentalId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Songs_Files_OriginalFileId",
+                        column: x => x.OriginalFileId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Songs_Files_PreviewId",
+                        column: x => x.PreviewId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Songs_Files_ThumbnailId",
+                        column: x => x.ThumbnailId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Songs_Files_VocalId",
+                        column: x => x.VocalId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -261,58 +298,6 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                         principalTable: "Singers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Songs",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Duration = table.Column<long>(type: "INTEGER", nullable: false),
-                    ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    OriginalLanguageId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ThumbnailId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    VocalId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    InstrumentalId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    PreviewId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "TEXT", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    LastModifiedBy = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Songs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Songs_Cultures_OriginalLanguageId",
-                        column: x => x.OriginalLanguageId,
-                        principalTable: "Cultures",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Songs_Files_InstrumentalId",
-                        column: x => x.InstrumentalId,
-                        principalTable: "Files",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Songs_Files_PreviewId",
-                        column: x => x.PreviewId,
-                        principalTable: "Files",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Songs_Files_ThumbnailId",
-                        column: x => x.ThumbnailId,
-                        principalTable: "Files",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Songs_Files_VocalId",
-                        column: x => x.VocalId,
-                        principalTable: "Files",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -560,7 +545,7 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocalizedString",
+                name: "LocalizedStrings",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -578,56 +563,104 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LocalizedString", x => x.Id);
+                    table.PrimaryKey("PK_LocalizedStrings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LocalizedString_Albums_AlbumId",
+                        name: "FK_LocalizedStrings_Albums_AlbumId",
                         column: x => x.AlbumId,
                         principalTable: "Albums",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LocalizedString_Collection_CollectionId",
+                        name: "FK_LocalizedStrings_Collection_CollectionId",
                         column: x => x.CollectionId,
                         principalTable: "Collection",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LocalizedString_Composer_ComposerId",
+                        name: "FK_LocalizedStrings_Composer_ComposerId",
                         column: x => x.ComposerId,
                         principalTable: "Composer",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LocalizedString_Composer_ComposerId1",
+                        name: "FK_LocalizedStrings_Composer_ComposerId1",
                         column: x => x.ComposerId1,
                         principalTable: "Composer",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LocalizedString_SongWriter_SongWriterId",
+                        name: "FK_LocalizedStrings_SongWriter_SongWriterId",
                         column: x => x.SongWriterId,
                         principalTable: "SongWriter",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LocalizedString_SongWriter_SongWriterId1",
+                        name: "FK_LocalizedStrings_SongWriter_SongWriterId1",
                         column: x => x.SongWriterId1,
                         principalTable: "SongWriter",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LocalizedString_Songs_SongId",
+                        name: "FK_LocalizedStrings_Songs_SongId",
                         column: x => x.SongId,
                         principalTable: "Songs",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LocalizedString_Work_WorkId",
+                        name: "FK_LocalizedStrings_Work_WorkId",
                         column: x => x.WorkId,
                         principalTable: "Work",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_LocalizedString_Work_WorkId1",
+                        name: "FK_LocalizedStrings_Work_WorkId1",
                         column: x => x.WorkId1,
                         principalTable: "Work",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocalizedStringSinger",
+                name: "SingerActivitiesLocalizedString",
+                columns: table => new
+                {
+                    ActivitiesId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Singer3Id = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SingerActivitiesLocalizedString", x => new { x.ActivitiesId, x.Singer3Id });
+                    table.ForeignKey(
+                        name: "FK_SingerActivitiesLocalizedString_LocalizedStrings_ActivitiesId",
+                        column: x => x.ActivitiesId,
+                        principalTable: "LocalizedStrings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SingerActivitiesLocalizedString_Singers_Singer3Id",
+                        column: x => x.Singer3Id,
+                        principalTable: "Singers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SingerDescriptionsLocalizedString",
+                columns: table => new
+                {
+                    DescriptionsId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Singer2Id = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SingerDescriptionsLocalizedString", x => new { x.DescriptionsId, x.Singer2Id });
+                    table.ForeignKey(
+                        name: "FK_SingerDescriptionsLocalizedString_LocalizedStrings_DescriptionsId",
+                        column: x => x.DescriptionsId,
+                        principalTable: "LocalizedStrings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SingerDescriptionsLocalizedString_Singers_Singer2Id",
+                        column: x => x.Singer2Id,
+                        principalTable: "Singers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SingerNamesLocalizedString",
                 columns: table => new
                 {
                     NamesId = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -635,15 +668,15 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LocalizedStringSinger", x => new { x.NamesId, x.SingerId });
+                    table.PrimaryKey("PK_SingerNamesLocalizedString", x => new { x.NamesId, x.SingerId });
                     table.ForeignKey(
-                        name: "FK_LocalizedStringSinger_LocalizedString_NamesId",
+                        name: "FK_SingerNamesLocalizedString_LocalizedStrings_NamesId",
                         column: x => x.NamesId,
-                        principalTable: "LocalizedString",
+                        principalTable: "LocalizedStrings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LocalizedStringSinger_Singers_SingerId",
+                        name: "FK_SingerNamesLocalizedString_Singers_SingerId",
                         column: x => x.SingerId,
                         principalTable: "Singers",
                         principalColumn: "Id",
@@ -651,7 +684,7 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocalizedStringSinger1",
+                name: "SingerNicknamesLocalizedString",
                 columns: table => new
                 {
                     NicknamesId = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -659,15 +692,15 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LocalizedStringSinger1", x => new { x.NicknamesId, x.Singer1Id });
+                    table.PrimaryKey("PK_SingerNicknamesLocalizedString", x => new { x.NicknamesId, x.Singer1Id });
                     table.ForeignKey(
-                        name: "FK_LocalizedStringSinger1_LocalizedString_NicknamesId",
+                        name: "FK_SingerNicknamesLocalizedString_LocalizedStrings_NicknamesId",
                         column: x => x.NicknamesId,
-                        principalTable: "LocalizedString",
+                        principalTable: "LocalizedStrings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LocalizedStringSinger1_Singers_Singer1Id",
+                        name: "FK_SingerNicknamesLocalizedString_Singers_Singer1Id",
                         column: x => x.Singer1Id,
                         principalTable: "Singers",
                         principalColumn: "Id",
@@ -700,11 +733,6 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 column: "SongsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cultures_UserId",
-                table: "Cultures",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_KaraokeInfo_FileId",
                 table: "KaraokeInfo",
                 column: "FileId");
@@ -720,59 +748,49 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 column: "KaraokeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_AlbumId",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_AlbumId",
+                table: "LocalizedStrings",
                 column: "AlbumId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_CollectionId",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_CollectionId",
+                table: "LocalizedStrings",
                 column: "CollectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_ComposerId",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_ComposerId",
+                table: "LocalizedStrings",
                 column: "ComposerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_ComposerId1",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_ComposerId1",
+                table: "LocalizedStrings",
                 column: "ComposerId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_SongId",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_SongId",
+                table: "LocalizedStrings",
                 column: "SongId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_SongWriterId",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_SongWriterId",
+                table: "LocalizedStrings",
                 column: "SongWriterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_SongWriterId1",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_SongWriterId1",
+                table: "LocalizedStrings",
                 column: "SongWriterId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_WorkId",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_WorkId",
+                table: "LocalizedStrings",
                 column: "WorkId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocalizedString_WorkId1",
-                table: "LocalizedString",
+                name: "IX_LocalizedStrings_WorkId1",
+                table: "LocalizedStrings",
                 column: "WorkId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LocalizedStringSinger_SingerId",
-                table: "LocalizedStringSinger",
-                column: "SingerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LocalizedStringSinger1_Singer1Id",
-                table: "LocalizedStringSinger1",
-                column: "Singer1Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lyrics_SongId",
@@ -791,6 +809,26 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SingerActivitiesLocalizedString_Singer3Id",
+                table: "SingerActivitiesLocalizedString",
+                column: "Singer3Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SingerDescriptionsLocalizedString_Singer2Id",
+                table: "SingerDescriptionsLocalizedString",
+                column: "Singer2Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SingerNamesLocalizedString_SingerId",
+                table: "SingerNamesLocalizedString",
+                column: "SingerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SingerNicknamesLocalizedString_Singer1Id",
+                table: "SingerNicknamesLocalizedString",
+                column: "Singer1Id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Singers_ProfilePictureId",
                 table: "Singers",
                 column: "ProfilePictureId");
@@ -806,9 +844,9 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 column: "InstrumentalId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Songs_OriginalLanguageId",
+                name: "IX_Songs_OriginalFileId",
                 table: "Songs",
-                column: "OriginalLanguageId");
+                column: "OriginalFileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Songs_PreviewId",
@@ -870,16 +908,22 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 name: "KaraokeInfoUser");
 
             migrationBuilder.DropTable(
-                name: "LocalizedStringSinger");
-
-            migrationBuilder.DropTable(
-                name: "LocalizedStringSinger1");
-
-            migrationBuilder.DropTable(
                 name: "Lyrics");
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
+
+            migrationBuilder.DropTable(
+                name: "SingerActivitiesLocalizedString");
+
+            migrationBuilder.DropTable(
+                name: "SingerDescriptionsLocalizedString");
+
+            migrationBuilder.DropTable(
+                name: "SingerNamesLocalizedString");
+
+            migrationBuilder.DropTable(
+                name: "SingerNicknamesLocalizedString");
 
             migrationBuilder.DropTable(
                 name: "SingerSong");
@@ -894,13 +938,19 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 name: "KaraokeInfo");
 
             migrationBuilder.DropTable(
-                name: "LocalizedString");
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Token");
 
             migrationBuilder.DropTable(
+                name: "LocalizedStrings");
+
+            migrationBuilder.DropTable(
                 name: "Singers");
+
+            migrationBuilder.DropTable(
+                name: "ApplicationUser");
 
             migrationBuilder.DropTable(
                 name: "Albums");
@@ -918,19 +968,10 @@ namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
                 name: "Work");
 
             migrationBuilder.DropTable(
-                name: "ApplicationUser");
-
-            migrationBuilder.DropTable(
                 name: "Songs");
 
             migrationBuilder.DropTable(
-                name: "Cultures");
-
-            migrationBuilder.DropTable(
                 name: "Files");
-
-            migrationBuilder.DropTable(
-                name: "User");
         }
     }
 }

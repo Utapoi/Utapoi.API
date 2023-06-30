@@ -5,6 +5,7 @@ using Karaoke.Application.LocalizedStrings.Interfaces;
 using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Singers.Commands.CreateSinger;
+using Karaoke.Application.Singers.Commands.DeleteSinger;
 using Karaoke.Application.Singers.Commands.EditSinger;
 using Karaoke.Application.Singers.Requests.GetSinger;
 using Karaoke.Application.Singers.Requests.GetSingers;
@@ -38,6 +39,8 @@ public class SingersService : ISingersService
         CancellationToken cancellationToken = default
     )
     {
+        var profilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken);
+
         var singer = new Singer
         {
             Names = command.Names
@@ -52,7 +55,8 @@ public class SingersService : ISingersService
             BloodType = command.BloodType,
             Height = command.Height,
             Nationality = command.Nationality,
-            ProfilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken)
+            ProfilePictureId = profilePicture.Id,
+            ProfilePicture = profilePicture
         };
 
         await _context.Singers.AddAsync(singer, cancellationToken);
@@ -62,6 +66,34 @@ public class SingersService : ISingersService
         {
             Id = singer.Id
         };
+    }
+
+    public async Task<bool> DeleteAsync(DeleteSinger.Command command, CancellationToken cancellationToken = default)
+    {
+        var singer = await _context.Singers
+            .Include(x => x.Names)
+            .Include(x => x.Nicknames)
+            .Include(x => x.Descriptions)
+            .Include(x => x.Activities)
+            .Include(x => x.ProfilePicture)
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
+
+        if (singer == null)
+        {
+            return false;
+        }
+
+        _localizedStringsService.RemoveRange(singer.Names);
+        _localizedStringsService.RemoveRange(singer.Nicknames);
+        _localizedStringsService.RemoveRange(singer.Descriptions);
+        _localizedStringsService.RemoveRange(singer.Activities);
+
+        await _filesService.DeleteAsync(singer.ProfilePicture, cancellationToken);
+        _context.Singers.Remove(singer);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 
     public async Task<EditSinger.Response?> EditAsync(

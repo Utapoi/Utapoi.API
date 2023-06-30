@@ -25,6 +25,7 @@
   <ItemGroup>
     <Folder Include="LocalizedStrings\Interfaces\" />
     <Folder Include="Singers\Commands\EditSinger\" />
+    <Folder Include="Singers\Commands\DeleteSinger\" />
   </ItemGroup>
 
 </Project>
