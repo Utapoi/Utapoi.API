@@ -27,5 +27,7 @@ public static partial class EditSinger
         public string Nationality { get; set; } = string.Empty;
 
         public FileRequest? ProfilePictureFile { get; set; }
+
+        public FileRequest? CoverFile { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Karaoke.Application.DTO;
 using Karaoke.Application.Singers.Requests.GetSinger;
 using Karaoke.Application.Singers.Requests.GetSingers;
 using Karaoke.Application.Singers.Requests.SearchSingers;
+using Karaoke.Application.Songs.Requests.GetSongsForSinger;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Karaoke.API.Controllers.Artists;
@@ -56,6 +57,21 @@ public class SingersController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public Task<IActionResult> GetSingerAsync(Guid id)
         => Mediator.ProcessRequestAsync(new GetSinger.Request(id));
+
+    /// <summary>
+    ///    Gets a list of songs for a singer.
+    /// </summary>
+    /// <param name="id">The id of the singer.</param>
+    /// <returns>
+    ///    A <see cref="IActionResult" /> containing the result of the operation.
+    /// </returns>
+    [HttpGet("{id:guid}/Songs")]
+    [ProducesResponseType(typeof(List<GetSongsForSinger.Response>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public Task<IActionResult> GetSongsForSingerAsync(Guid id)
+        => Mediator.ProcessRequestAsync(new GetSongsForSinger.Request(id));
 
     /// <summary>
     ///     Search a singer by name.

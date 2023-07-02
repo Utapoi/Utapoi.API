@@ -40,30 +40,30 @@ public static class CreateSong
         /// <summary>
         ///     Gets or sets the thumbnail.
         /// </summary>
-        public FileRequest Thumbnail { get; set; } = new();
+        public FileRequest? Thumbnail { get; set; }
 
         /// <summary>
         ///     Gets or sets the voice file.
         /// </summary>
-        public FileRequest VoiceFile { get; set; } = new();
+        public FileRequest? VoiceFile { get; set; }
 
         /// <summary>
         ///     Gets or sets the instrumental file.
         /// </summary>
-        public FileRequest InstrumentalFile { get; set; } = new();
+        public FileRequest? InstrumentalFile { get; set; }
 
         /// <summary>
         ///     Gets or sets the preview file.
         /// </summary>
-        public FileRequest PreviewFile { get; set; } = new();
+        public FileRequest? PreviewFile { get; set; }
 
-        public IEnumerable<LocalizedFileRequest> LyricsFiles { get; set; } = new List<LocalizedFileRequest>();
+        public IEnumerable<LocalizedFileRequest?> LyricsFiles { get; set; } = new List<LocalizedFileRequest?>();
 
         /// <summary>
         ///     Gets or sets an <see cref="ICollection{T}" /> of <see cref="LocalizedFileRequest" />s representing the karaoke
         ///     files.
         /// </summary>
-        public IEnumerable<LocalizedFileRequest> KaraokeFiles { get; set; } = new List<LocalizedFileRequest>();
+        public IEnumerable<LocalizedFileRequest?> KaraokeFiles { get; set; } = new List<LocalizedFileRequest?>();
     }
 
     internal sealed class Handler : IRequestHandler<Command, Result<string>>

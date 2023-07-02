@@ -28,12 +28,16 @@ public sealed class Singer : AuditableEntity
     /// </summary>
     public ICollection<LocalizedString> Activities { get; set; } = new List<LocalizedString>();
 
-    public Guid ProfilePictureId { get; set; }
+    public Guid? ProfilePictureId { get; set; }
 
     /// <summary>
     ///    Gets or sets the profile picture.
     /// </summary>
-    public NamedFile ProfilePicture { get; set; } = null!;
+    public NamedFile? ProfilePicture { get; set; }
+
+    public Guid? CoverId { get; set; }
+
+    public NamedFile? Cover { get; set; }
 
     /// <summary>
     ///    Gets an <see cref="ICollection{T}" /> of <see cref="Album" />s.

@@ -7,7 +7,9 @@ using Karaoke.Application.Persistence;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Songs;
 using Karaoke.Application.Songs.Commands.CreateSong;
+using Karaoke.Application.Songs.Requests.GetSong;
 using Karaoke.Application.Songs.Requests.GetSongsForAdmin;
+using Karaoke.Application.Songs.Requests.GetSongsForSinger;
 using Karaoke.Application.Tags;
 using Karaoke.Core.Entities;
 using Karaoke.Core.Exceptions;
@@ -83,17 +85,43 @@ public sealed class SongsService : ISongsService
             Tags = command.Tags
                 .Select(x => _tagsService.GetOrCreateByName(x))
                 .ToList(),
-            ReleaseDate = command.ReleaseDate,
-            Thumbnail = await _filesService.CreateAsync(command.Thumbnail, cancellationToken),
-            Vocal = await _filesService.CreateAsync(command.VoiceFile, cancellationToken),
-            Instrumental = await _filesService.CreateAsync(command.InstrumentalFile, cancellationToken),
-            Preview = await _filesService.CreateAsync(command.PreviewFile, cancellationToken),
+            ReleaseDate = command.ReleaseDate.ToUniversalTime(),
             Karaoke = new List<KaraokeInfo>()
         };
 
+        if (command.Thumbnail?.File.Length > 0)
+        {
+            song.Thumbnail = await _filesService.CreateAsync(command.Thumbnail, cancellationToken);
+        }
+
+        if (command.VoiceFile?.File.Length > 0)
+        {
+            song.Vocal = await _filesService.CreateAsync(command.VoiceFile, cancellationToken);
+        }
+
+        if (command.InstrumentalFile?.File.Length > 0)
+        {
+            song.Instrumental = await _filesService.CreateAsync(command.InstrumentalFile, cancellationToken);
+        }
+
+        if (command.PreviewFile?.File.Length > 0)
+        {
+            song.Preview = await _filesService.CreateAsync(command.PreviewFile, cancellationToken);
+        }
+
         foreach (var karaokeFile in command.KaraokeFiles)
         {
-            song.Karaoke.Add(await _karaokeService.CreateAsync(karaokeFile, song, cancellationToken));
+            if (karaokeFile == null)
+            {
+                continue;
+            }
+
+            if (karaokeFile?.File.Length == 0)
+            {
+                continue;
+            }
+
+            song.Karaoke.Add(await _karaokeService.CreateAsync(karaokeFile!, song, cancellationToken));
         }
 
         await _context.Songs.AddAsync(song, cancellationToken);
@@ -117,17 +145,30 @@ public sealed class SongsService : ISongsService
     }
 
     /// <inheritdoc cref="ISongsService.GetAsync(Guid, CancellationToken)" />
-    public async Task<Song> GetAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<GetSong.Response> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var song = await _context.Songs
             .Include(x => x.Singers)
             .Include(x => x.Albums)
             .Include(x => x.Tags)
             .Include(x => x.Karaoke)
+            .ProjectTo<GetSong.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         return song ?? throw new EntityNotFoundException<Song>(id);
+    }
+
+    /// <inheritdoc cref="ISongsService.GetForSingerAsync(GetSongsForSinger.Request, CancellationToken)" />
+    public Task<List<GetSongsForSinger.Response>> GetForSingerAsync(GetSongsForSinger.Request request, CancellationToken cancellationToken = default)
+    {
+        return _context.Songs
+            .Include(x => x.Singers.Select(y => y.Id))
+            .Include(x => x.Albums)
+            .Where(x => x.Singers.Any(s => s.Id == request.SingerId))
+            .ProjectTo<GetSongsForSinger.Response>(_mapper.ConfigurationProvider)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     /// <inheritdoc cref="ISongsService.CountAsync(CancellationToken)" />

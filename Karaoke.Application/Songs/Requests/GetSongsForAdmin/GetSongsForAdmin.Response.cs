@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Karaoke.Application.Common.Mappings;
 using Karaoke.Core.Entities;
+using Karaoke.Core.Extensions;
 
 namespace Karaoke.Application.Songs.Requests.GetSongsForAdmin;
 
@@ -31,6 +32,8 @@ public static partial class GetSongsForAdmin
 
         public IList<LocalizedString> Titles { get; set; } = new List<LocalizedString>();
 
+        public string Cover { get; set; } = string.Empty;
+
         public AlbumDTO()
         {
         }
@@ -40,6 +43,11 @@ public static partial class GetSongsForAdmin
             projection.ForMember(
                 d => d.Id,
                 opt => opt.MapFrom(s => s.Id.ToString())
+            );
+
+            projection.ForMember(
+                d => d.Cover,
+                opt => opt.MapFrom(s => s.Cover != null ? s.Cover.GetUrl() : string.Empty)
             );
         }
     }

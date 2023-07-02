@@ -53,7 +53,7 @@ public class AlbumsService : IAlbumsService
                     Text = x.Text,
                     Language = x.Language
                 }).ToList(),
-            ReleaseDate = command.ReleaseDate,
+            ReleaseDate = command.ReleaseDate.ToUniversalTime(),
             Cover = command.CoverFile != null ? await _filesService.CreateAsync(command.CoverFile, cancellationToken) : null,
             Singers = command.Singers
                 .Select(x => _singersService.GetById(Guid.Parse(x))!)

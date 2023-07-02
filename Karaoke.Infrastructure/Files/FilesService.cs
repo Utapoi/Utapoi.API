@@ -61,8 +61,13 @@ public class FilesService : IFilesService
         );
     }
 
-    public async Task DeleteAsync(NamedFile namedFile, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(NamedFile? namedFile, CancellationToken cancellationToken = default)
     {
+        if (namedFile == null)
+        {
+            return;
+        }
+
         if (!DeletePhysicalFileAsync(namedFile))
         {
             return;
@@ -110,6 +115,23 @@ public class FilesService : IFilesService
         await stream.WriteAsync(bytes, cancellationToken);
     }
 
+    private void TryDeletePhysicalFolders(IFileInfo file)
+    {
+        var path = file.GetStoragePath();
+        var directory = Path.GetDirectoryName(path);
+
+        while (!string.IsNullOrWhiteSpace(directory) && !directory.EndsWith("files"))
+        {
+            if (_storage.GetFiles(directory).Any() || _storage.GetDirectories(directory).Any())
+            {
+                break;
+            }
+
+            _storage.Delete(directory);
+            directory = Path.GetDirectoryName(directory);
+        }
+    }
+
     private bool DeletePhysicalFileAsync(IFileInfo file)
     {
         if (!CheckFileExistsAndMatchesHash(file))
@@ -118,6 +140,7 @@ public class FilesService : IFilesService
         }
 
         _storage.Delete(file.GetStoragePath());
+        TryDeletePhysicalFolders(file);
 
         return true;
     }
@@ -142,6 +165,7 @@ public class FilesService : IFilesService
         return mimeType switch
         {
             "image/jpeg" => ".jpg",
+            "image/webp" => ".webp",
             "image/png" => ".png",
             "image/gif" => ".gif",
             "audio/mpeg" => ".mp3",

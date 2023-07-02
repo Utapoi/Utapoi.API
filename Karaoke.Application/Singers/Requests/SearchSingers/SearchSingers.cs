@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Persistence;
+using Karaoke.Core.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +31,7 @@ public static class SearchSingers
             {
                 Id = x.Id.ToString(),
                 Names = x.Names,
+                ProfilePicture = x.ProfilePicture != null ? x.ProfilePicture.GetUrl() : string.Empty
             }).ToList());
         }
     }

@@ -15,17 +15,6 @@ public class SingerEntityTypeConfiguration : IEntityTypeConfiguration<Singer>
         builder.HasMany(x => x.Names)
             .WithMany()
             .UsingEntity("SingerNamesLocalizedString");
-            //.UsingEntity(
-            //    "SingerNamesLocalizedString",
-            //    l => l.HasOne(typeof(LocalizedString))
-            //        .WithMany()
-            //        .HasForeignKey("NamesId")
-            //        .HasPrincipalKey(nameof(LocalizedString.Id)),
-            //    r => r.HasOne(typeof(Singer))
-            //        .WithMany()
-            //        .HasForeignKey("SingerNamesId")
-            //        .HasPrincipalKey(nameof(Singer.Id))
-            //);
 
         builder.HasMany(x => x.Nicknames)
             .WithMany()
@@ -43,6 +32,11 @@ public class SingerEntityTypeConfiguration : IEntityTypeConfiguration<Singer>
         builder.HasOne(x => x.ProfilePicture)
             .WithMany()
             .HasForeignKey(x => x.ProfilePictureId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Cover)
+            .WithMany()
+            .HasForeignKey(x => x.CoverId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

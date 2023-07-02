@@ -19,9 +19,13 @@ public static partial class GetSinger
 
         public IReadOnlyCollection<LocalizedString> Titles { get; set; } = new List<LocalizedString>();
 
+        public IReadOnlyCollection<AlbumDTO> Albums { get; set; } = new List<AlbumDTO>();
+
         public string Cover { get; set; } = string.Empty;
 
-        public string Url { get; set; } = string.Empty;
+        public string OriginalFile { get; set; } = string.Empty;
+
+        public DateTime ReleaseDate { get; set; }
 
         public SongDTO()
         {
@@ -30,13 +34,13 @@ public static partial class GetSinger
         public readonly void ConfigureProjection(IProjectionExpression<Song, SongDTO> projection)
         {
             projection.ForMember(
-                d => d.Url,
+                d => d.OriginalFile,
                 opt => opt.MapFrom(s => s.OriginalFile != null ? s.OriginalFile.GetUrl() : string.Empty)
             );
 
             projection.ForMember(
                 d => d.Cover,
-                opt => opt.MapFrom(s => s.Albums.First(x => x.Cover != null).Cover!.GetUrl())
+                opt => opt.MapFrom(s => s.Thumbnail != null ? s.Thumbnail.GetUrl() : string.Empty)
             );;
         }
     }
@@ -48,6 +52,8 @@ public static partial class GetSinger
         public IReadOnlyCollection<LocalizedString> Titles { get; set; } = new List<LocalizedString>();
 
         public string Cover { get; set; } = string.Empty;
+
+        public DateTime ReleaseDate { get; set; }
 
         public AlbumDTO()
         {
@@ -84,9 +90,13 @@ public static partial class GetSinger
 
         public string ProfilePicture { get; set; } = string.Empty;
 
+        public string Cover { get; set; } = string.Empty;
+
         public SongDTO? PopularSong { get; set; }
 
         public IReadOnlyCollection<AlbumDTO> Albums { get; set; } = new List<AlbumDTO>();
+
+        public IReadOnlyCollection<SongDTO> Songs { get; set; } = new List<SongDTO>();
 
         public int AlbumsCount { get; set; }
 
@@ -106,12 +116,12 @@ public static partial class GetSinger
 
             projection.ForMember(
                 d => d.ProfilePicture,
-                opt => opt.MapFrom(s => s.ProfilePicture.GetUrl())
+                opt => opt.MapFrom(s => s.ProfilePicture != null ? s.ProfilePicture.GetUrl() : string.Empty)
             );
 
             projection.ForMember(
-                d => d.Albums,
-                opt => opt.MapFrom(s => s.Albums.OrderBy(x => x.ReleaseDate))
+                d => d.Cover,
+                opt => opt.MapFrom(s => s.Cover != null ? s.Cover.GetUrl() : string.Empty)
             );
 
             projection.ForMember(

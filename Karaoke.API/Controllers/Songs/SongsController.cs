@@ -4,8 +4,6 @@ using Karaoke.Application.Common.Requests;
 using Karaoke.Application.DTO;
 using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSong;
-using Karaoke.Core.Common;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Karaoke.API.Controllers.Songs;
@@ -23,7 +21,7 @@ public sealed class SongsController : ApiControllerBase
     ///    A <see cref="SongDTO" /> containing the song information.
     /// </returns>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(SongDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetSong.Response), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetSongAsync([FromRoute] Guid id)

@@ -1,5 +1,7 @@
 ﻿using Karaoke.Application.Songs.Commands.CreateSong;
+using Karaoke.Application.Songs.Requests.GetSong;
 using Karaoke.Application.Songs.Requests.GetSongsForAdmin;
+using Karaoke.Application.Songs.Requests.GetSongsForSinger;
 using Karaoke.Core.Entities;
 using Karaoke.Core.Exceptions;
 
@@ -52,8 +54,21 @@ public interface ISongsService
     /// <exception cref="EntityNotFoundException{Song}">
     ///     Thrown when the <see cref="Song" /> is not found.
     /// </exception>
-    Task<Song> GetAsync(
+    Task<GetSong.Response> GetAsync(
         Guid id,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    ///     Gets all <see cref="Song" />s for a <see cref="Singer" />.
+    /// </summary>
+    /// <param name="request">The <see cref="GetSongsForSinger.Request" /> containing the pagination request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    ///     An <see cref="IReadOnlyCollection{T}" /> of <see cref="Song" />s.
+    /// </returns>
+    Task<List<GetSongsForSinger.Response>> GetForSingerAsync(
+        GetSongsForSinger.Request request,
         CancellationToken cancellationToken = default
     );
 

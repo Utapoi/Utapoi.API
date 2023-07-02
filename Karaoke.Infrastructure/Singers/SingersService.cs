@@ -11,6 +11,7 @@ using Karaoke.Application.Singers.Requests.GetSinger;
 using Karaoke.Application.Singers.Requests.GetSingers;
 using Karaoke.Application.Singers.Requests.GetSingersForAdmin;
 using Karaoke.Application.Singers.Requests.SearchSingers;
+using Karaoke.Core.Common;
 using Karaoke.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,6 +41,7 @@ public class SingersService : ISingersService
     )
     {
         var profilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken);
+        var cover = await _filesService.CreateAsync(command.CoverFile, cancellationToken);
 
         var singer = new Singer
         {
@@ -51,12 +53,14 @@ public class SingersService : ISingersService
                 .Select(x => _localizedStringsService.Add(x.Text, x.Language)).ToList(),
             Activities = command.Activities
                 .Select(x => _localizedStringsService.Add(x.Text, x.Language)).ToList(),
-            Birthday = command.Birthday ?? DateTime.MinValue,
+            Birthday = command.Birthday?.ToUniversalTime() ?? DateTime.MinValue,
             BloodType = command.BloodType,
             Height = command.Height,
             Nationality = command.Nationality,
             ProfilePictureId = profilePicture.Id,
-            ProfilePicture = profilePicture
+            ProfilePicture = profilePicture,
+            CoverId = cover.Id,
+            Cover = cover,
         };
 
         await _context.Singers.AddAsync(singer, cancellationToken);
@@ -89,6 +93,7 @@ public class SingersService : ISingersService
         _localizedStringsService.RemoveRange(singer.Activities);
 
         await _filesService.DeleteAsync(singer.ProfilePicture, cancellationToken);
+        await _filesService.DeleteAsync(singer.Cover, cancellationToken);
         _context.Singers.Remove(singer);
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -170,7 +175,21 @@ public class SingersService : ISingersService
         if (command.ProfilePictureFile != null)
         {
             await _filesService.DeleteAsync(singer.ProfilePicture, cancellationToken);
-            singer.ProfilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken);
+
+            var profilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken);
+
+            singer.ProfilePictureId = profilePicture.Id;
+            singer.ProfilePicture = profilePicture;
+        }
+
+        if (command.CoverFile != null)
+        {
+            await _filesService.DeleteAsync(singer.Cover, cancellationToken);
+
+            var cover = await _filesService.CreateAsync(command.CoverFile, cancellationToken);
+
+            singer.CoverId = cover.Id;
+            singer.Cover = cover;
         }
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -192,6 +211,14 @@ public class SingersService : ISingersService
     {
         return _context
             .Singers
+            .Include(x => x.Albums
+                .OrderByDescending(a => a.ReleaseDate)
+                .Take(7)
+            )
+            .Include(x => x.Songs
+                .OrderByDescending(a => a.ReleaseDate)
+                .Take(7)
+            )
             .ProjectTo<GetSinger.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -204,6 +231,7 @@ public class SingersService : ISingersService
     {
         return await _context
             .Singers
+            .OrderBy(x => x.Names.FirstOrDefault(n => n.Language == Languages.English)!.Text)
             .Skip(request.Skip)
             .Take(request.Take)
             .ProjectTo<GetSingers.Response>(_mapper.ConfigurationProvider)
@@ -232,9 +260,11 @@ public class SingersService : ISingersService
     {
         return await _context.Singers
             .Include(x => x.Names)
+            .Include(x => x.ProfilePicture)
             .Where(s => s.Names.Any(
-                x => x.Text.ToLower().Contains(request.Input.ToLower()))
+                x => x.Text.ToLower().StartsWith(request.Input.ToLower()))
             )
+            .OrderBy(x => x.Names.FirstOrDefault(n => n.Language == Languages.English)!.Text)
             .ToListAsync(cancellationToken);
     }
 

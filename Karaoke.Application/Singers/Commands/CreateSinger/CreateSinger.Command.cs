@@ -28,6 +28,8 @@ namespace Karaoke.Application.Singers.Commands.CreateSinger
             public string Nationality { get; set; } = string.Empty;
 
             public FileRequest ProfilePictureFile { get; set; } = null!;
+
+            public FileRequest CoverFile { get; set; } = null!;
         }
     }
 }
