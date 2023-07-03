@@ -14,6 +14,7 @@ using Karaoke.Application.Tags;
 using Karaoke.Core.Entities;
 using Karaoke.Core.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Karaoke.Infrastructure.Songs;
 
@@ -160,12 +161,14 @@ public sealed class SongsService : ISongsService
     }
 
     /// <inheritdoc cref="ISongsService.GetForSingerAsync(GetSongsForSinger.Request, CancellationToken)" />
-    public Task<List<GetSongsForSinger.Response>> GetForSingerAsync(GetSongsForSinger.Request request, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<GetSongsForSinger.Response>> GetForSingerAsync(GetSongsForSinger.Request request, CancellationToken cancellationToken = default)
     {
-        return _context.Songs
-            .Include(x => x.Singers.Select(y => y.Id))
+        return await _context.Songs
+            .Include(x => x.Singers)
             .Include(x => x.Albums)
             .Where(x => x.Singers.Any(s => s.Id == request.SingerId))
+            .Skip(request.Skip)
+            .Take(request.Take)
             .ProjectTo<GetSongsForSinger.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
@@ -174,7 +177,18 @@ public sealed class SongsService : ISongsService
     /// <inheritdoc cref="ISongsService.CountAsync(CancellationToken)" />
     public Task<int> CountAsync(CancellationToken cancellationToken = default)
     {
-        return _context.Songs
+        return _context
+            .Songs
+            .AsNoTracking()
+            .CountAsync(cancellationToken);
+    }
+
+    /// <inheritdoc cref="ISongsService.CountAsync(Expression{Func{Song,bool}}, CancellationToken)" />
+    public Task<int> CountAsync(Expression<Func<Song, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return _context
+            .Songs
+            .Where(predicate)
             .AsNoTracking()
             .CountAsync(cancellationToken);
     }

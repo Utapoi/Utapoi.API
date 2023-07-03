@@ -1,11 +1,12 @@
 ﻿using FluentResults;
+using Karaoke.Application.Common;
 using MediatR;
 
 namespace Karaoke.Application.Songs.Requests.GetSongsForSinger;
 
 public static partial class GetSongsForSinger
 {
-    internal sealed class Handler : IRequestHandler<Request, Result<List<Response>>>
+    internal sealed class Handler : IRequestHandler<Request, Result<PaginatedResponse<Response>>>
     {
         private readonly ISongsService _songsService;
 
@@ -14,13 +15,18 @@ public static partial class GetSongsForSinger
             _songsService = songsService;
         }
 
-        public async Task<Result<List<Response>>> Handle(Request request, CancellationToken cancellationToken)
+        public async Task<Result<PaginatedResponse<Response>>> Handle(Request request, CancellationToken cancellationToken)
         {
             try
             {
                 var songs = await _songsService.GetForSingerAsync(request, cancellationToken);
 
-                return Result.Ok(songs);
+                return Result.Ok(new PaginatedResponse<Response>
+                {
+                    Items = songs,
+                    Count = songs.Count,
+                    TotalCount = await _songsService.CountAsync(x => x.Id == request.SingerId, cancellationToken)
+                });
             }
             catch (Exception ex)
             {

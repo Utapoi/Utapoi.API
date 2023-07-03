@@ -1,4 +1,5 @@
-﻿using Karaoke.Application.Songs.Commands.CreateSong;
+﻿using System.Linq.Expressions;
+using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSong;
 using Karaoke.Application.Songs.Requests.GetSongsForAdmin;
 using Karaoke.Application.Songs.Requests.GetSongsForSinger;
@@ -67,7 +68,7 @@ public interface ISongsService
     /// <returns>
     ///     An <see cref="IReadOnlyCollection{T}" /> of <see cref="Song" />s.
     /// </returns>
-    Task<List<GetSongsForSinger.Response>> GetForSingerAsync(
+    Task<IReadOnlyCollection<GetSongsForSinger.Response>> GetForSingerAsync(
         GetSongsForSinger.Request request,
         CancellationToken cancellationToken = default
     );
@@ -82,4 +83,6 @@ public interface ISongsService
     ///     The number of <see cref="Song" />s.
     /// </returns>
     Task<int> CountAsync(CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(Expression<Func<Song, bool>> predicate, CancellationToken cancellationToken = default);
 }
