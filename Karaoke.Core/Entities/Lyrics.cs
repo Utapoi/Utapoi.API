@@ -12,7 +12,7 @@ public sealed class Lyrics : AuditableEntity
     /// <summary>
     ///     Gets the phrases of the lyrics.
     /// </summary>
-    public ICollection<string> Phrases { get; } = new List<string>();
+    public List<string> Phrases { get; set; } = new List<string>();
 
     /// <summary>
     ///     Gets or sets the language.

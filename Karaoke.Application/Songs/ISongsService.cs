@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Karaoke.Application.Songs.Commands.CreateSong;
 using Karaoke.Application.Songs.Requests.GetSong;
+using Karaoke.Application.Songs.Requests.GetSongForEdit;
 using Karaoke.Application.Songs.Requests.GetSongsForAdmin;
 using Karaoke.Application.Songs.Requests.GetSongsForSinger;
 using Karaoke.Core.Entities;
@@ -41,6 +42,11 @@ public interface ISongsService
     /// </returns>
     Task<IReadOnlyCollection<GetSongsForAdmin.Response>> GetForAdminAsync(
         GetSongsForAdmin.Request request,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<GetSongForEdit.Response> GetForEditAsync(
+        GetSongForEdit.Request request,
         CancellationToken cancellationToken = default
     );
 

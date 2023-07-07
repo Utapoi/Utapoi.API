@@ -2,6 +2,7 @@
 using Karaoke.Application.Files;
 using Karaoke.Application.Karaoke;
 using Karaoke.Application.LocalizedStrings.Interfaces;
+using Karaoke.Application.Lyrics;
 using Karaoke.Application.Singers;
 using Karaoke.Application.Songs;
 using Karaoke.Application.Tags;
@@ -12,6 +13,7 @@ using Karaoke.Infrastructure.Files;
 using Karaoke.Infrastructure.Identity;
 using Karaoke.Infrastructure.Karaoke;
 using Karaoke.Infrastructure.LocalizedStrings;
+using Karaoke.Infrastructure.Lyrics;
 using Karaoke.Infrastructure.Options;
 using Karaoke.Infrastructure.Persistence;
 using Karaoke.Infrastructure.Singers;
@@ -59,6 +61,7 @@ public static class DependencyInjection
         services.AddScoped<ISongsService, SongsService>();
         services.AddScoped<ITagsService, TagsService>();
         services.AddScoped<ILocalizedStringsService, LocalizedStringsService>();
+        services.AddScoped<ILyricsService, LyricsService>();
 
         return services;
     }

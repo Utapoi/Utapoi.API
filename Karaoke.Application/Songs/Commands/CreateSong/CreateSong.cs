@@ -57,7 +57,7 @@ public static class CreateSong
         /// </summary>
         public FileRequest? PreviewFile { get; set; }
 
-        public IEnumerable<LocalizedFileRequest?> LyricsFiles { get; set; } = new List<LocalizedFileRequest?>();
+        public IEnumerable<LocalizedStringRequest> Lyrics { get; set; } = new List<LocalizedStringRequest>();
 
         /// <summary>
         ///     Gets or sets an <see cref="ICollection{T}" /> of <see cref="LocalizedFileRequest" />s representing the karaoke

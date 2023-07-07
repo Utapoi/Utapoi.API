@@ -55,6 +55,8 @@ public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
 
     public DbSet<LocalizedString> LocalizedStrings => Set<LocalizedString>();
 
+    public DbSet<Core.Entities.Lyrics> Lyrics => Set<Core.Entities.Lyrics>();
+
     public DbSet<KaraokeInfo> KaraokeInfos => Set<KaraokeInfo>();
 
     /// <summary>

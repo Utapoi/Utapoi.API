@@ -13,6 +13,8 @@ public interface IKaraokeDbContext
 
     DbSet<LocalizedString> LocalizedStrings { get; }
 
+    DbSet<Core.Entities.Lyrics> Lyrics { get; }
+
     DbSet<Singer> Singers { get; }
 
     DbSet<Song> Songs { get; }

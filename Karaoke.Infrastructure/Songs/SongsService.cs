@@ -15,6 +15,8 @@ using Karaoke.Core.Entities;
 using Karaoke.Core.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Karaoke.Application.Lyrics;
+using Karaoke.Application.Songs.Requests.GetSongForEdit;
 
 namespace Karaoke.Infrastructure.Songs;
 
@@ -35,6 +37,8 @@ public sealed class SongsService : ISongsService
 
     private readonly ITagsService _tagsService;
 
+    private readonly ILyricsService _lyricsService;
+
     private readonly IMapper _mapper;
 
     /// <summary>
@@ -47,15 +51,17 @@ public sealed class SongsService : ISongsService
     /// <param name="filesService">The files service.</param>
     /// <param name="karaokeService">The karaoke service.</param>
     /// <param name="mapper">The mapper.</param>
+    /// <param name="lyricsService">The lyrics service.</param>
     public SongsService(
         IKaraokeDbContext context,
         ISingersService singersService,
         IAlbumsService albumsService,
         ITagsService tagsService,
         IFilesService filesService,
-        IKaraokeService karaokeService
-,
-        IMapper mapper)
+        IKaraokeService karaokeService,
+        IMapper mapper,
+        ILyricsService lyricsService
+    )
     {
         _context = context;
         _singersService = singersService;
@@ -64,6 +70,7 @@ public sealed class SongsService : ISongsService
         _filesService = filesService;
         _karaokeService = karaokeService;
         _mapper = mapper;
+        _lyricsService = lyricsService;
     }
 
     /// <inheritdoc cref="ISongsService.CreateAsync(CreateSong.Command, CancellationToken)" />
@@ -89,6 +96,10 @@ public sealed class SongsService : ISongsService
             ReleaseDate = command.ReleaseDate.ToUniversalTime(),
             Karaoke = new List<KaraokeInfo>()
         };
+
+        song.Lyrics = command.Lyrics
+            .Select(x => _lyricsService.Create(x, song))
+            .ToList();
 
         if (command.Thumbnail?.File.Length > 0)
         {
@@ -143,6 +154,18 @@ public sealed class SongsService : ISongsService
             .ProjectTo<GetSongsForAdmin.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<GetSongForEdit.Response> GetForEditAsync(
+        GetSongForEdit.Request request,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var song = await _context.Songs
+            .ProjectTo<GetSongForEdit.Response>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(x => x.Id == request.SongId, cancellationToken);
+
+        return song ?? throw new EntityNotFoundException<Song>(request.SongId);
     }
 
     /// <inheritdoc cref="ISongsService.GetAsync(Guid, CancellationToken)" />

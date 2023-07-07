@@ -5,9 +5,9 @@ using Karaoke.Core.Entities;
 using Karaoke.Core.Exceptions;
 using MediatR;
 
-namespace Karaoke.Application.Songs.Requests.GetSong;
+namespace Karaoke.Application.Songs.Requests.GetSongForEdit;
 
-public static partial class GetSong
+public static partial class GetSongForEdit
 {
     [UsedImplicitly]
     internal sealed class Handler : IRequestHandler<Request, Result<Response>>
@@ -23,13 +23,13 @@ public static partial class GetSong
         {
             try
             {
-                var song = await _songsService.GetAsync(request.Id, cancellationToken);
+                var song = await _songsService.GetForEditAsync(request, cancellationToken);
 
                 return Result.Ok(song);
             }
             catch (EntityNotFoundException<Song> ex)
             {
-                return Result.Fail(new EntityNotFoundError(ex.Message, request.Id));
+                return Result.Fail(new EntityNotFoundError(ex.Message, request.SongId));
             }
             catch (Exception ex)
             {

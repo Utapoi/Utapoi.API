@@ -3,9 +3,9 @@ using Karaoke.Application.Common.Mappings;
 using Karaoke.Core.Entities;
 using Karaoke.Core.Extensions;
 
-namespace Karaoke.Application.Songs.Requests.GetSong;
+namespace Karaoke.Application.Songs.Requests.GetSongForEdit;
 
-public static partial class GetSong
+public static partial class GetSongForEdit
 {
     public struct SingerDTO : IProjection<Singer, SingerDTO>
     {
@@ -13,18 +13,8 @@ public static partial class GetSong
 
         public IReadOnlyCollection<LocalizedString> Names { get; set; } = new List<LocalizedString>();
 
-        public string Cover { get; set; } = string.Empty;
-
         public SingerDTO()
         {
-        }
-
-        public readonly void ConfigureProjection(IProjectionExpression<Singer, SingerDTO> projection)
-        {
-            projection.ForMember(
-                d => d.Cover,
-                opt => opt.MapFrom(s => s.Cover!.GetUrl())
-            );
         }
     }
 
@@ -34,22 +24,19 @@ public static partial class GetSong
 
         public IReadOnlyCollection<LocalizedString> Titles { get; set; } = new List<LocalizedString>();
 
-        public string Cover { get; set; } = string.Empty;
-
-        public DateTime ReleaseDate { get; set; }
-
-        public IReadOnlyCollection<SingerDTO> Singers { get; set; } = new List<SingerDTO>();
-
         public AlbumDTO()
         {
         }
+    }
 
-        public readonly void ConfigureProjection(IProjectionExpression<Album, AlbumDTO> projection)
+    public struct TagDTO : IProjection<Tag, TagDTO>
+    {
+        public Guid Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
+        public TagDTO()
         {
-            projection.ForMember(
-                d => d.Cover,
-                opt => opt.MapFrom(s => s.Cover!.GetUrl())
-            );
         }
     }
 
@@ -65,9 +52,11 @@ public static partial class GetSong
 
         public DateTime ReleaseDate { get; set; }
 
+        public IReadOnlyCollection<SingerDTO> Singers { get; set; } = new List<SingerDTO>();
+
         public IReadOnlyCollection<AlbumDTO> Albums { get; set; } = new List<AlbumDTO>();
 
-        public IReadOnlyCollection<SingerDTO> Singers { get; set; } = new List<SingerDTO>();
+        public IReadOnlyCollection<TagDTO> Tags { get; set; } = new List<TagDTO>();
 
         public Response()
         {

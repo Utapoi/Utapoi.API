@@ -24,12 +24,15 @@ public static class MediatorExtensions
     /// <param name="request">
     ///     The <see cref="IRequest{T}" />.
     /// </param>
+    /// <param name="cancellationToken">
+    ///     The cancellation token.
+    /// </param>
     /// <returns>
     ///     An <see cref="IActionResult" />.
     /// </returns>
-    public static async Task<IActionResult> ProcessRequestAsync<T>(this ISender mediator, IRequest<Result<T>> request)
+    public static async Task<IActionResult> ProcessRequestAsync<T>(this ISender mediator, IRequest<Result<T>> request, CancellationToken cancellationToken = default)
     {
-        var result = await mediator.Send(request);
+        var result = await mediator.Send(request, cancellationToken);
 
         if (result.HasError<EntityNotFoundError>())
         {
