@@ -42,13 +42,22 @@ public class SingersController : ApiControllerBase
     [ProducesResponseType(typeof(IEnumerable<GetSingers.Response>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<IActionResult> GetSingersAsync([FromQuery] GetSingersRequest request, CancellationToken cancellationToken = default)
-        => Mediator.ProcessRequestAsync(new GetSingers.Request(request.Skip, request.Take));
+    public Task<IActionResult> GetSingersAsync(
+        [FromQuery] GetSingersRequest request,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return Mediator.ProcessRequestAsync(
+            new GetSingers.Request(request.Skip, request.Take),
+            cancellationToken
+        );
+    }
 
     /// <summary>
     ///     Gets a singer by id.
     /// </summary>
     /// <param name="id">The id.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     ///     A <see cref="IActionResult" /> containing the result of the operation.
     /// </returns>
@@ -57,14 +66,23 @@ public class SingersController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<IActionResult> GetSingerAsync(Guid id)
-        => Mediator.ProcessRequestAsync(new GetSinger.Request(id));
+    public Task<IActionResult> GetSingerAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return Mediator.ProcessRequestAsync(
+            new GetSinger.Request(id),
+            cancellationToken
+        );
+    }
 
     /// <summary>
     ///    Gets a list of songs for a singer.
     /// </summary>
     /// <param name="id">The id of the singer.</param>
     /// <param name="request">The paginated request params.</param>
+    /// <param name="cancellationToken">The cancellationToken.</param>
     /// <returns>
     ///    A <see cref="IActionResult" /> containing the result of the operation.
     /// </returns>
@@ -73,13 +91,18 @@ public class SingersController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public Task<IActionResult> GetSongsForSingerAsync([FromRoute] Guid id, [FromQuery] PaginatedRequest request)
-        => Mediator.ProcessRequestAsync(new GetSongsForSinger.Request(id)
+    public Task<IActionResult> GetSongsForSingerAsync(
+        [FromRoute] Guid id,
+        [FromQuery] PaginatedRequest request,
+        CancellationToken cancellationToken = default
+    ) 
+    {
+        return Mediator.ProcessRequestAsync(new GetSongsForSinger.Request(id)
         {
             Skip = request.Skip,
             Take = request.Take
-        });
-
+        }, cancellationToken);
+    }
     /// <summary>
     ///     Search a singer by name.
     /// </summary>

@@ -50,8 +50,8 @@ dotnet user-secrets init
 4. Add the necessary secrets for OAuth2 Google authentication. Replace `YOUR_CLIENT_ID` and `YOUR_CLIENT_SECRET` with your actual values:
 
 ```shell
-dotnet user-secrets set "GoogleOptions:GoogleAuthOptions:ClientId" "YOUR_CLIENT_ID"
-dotnet user-secrets set "GoogleOptions:GoogleAuthOptions:ClientSecret" "YOUR_CLIENT_SECRET"
+dotnet user-secrets set "GoogleOptions:Auth:ClientId" "YOUR_CLIENT_ID" --project Karaoke.API
+dotnet user-secrets set "GoogleOptions:Auth:ClientSecret" "YOUR_CLIENT_SECRET" --project Karaoke.API
 ```
 
 5. If required, configure the `appsettings.development.json` file with the following information:

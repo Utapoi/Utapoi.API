@@ -90,6 +90,11 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseInfrastructure();
 
+if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "files")))
+{
+    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "files"));
+}
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
