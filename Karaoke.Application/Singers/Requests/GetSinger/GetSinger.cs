@@ -1,4 +1,5 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using Karaoke.Application.Common.Errors;
 using MediatR;
 
@@ -10,9 +11,12 @@ public static partial class GetSinger
     {
         private readonly ISingersService _singersService;
 
-        public Handler(ISingersService singersService)
+        private readonly IMapper _mapper;
+
+        public Handler(ISingersService singersService, IMapper mapper)
         {
             _singersService = singersService;
+            _mapper = mapper;
         }
 
         public async Task<Result<Response>> Handle(Request request, CancellationToken cancellationToken)
@@ -21,7 +25,7 @@ public static partial class GetSinger
 
             return singer is null
                 ? Result.Fail(new EntityNotFoundError("Singer not found", request.Id))
-                : Result.Ok(singer);
+                : Result.Ok(_mapper.Map<Response>(singer));
         }
     }
 }

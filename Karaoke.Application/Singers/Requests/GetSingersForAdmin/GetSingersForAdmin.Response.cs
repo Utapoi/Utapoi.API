@@ -7,7 +7,7 @@ namespace Karaoke.Application.Singers.Requests.GetSingersForAdmin;
 
 public static partial class GetSingersForAdmin
 {
-    public struct AlbumDTO : IProjection<Album, AlbumDTO>
+    public struct AlbumDTO : IMap<Album, AlbumDTO>
     {
         public string Id { get; set; } = string.Empty;
 
@@ -15,7 +15,7 @@ public static partial class GetSingersForAdmin
         {
         }
 
-        public readonly void ConfigureProjection(IProjectionExpression<Album, AlbumDTO> projection)
+        public readonly void ConfigureMapping(IProjectionExpression<Album, AlbumDTO> projection)
         {
             projection.ForMember(
                 d => d.Id,
@@ -24,7 +24,7 @@ public static partial class GetSingersForAdmin
         }
     }
 
-    public struct SongDTO : IProjection<Song, SongDTO>
+    public struct SongDTO : IMap<Song, SongDTO>
     {
         public string Id { get; set; } = string.Empty;
 
@@ -32,7 +32,7 @@ public static partial class GetSingersForAdmin
         {
         }
 
-        public readonly void ConfigureProjection(IProjectionExpression<Song, SongDTO> projection)
+        public readonly void ConfigureMapping(IProjectionExpression<Song, SongDTO> projection)
         {
             projection.ForMember(
                 d => d.Id,
@@ -41,7 +41,7 @@ public static partial class GetSingersForAdmin
         }
     }
 
-    public sealed class Response : IProjection<Singer, Response>
+    public sealed class Response : IMap<Singer, Response>
     {
         public string Id { get; set; } = string.Empty;
 
@@ -53,7 +53,7 @@ public static partial class GetSingersForAdmin
 
         public IReadOnlyCollection<SongDTO> Songs { get; set; } = new List<SongDTO>();
 
-        public void ConfigureProjection(IProjectionExpression<Singer, Response> projection)
+        public void ConfigureMapping(IProjectionExpression<Singer, Response> projection)
         {
             projection.ForMember(
                 d => d.Id,

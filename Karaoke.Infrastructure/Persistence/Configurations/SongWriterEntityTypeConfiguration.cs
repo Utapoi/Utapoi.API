@@ -12,8 +12,10 @@ public class SongWriterEntityTypeConfiguration : IEntityTypeConfiguration<SongWr
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<SongWriter> builder)
     {
-        builder.HasMany(x => x.Names);
+        builder.HasMany(x => x.Names)
+            .WithMany();
 
-        builder.HasMany(x => x.Nicknames);
+        builder.HasMany(x => x.Nicknames)
+            .WithMany();
     }
 }

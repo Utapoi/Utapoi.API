@@ -35,14 +35,14 @@ public interface ISingersService
 
     Singer? GetById(Guid id);
 
-    Task<GetSinger.Response?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Singer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyCollection<GetSingers.Response>> GetAsync(
+    Task<IReadOnlyCollection<Singer>> GetAsync(
         GetSingers.Request request,
         CancellationToken cancellationToken = default
     );
 
-    Task<IReadOnlyCollection<GetSingersForAdmin.Response>> GetForAdminAsync(
+    Task<IReadOnlyCollection<Singer>> GetForAdminAsync(
         GetSingersForAdmin.Request request,
         CancellationToken cancellationToken = default
     );

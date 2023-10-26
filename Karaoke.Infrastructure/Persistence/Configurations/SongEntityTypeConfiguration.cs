@@ -12,7 +12,8 @@ public class SongEntityTypeConfiguration : IEntityTypeConfiguration<Song>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Song> builder)
     {
-        builder.HasMany(x => x.Titles);
+        builder.HasMany(x => x.Titles)
+            .WithMany();
 
         builder.Property(x => x.Duration)
             .HasConversion<long>();
@@ -61,11 +62,13 @@ public class SongEntityTypeConfiguration : IEntityTypeConfiguration<Song>
         builder.HasMany(x => x.SongWriters)
             .WithMany(x => x.Songs);
 
-        builder.HasMany(x => x.Sources);
+        builder.HasMany(x => x.Sources)
+            .WithMany();
 
         builder.HasMany(x => x.Collections)
             .WithMany(x => x.Songs);
 
-        builder.HasMany(x => x.Tags);
+        builder.HasMany(x => x.Tags)
+            .WithMany();
     }
 }

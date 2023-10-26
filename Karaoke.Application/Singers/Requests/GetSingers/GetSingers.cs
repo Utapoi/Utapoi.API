@@ -1,4 +1,5 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using Karaoke.Application.Common;
 using MediatR;
 
@@ -10,9 +11,12 @@ public static partial class GetSingers
     {
         private readonly ISingersService _singersService;
 
-        public Handler(ISingersService singersService)
+        private readonly IMapper _mapper;
+
+        public Handler(ISingersService singersService, IMapper mapper)
         {
             _singersService = singersService;
+            _mapper = mapper;
         }
 
         public async Task<Result<PaginatedResponse<Response>>> Handle(Request request, CancellationToken cancellationToken)
@@ -21,7 +25,7 @@ public static partial class GetSingers
 
             return Result.Ok(new PaginatedResponse<Response>
             {
-                Items = singers,
+                Items = _mapper.Map<List<Response>>(singers),
                 Count = singers.Count,
                 TotalCount = await _singersService.CountAsync(cancellationToken)
             });

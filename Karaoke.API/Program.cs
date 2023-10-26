@@ -13,22 +13,25 @@ builder.Services.AddCors(x =>
 {
     x.AddDefaultPolicy(c =>
     {
-        c.WithOrigins("http://localhost:3000")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        //c.WithOrigins("http://localhost:3000")
+        //    .AllowAnyHeader()
+        //    .AllowAnyMethod()
+        //    .AllowAnyOrigin();
 
-        c.WithOrigins("https://localhost:3000")
-            .AllowAnyHeader()
+        c.AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyOrigin();
 
-        c.WithOrigins("https://karaoke.utapoi.com")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        //c.WithOrigins("https://karaoke.utapoi.com")
+        //    .AllowAnyHeader()
+        //    .AllowAnyMethod()
+        //    .AllowCredentials();
     });
 });
+
+
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 
 builder.Services
     .AddControllers()
@@ -45,9 +48,6 @@ builder.Services.AddSwaggerGen(c => { c.CustomSchemaIds(type => type?.FullName?.
 
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-builder.Services.AddInfrastructure(builder.Configuration);
-
-builder.Services.AddApplication();
 
 var app = builder.Build();
 

@@ -8,8 +8,11 @@ public class CollectionEntityTypeConfiguration : IEntityTypeConfiguration<Collec
 {
     public void Configure(EntityTypeBuilder<Collection> builder)
     {
-        builder.HasMany(x => x.Names);
+        builder.HasMany(x => x.Names)
+            .WithMany()
+            .UsingEntity("CollectionNamesLocalizedString");
 
-        builder.HasMany(x => x.Tags);
+        builder.HasMany(x => x.Tags)
+            .WithMany();
     }
 }

@@ -3,6 +3,8 @@ using Karaoke.Application.Persistence;
 using Karaoke.Core.Entities;
 using Karaoke.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
+using Tag = Karaoke.Core.Entities.Tag;
 
 namespace Karaoke.Infrastructure.Persistence.Contexts;
 
@@ -42,7 +44,7 @@ public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
     public DbSet<Singer> Singers => Set<Singer>();
 
     /// <summary>
-    ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Tag" />.
+    ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Core.Entities.Tag" />.
     /// </summary>
     public DbSet<Tag> Tags => Set<Tag>();
 

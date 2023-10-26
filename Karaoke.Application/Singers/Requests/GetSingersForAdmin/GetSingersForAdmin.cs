@@ -16,9 +16,9 @@ public static partial class GetSingersForAdmin
     /// </summary>
     internal sealed class Handler : IRequestHandler<Request, Result<PaginatedResponse<Response>>>
     {
-        private readonly IMapper _mapper;
-
         private readonly ISingersService _singersService;
+
+        private readonly IMapper _mapper;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Handler" /> class.
@@ -40,7 +40,7 @@ public static partial class GetSingersForAdmin
 
             return Result.Ok(new PaginatedResponse<Response>
             {
-                Items = singers,
+                Items = _mapper.Map<List<Response>>(singers),
                 Count = singers.Count,
                 TotalCount = await _singersService.CountAsync(cancellationToken)
             });

@@ -12,8 +12,10 @@ public class WorkEntityTypeConfiguration : IEntityTypeConfiguration<Work>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Work> builder)
     {
-        builder.HasMany(x => x.Names);
+        builder.HasMany(x => x.Names)
+            .WithMany();
 
-        builder.HasMany(x => x.Descriptions);
+        builder.HasMany(x => x.Descriptions)
+            .WithMany();
     }
 }

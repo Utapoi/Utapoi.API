@@ -40,8 +40,8 @@ public class SingersService : ISingersService
         CancellationToken cancellationToken = default
     )
     {
-        var profilePicture = await _filesService.CreateAsync(command.ProfilePictureFile, cancellationToken);
-        var cover = await _filesService.CreateAsync(command.CoverFile, cancellationToken);
+        var profilePicture = await _filesService.CreateAsync(command.ProfilePictureFile!, cancellationToken);
+        var cover = await _filesService.CreateAsync(command.CoverFile!, cancellationToken);
 
         var singer = new Singer
         {
@@ -207,7 +207,7 @@ public class SingersService : ISingersService
             .FirstOrDefault(x => x.Id == id);
     }
 
-    public Task<GetSinger.Response?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public Task<Singer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return _context
             .Singers
@@ -219,27 +219,25 @@ public class SingersService : ISingersService
                 .OrderByDescending(a => a.ReleaseDate)
                 .Take(7)
             )
-            .ProjectTo<GetSinger.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<GetSingers.Response>> GetAsync(
+    public async Task<IReadOnlyCollection<Singer>> GetAsync(
         GetSingers.Request request,
         CancellationToken cancellationToken = default
     )
     {
         return await _context
             .Singers
-            .OrderBy(x => x.Names.FirstOrDefault(n => n.Language == Languages.English)!.Text)
+            .OrderBy(x => x.Id)
             .Skip(request.Skip)
             .Take(request.Take)
-            .ProjectTo<GetSingers.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<GetSingersForAdmin.Response>> GetForAdminAsync(
+    public async Task<IReadOnlyCollection<Singer>> GetForAdminAsync(
         GetSingersForAdmin.Request request,
         CancellationToken cancellationToken = default
     )
@@ -248,7 +246,6 @@ public class SingersService : ISingersService
             .Singers
             .Skip(request.Skip)
             .Take(request.Take)
-            .ProjectTo<GetSingersForAdmin.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }

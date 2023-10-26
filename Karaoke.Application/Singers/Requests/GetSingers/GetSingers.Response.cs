@@ -7,7 +7,7 @@ namespace Karaoke.Application.Singers.Requests.GetSingers;
 
 public static partial class GetSingers
 {
-    public sealed class Response : IProjection<Singer, Response>
+    public sealed class Response : IMap<Singer, Response>
     {
         public string Id { get; set; } = string.Empty;
 
@@ -15,7 +15,7 @@ public static partial class GetSingers
 
         public string ProfilePicture { get; set; } = string.Empty;
 
-        public void ConfigureProjection(IProjectionExpression<Singer, Response> projection)
+        public void ConfigureMapping(IProjectionExpression<Singer, Response> projection)
         {
             projection.ForMember(
                 d => d.Id,

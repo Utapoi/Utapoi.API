@@ -8,7 +8,8 @@ internal sealed class AlbumEntityTypeConfiguration : IEntityTypeConfiguration<Al
 {
     public void Configure(EntityTypeBuilder<Album> builder)
     {
-        builder.HasMany(x => x.Titles);
+        builder.HasMany(x => x.Titles)
+            .WithMany();
 
         builder.HasMany(x => x.Singers)
             .WithMany(x => x.Albums);

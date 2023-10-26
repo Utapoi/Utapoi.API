@@ -12,8 +12,10 @@ public class ComposerEntityTypeConfiguration : IEntityTypeConfiguration<Composer
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Composer> builder)
     {
-        builder.HasMany(x => x.Names);
+        builder.HasMany(x => x.Names)
+            .WithMany();
 
-        builder.HasMany(x => x.Nicknames);
+        builder.HasMany(x => x.Nicknames)
+            .WithMany();
     }
 }

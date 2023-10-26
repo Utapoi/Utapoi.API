@@ -1,10 +1,12 @@
-﻿using Karaoke.Application.Persistence;
+﻿using FluentResults;
+using Karaoke.Application.Persistence;
 using Karaoke.Infrastructure.Persistence.Contexts;
 using Karaoke.Infrastructure.Persistence.Initializers;
 using Karaoke.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace Karaoke.Infrastructure.Persistence;
 
@@ -43,8 +45,12 @@ public static class DependencyInjection
             }
             else if (configuration.GetValue<bool>("UseSQLiteDatabase"))
             {
-                x.UseSqlite(configuration.GetConnectionString("KaraokeDb"),
-                    builder => { builder.MigrationsAssembly(typeof(KaraokeDbContext).Assembly.FullName); });
+                x.UseMongoDB(
+                    new MongoClient(configuration.GetConnectionString("KaraokeDb")),
+                    "utapoi"
+                );
+                //x.UseSqlite(configuration.GetConnectionString("KaraokeDb"),
+                //    builder => { builder.MigrationsAssembly(typeof(KaraokeDbContext).Assembly.FullName); });
             }
             else
             {
