@@ -1,6 +1,6 @@
 <div align=center>
-<h1>Utapoi - Karaoke API</h1>
-Karaoke.API is developed using .NET 7 and ASP.NET Core. This repository contains the backend code for Karaoke.Web project.
+<h1>Utapoi - API</h1>
+Utapoi.API is developed using .NET 7 and ASP.NET Core. This repository contains the backend code for the API used by our projects.
 </div>
 <br>
 
@@ -32,13 +32,13 @@ To set up the project for local development, follow these steps:
 1. Clone the repository:
 
 ```shell
-git clone https://github.com/Utapoi/Karaoke.API.git
+git clone https://github.com/Utapoi/Utapoi.API.git
 ```
 
 2. Navigate to the project directory:
 
 ```shell
-cd Karaoke.API
+cd Utapoi.API
 ```
 
 3. Initialize `dotnet secrets`:
@@ -95,67 +95,6 @@ dotnet run
 ```
 
 The application will start running on `https://localhost:7215/`.
-
-<br>
-
-## EF Core
-
-
-
-### Add a migration
-
-#### Karaoke Context
-
-```sh
-dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/KaraokeDb" --context "KaraokeDbContext"
-```
-
-#### Auth Context
-
-```sh
-dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/AuthDb" --context "AuthDbContext"
-```
-
-#### Stats Context
-
-```sh
-dotnet ef migrations add "<MIGRATION_NAME>" --project Karaoke.Infrastructure --startup-project Karaoke.API --output-dir "Persistence/Migrations/StatsDb" --context "StatsDbContext"
-```
-
-<br>
-
-### Update database
-
-#### Karaoke Context
-
-```sh
-dotnet ef database update --project Karaoke.Infrastructure --startup-project Karaoke.API --context "KaraokeDbContext"
-```
-
-#### Auth Context
-
-```sh
-dotnet ef database update --project Karaoke.Infrastructure --startup-project Karaoke.API --context "AuthDbContext"
-```
-
-#### Stats Context
-
-```sh
-dotnet ef database update --project Karaoke.Infrastructure --startup-project Karaoke.API --context "StatsDbContext"
-```
-
-<br>
-
-## Contributing
-
-We welcome contributions to the Karaoke.API project. To contribute, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Commit your changes and push the branch to your fork.
-4. Submit a pull request, explaining your changes and referencing any relevant issues.
-
-Please ensure that your code adheres to the project's coding standards and includes appropriate unit tests.
 
 <br>
 
