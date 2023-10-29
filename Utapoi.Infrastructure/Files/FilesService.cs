@@ -11,11 +11,11 @@ namespace Utapoi.Infrastructure.Files;
 
 public class FilesService : IFilesService
 {
-    private readonly IKaraokeDbContext _context;
+    private readonly IUtapoiDbContext _context;
 
     private readonly Storage _storage;
 
-    public FilesService(IKaraokeDbContext context, Storage storage)
+    public FilesService(IUtapoiDbContext context, Storage storage)
     {
         _context = context;
         _storage = storage.GetStorageForDirectory(@"files");

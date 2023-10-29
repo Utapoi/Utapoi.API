@@ -48,10 +48,10 @@ public static class DependencyInjection
     {
         services
             .AddOptions(configuration)
-            .AddIdentity()
+            // .AddIdentity()
             .AddPersistence(configuration);
 
-        services.AddScoped<IUsersService, UsersService>();
+        //services.AddScoped<IUsersService, UsersService>();
         services.AddSingleton<Storage, NativeStorage>(_ => new NativeStorage(Directory.GetCurrentDirectory()));
 
         // TODO: Add Source Generators to register all services
@@ -74,7 +74,7 @@ public static class DependencyInjection
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
         });
 
-        app.UseIdentity();
+        //app.UseIdentity();
 
         return app;
     }

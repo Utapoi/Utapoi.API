@@ -17,7 +17,7 @@ namespace Utapoi.Infrastructure.Singers;
 
 public class SingersService : ISingersService
 {
-    private readonly IKaraokeDbContext _context;
+    private readonly IUtapoiDbContext _context;
 
     private readonly IFilesService _filesService;
 
@@ -25,7 +25,7 @@ public class SingersService : ISingersService
 
     private readonly IMapper _mapper;
 
-    public SingersService(IKaraokeDbContext context, IFilesService filesService, IMapper mapper, ILocalizedStringsService localizedStringsService)
+    public SingersService(IUtapoiDbContext context, IFilesService filesService, IMapper mapper, ILocalizedStringsService localizedStringsService)
     {
         _context = context;
         _filesService = filesService;

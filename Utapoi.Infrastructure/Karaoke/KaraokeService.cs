@@ -8,11 +8,11 @@ namespace Utapoi.Infrastructure.Karaoke;
 
 public class KaraokeService : IKaraokeService
 {
-    private readonly IKaraokeDbContext _context;
+    private readonly IUtapoiDbContext _context;
 
     private readonly IFilesService _filesService;
 
-    public KaraokeService(IKaraokeDbContext context, IFilesService filesService)
+    public KaraokeService(IUtapoiDbContext context, IFilesService filesService)
     {
         _context = context;
         _filesService = filesService;

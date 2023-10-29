@@ -9,7 +9,7 @@ using Utapoi.Infrastructure.Persistence.Contexts;
 
 namespace Utapoi.Infrastructure.Persistence.Migrations.KaraokeDb
 {
-    [DbContext(typeof(KaraokeDbContext))]
+    [DbContext(typeof(UtapoiDbContext))]
     [Migration("20230630102422_AddSingerCover")]
     partial class AddSingerCover
     {

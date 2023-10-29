@@ -13,7 +13,7 @@ namespace Utapoi.Infrastructure.Albums;
 
 public class AlbumsService : IAlbumsService
 {
-    private readonly IKaraokeDbContext _context;
+    private readonly IUtapoiDbContext _context;
 
     private readonly ISingersService _singersService;
 
@@ -21,7 +21,7 @@ public class AlbumsService : IAlbumsService
 
     private readonly IMapper _mapper;
 
-    public AlbumsService(IKaraokeDbContext context, ISingersService singersService, IFilesService filesService, IMapper mapper)
+    public AlbumsService(IUtapoiDbContext context, ISingersService singersService, IFilesService filesService, IMapper mapper)
     {
         _context = context;
         _singersService = singersService;

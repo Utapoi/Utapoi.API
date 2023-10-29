@@ -6,13 +6,13 @@ using Utapoi.Infrastructure.Persistence.Contexts;
 
 namespace Utapoi.Infrastructure.Persistence.Initializers;
 
-public class KaraokeDbInitializer : IInitializer
+public class UtapoiDbInitializer : IInitializer
 {
-    private readonly KaraokeDbContext _context;
+    private readonly UtapoiDbContext _context;
 
-    private readonly ILogger<KaraokeDbInitializer> _logger;
+    private readonly ILogger<UtapoiDbInitializer> _logger;
 
-    public KaraokeDbInitializer(KaraokeDbContext context, ILogger<KaraokeDbInitializer> logger)
+    public UtapoiDbInitializer(UtapoiDbContext context, ILogger<UtapoiDbInitializer> logger)
     {
         _context = context;
         _logger = logger;

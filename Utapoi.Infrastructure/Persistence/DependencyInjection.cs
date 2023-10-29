@@ -15,9 +15,9 @@ public static class DependencyInjection
     {
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
-        AddAuthDbContext(services, configuration);
+        // AddAuthDbContext(services, configuration);
         AddKaraokeDbContext(services, configuration);
-        AddStatsDbContext(services, configuration);
+        // AddStatsDbContext(services, configuration);
 
         return services;
     }
@@ -33,37 +33,20 @@ public static class DependencyInjection
     /// </param>
     private static void AddKaraokeDbContext(IServiceCollection services, IConfiguration configuration)
     {
-        var r = configuration.GetConnectionString("KaraokeDb");
-
-        services.AddDbContext<KaraokeDbContext>(x =>
+        services.AddDbContext<UtapoiDbContext>(x =>
         {
-            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
-            {
-                // Note(Mikyan): Switch to SQLite or MSSQL for testing?
-                x.UseInMemoryDatabase("KaraokeDb");
-            }
-            else if (configuration.GetValue<bool>("UseSQLiteDatabase"))
-            {
-                x.UseMongoDB(
-                    new MongoClient(configuration.GetConnectionString("KaraokeDb")),
-                    "utapoi"
-                );
-                //x.UseSqlite(configuration.GetConnectionString("KaraokeDb"),
-                //    builder => { builder.MigrationsAssembly(typeof(KaraokeDbContext).Assembly.FullName); });
-            }
-            else
-            {
-                x.UseSqlServer(configuration.GetConnectionString("KaraokeDb"),
-                    builder => { builder.MigrationsAssembly(typeof(KaraokeDbContext).Assembly.FullName); });
-            }
-
+            x.UseMongoDB(
+                new MongoClient(configuration.GetConnectionString("UtapoiDb")),
+                "Utapoi"
+            );
+            
             x.EnableSensitiveDataLogging();
             x.EnableDetailedErrors();
             x.LogTo(Console.WriteLine);
         });
 
-        services.AddScoped<IInitializer, KaraokeDbInitializer>();
-        services.AddScoped<IKaraokeDbContext>(provider => provider.GetRequiredService<KaraokeDbContext>());
+        services.AddScoped<IInitializer, UtapoiDbInitializer>();
+        services.AddScoped<IUtapoiDbContext>(provider => provider.GetRequiredService<UtapoiDbContext>());
     }
 
     /// <summary>

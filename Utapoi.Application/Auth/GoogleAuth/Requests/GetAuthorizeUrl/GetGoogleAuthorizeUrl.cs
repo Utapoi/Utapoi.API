@@ -23,19 +23,6 @@ public static class GetGoogleAuthorizeUrl
     [UsedImplicitly]
     internal sealed class Handler : IRequestHandler<Request, Result<GoogleAuthProperties>>
     {
-        private readonly IGoogleAuthService _googleAuthService;
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Handler" /> class.
-        /// </summary>
-        /// <param name="googleAuthService">
-        ///     The Google authentication service.
-        /// </param>
-        public Handler(IGoogleAuthService googleAuthService)
-        {
-            _googleAuthService = googleAuthService;
-        }
-
         /// <summary>
         ///     Handles the <see cref="Request" />.
         /// </summary>
@@ -48,11 +35,9 @@ public static class GetGoogleAuthorizeUrl
         /// <returns>
         ///     A <see cref="Result" /> containing the Google authorization URL.
         /// </returns>
-        public Task<Result<GoogleAuthProperties>> Handle(Request request, CancellationToken cancellationToken)
+        public async Task<Result<GoogleAuthProperties>> Handle(Request request, CancellationToken cancellationToken)
         {
-            var url = _googleAuthService.GetAuthorizeUrl();
-
-            return Task.FromResult(Result.Ok(url));
+            return Result.Fail("Not implemented yet.");
         }
     }
 }

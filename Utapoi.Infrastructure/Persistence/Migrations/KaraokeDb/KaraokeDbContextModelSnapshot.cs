@@ -9,7 +9,7 @@ using Utapoi.Infrastructure.Persistence.Contexts;
 
 namespace Karaoke.Infrastructure.Persistence.Migrations.KaraokeDb
 {
-    [DbContext(typeof(KaraokeDbContext))]
+    [DbContext(typeof(UtapoiDbContext))]
     partial class KaraokeDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

@@ -6,9 +6,9 @@ namespace Utapoi.Infrastructure.Tags;
 
 public sealed class TagsService : ITagsService
 {
-    private readonly IKaraokeDbContext _context;
+    private readonly IUtapoiDbContext _context;
 
-    public TagsService(IKaraokeDbContext context)
+    public TagsService(IUtapoiDbContext context)
     {
         _context = context;
     }

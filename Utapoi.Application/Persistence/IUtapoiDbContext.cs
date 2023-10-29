@@ -3,7 +3,7 @@ using Utapoi.Core.Entities;
 
 namespace Utapoi.Application.Persistence;
 
-public interface IKaraokeDbContext
+public interface IUtapoiDbContext
 {
     DbSet<Album> Albums { get; }
 

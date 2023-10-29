@@ -69,17 +69,6 @@ public static class VerifyRole
     [UsedImplicitly]
     internal sealed class Handler : IRequestHandler<Command, Result>
     {
-        private readonly IUsersService _usersService;
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Handler" /> class.
-        /// </summary>
-        /// <param name="usersService">The <see cref="IUsersService" />.</param>
-        public Handler(IUsersService usersService)
-        {
-            _usersService = usersService;
-        }
-
         /// <summary>
         ///     Handles the <see cref="Command" />.
         /// </summary>
@@ -88,9 +77,9 @@ public static class VerifyRole
         /// <returns>
         ///     A <see cref="Result" /> indicating whether the user is in the specified role.
         /// </returns>
-        public Task<Result> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
-            return _usersService.IsInRoleAsync(command.UserId, command.Role, cancellationToken);
+            return Result.Fail("Not implemented yet.");
         }
     }
 }

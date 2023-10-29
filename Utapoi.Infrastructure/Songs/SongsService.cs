@@ -27,7 +27,7 @@ public sealed class SongsService : ISongsService
 {
     private readonly IAlbumsService _albumsService;
 
-    private readonly IKaraokeDbContext _context;
+    private readonly IUtapoiDbContext _context;
 
     private readonly IFilesService _filesService;
 
@@ -44,7 +44,7 @@ public sealed class SongsService : ISongsService
     /// <summary>
     ///     Initializes a new instance of the <see cref="SongsService" /> class.
     /// </summary>
-    /// <param name="context">The <see cref="IKaraokeDbContext" /> context.</param>
+    /// <param name="context">The <see cref="IUtapoiDbContext" /> context.</param>
     /// <param name="singersService">The singers service.</param>
     /// <param name="albumsService">The albums service.</param>
     /// <param name="tagsService">The tags service.</param>
@@ -53,7 +53,7 @@ public sealed class SongsService : ISongsService
     /// <param name="mapper">The mapper.</param>
     /// <param name="lyricsService">The lyrics service.</param>
     public SongsService(
-        IKaraokeDbContext context,
+        IUtapoiDbContext context,
         ISingersService singersService,
         IAlbumsService albumsService,
         ITagsService tagsService,

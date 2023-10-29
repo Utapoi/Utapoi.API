@@ -6,9 +6,9 @@ namespace Utapoi.Infrastructure.LocalizedStrings;
 
 public sealed class LocalizedStringsService : ILocalizedStringsService
 {
-    private readonly IKaraokeDbContext _context;
+    private readonly IUtapoiDbContext _context;
 
-    public LocalizedStringsService(IKaraokeDbContext context)
+    public LocalizedStringsService(IUtapoiDbContext context)
     {
         _context = context;
     }

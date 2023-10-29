@@ -14,12 +14,12 @@ namespace Utapoi.Infrastructure.Persistence.Contexts;
 ///     We may want to consider using a separate database for community submitted songs.
 ///     This allow us to have a concept of "official" songs and "community" songs.
 /// </remarks>
-public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
+public sealed class UtapoiDbContext : DbContext, IUtapoiDbContext
 {
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="KaraokeDbContext" /> class.
+    ///     Initializes a new instance of the <see cref="UtapoiDbContext" /> class.
     /// </summary>
     /// <param name="options">
     ///     The <see cref="DbContextOptions{TContext}" />.
@@ -27,7 +27,7 @@ public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
     /// <param name="auditableEntitySaveChangesInterceptor">
     ///     The <see cref="AuditableEntitySaveChangesInterceptor" />.
     /// </param>
-    public KaraokeDbContext(DbContextOptions<KaraokeDbContext> options,
+    public UtapoiDbContext(DbContextOptions<UtapoiDbContext> options,
         AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor) : base(options)
     {
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
@@ -68,7 +68,7 @@ public sealed class KaraokeDbContext : DbContext, IKaraokeDbContext
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(KaraokeDbContext)) ??
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetAssembly(typeof(UtapoiDbContext)) ??
                                                      Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(modelBuilder);

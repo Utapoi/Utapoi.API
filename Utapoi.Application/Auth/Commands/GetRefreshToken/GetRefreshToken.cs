@@ -36,16 +36,9 @@ public static class GetRefreshToken
     [UsedImplicitly]
     internal sealed class Handler : IRequestHandler<Command, Result<TokenResponse>>
     {
-        private readonly ITokenService _tokenService;
-
-        public Handler(ITokenService tokenService)
+        public async Task<Result<TokenResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
-            _tokenService = tokenService;
-        }
-
-        public Task<Result<TokenResponse>> Handle(Command request, CancellationToken cancellationToken)
-        {
-            return _tokenService.GetRefreshTokenAsync(request);
+            return Result.Fail("Not implemented yet.");
         }
     }
 }

@@ -53,23 +53,10 @@ public static class GoogleLogin
     /// </summary>
     internal sealed class Handler : IRequestHandler<Request, Result<TokenResponse>>
     {
-        private readonly IGoogleAuthService _googleAuthService;
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Handler" /> class.
-        /// </summary>
-        /// <param name="googleAuthService">
-        ///     The Google authentication service.
-        /// </param>
-        public Handler(IGoogleAuthService googleAuthService)
-        {
-            _googleAuthService = googleAuthService;
-        }
-
         /// <inheritdoc />
-        public Task<Result<TokenResponse>> Handle(Request request, CancellationToken cancellationToken)
+        public async Task<Result<TokenResponse>> Handle(Request request, CancellationToken cancellationToken)
         {
-            return _googleAuthService.LoginAsync(request, cancellationToken);
+            return Result.Fail("Not implemented yet.");
         }
     }
 }

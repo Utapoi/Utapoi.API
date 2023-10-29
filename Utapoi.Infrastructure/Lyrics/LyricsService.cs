@@ -7,9 +7,9 @@ namespace Utapoi.Infrastructure.Lyrics;
 
 public sealed class LyricsService : ILyricsService
 {
-    private readonly IKaraokeDbContext _context;
+    private readonly IUtapoiDbContext _context;
 
-    public LyricsService(IKaraokeDbContext context)
+    public LyricsService(IUtapoiDbContext context)
     {
         _context = context;
     }

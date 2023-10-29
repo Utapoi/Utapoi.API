@@ -16,16 +16,9 @@ public static class GetCurrentUser
 
     internal sealed class Handler : IRequestHandler<Request, Result<Response>>
     {
-        private readonly IUsersService _usersService;
-
-        public Handler(IUsersService usersService)
+        public async Task<Result<Response>> Handle(Request request, CancellationToken cancellationToken)
         {
-            _usersService = usersService;
-        }
-
-        public Task<Result<Response>> Handle(Request request, CancellationToken cancellationToken)
-        {
-            return _usersService.GetCurrentUserAsync(cancellationToken);
+            return Result.Fail("Not implemented yet.");
         }
     }
 }
