@@ -18,22 +18,6 @@ public class UtapoiDbInitializer : IInitializer
         _logger = logger;
     }
 
-    public async Task InitialiseAsync()
-    {
-        try
-        {
-            if (_context.Database.IsSqlServer())
-            {
-                await _context.Database.MigrateAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while initializing the database.");
-            throw;
-        }
-    }
-
     public async Task SeedAsync(IConfiguration configuration)
     {
         try

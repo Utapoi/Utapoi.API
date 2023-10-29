@@ -47,27 +47,17 @@ cd Utapoi.API
 dotnet user-secrets init
 ```
 
-4. Add the necessary secrets for OAuth2 Google authentication. Replace `YOUR_CLIENT_ID` and `YOUR_CLIENT_SECRET` with your actual values:
-
-```shell
-dotnet user-secrets set "GoogleOptions:Auth:ClientId" "YOUR_CLIENT_ID" --project Karaoke.API
-dotnet user-secrets set "GoogleOptions:Auth:ClientSecret" "YOUR_CLIENT_SECRET" --project Karaoke.API
-```
-
-5. If required, configure the `appsettings.development.json` file with the following information:
+4. If required, configure the `appsettings.development.json` file with the following information:
 
 ```json
 {
-  "UseInMemoryDatabase": true,
   "ServerOptions": {
     "BaseUrl": "https://localhost:7215/",
     "FileStoragePath": "/files"
   },
   "SecurityOptions": {
     "AdminOptions": {
-      "AllowedEmails": [
-        ...
-      ]
+      "AllowedEmails": []
     },
     "JwtOptions": {
       "Key": "Development",
@@ -76,17 +66,9 @@ dotnet user-secrets set "GoogleOptions:Auth:ClientSecret" "YOUR_CLIENT_SECRET" -
       "ValidAudience": "https://localhost:3000",
       "ValidIssuer": "https://localhost:7215"
     }
-  },
-  "GoogleOptions": {
-    "GoogleAuthOptions": {
-      "RedirectUrl": "https://localhost:7215/",
-      "WebClientUrl": "https://localhost:3000/"
-    }
   }
 }
 ```
-
-Make sure to replace `...` with the actual configuration values.
 
 6. Run the application using the `dotnet run` command:
 

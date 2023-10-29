@@ -4,7 +4,7 @@ namespace Utapoi.Infrastructure.Options.Admin;
 
 public sealed class AdminOptions : IValidatableObject
 {
-    public IReadOnlyCollection<string> AllowedEmails { get; set; } = Array.Empty<string>();
+    public IReadOnlyCollection<string> AllowedEmails { get; init; } = Array.Empty<string>();
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

@@ -48,7 +48,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
         {
             OnMessageReceived = context =>
             {
-                if (!context.Request.Cookies.TryGetValue("Karaoke-Token", out var kToken))
+                if (!context.Request.Cookies.TryGetValue("UtapoiToken", out var kToken))
                 {
                     return Task.CompletedTask;
                 }

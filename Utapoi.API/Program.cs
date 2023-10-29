@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
-using Utapoi.API.Services;
 using Utapoi.Application;
 using Utapoi.Application.Persistence;
-using Utapoi.Application.Users.Interfaces;
 using Utapoi.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,9 +44,6 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c => { c.CustomSchemaIds(type => type?.FullName?.Replace("+", ".")); });
 
-//builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -75,7 +70,6 @@ using (var scope = app.Services.CreateScope())
 
     foreach (var initializer in initializers)
     {
-        await initializer.InitialiseAsync();
         await initializer.SeedAsync(app.Configuration);
     }
 }

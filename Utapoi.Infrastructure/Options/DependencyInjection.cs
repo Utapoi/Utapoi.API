@@ -2,9 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OpenIddict.Client.WebIntegration;
 using Utapoi.Infrastructure.Options.Admin;
-using Utapoi.Infrastructure.Options.Google;
 using Utapoi.Infrastructure.Options.JWT;
 using Utapoi.Infrastructure.Options.Server;
 
@@ -20,11 +18,6 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        services.AddOptions<GoogleAuthOptions>()
-            .BindConfiguration($"GoogleOptions:Auth")
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
         services.AddOptions<ServerOptions>()
             .BindConfiguration($"{nameof(ServerOptions)}")
             .ValidateDataAnnotations()
@@ -36,7 +29,6 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
-        services.AddSingleton<IConfigureOptions<OpenIddictClientWebIntegrationOptions.Google>, ConfigureGoogleOptions>();
 
         return services;
     }

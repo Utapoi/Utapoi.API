@@ -10,11 +10,9 @@ using Utapoi.Application.Lyrics;
 using Utapoi.Application.Singers;
 using Utapoi.Application.Songs;
 using Utapoi.Application.Tags;
-using Utapoi.Application.Users.Interfaces;
 using Utapoi.Core.Storage;
 using Utapoi.Infrastructure.Albums;
 using Utapoi.Infrastructure.Files;
-using Utapoi.Infrastructure.Identity;
 using Utapoi.Infrastructure.Karaoke;
 using Utapoi.Infrastructure.LocalizedStrings;
 using Utapoi.Infrastructure.Lyrics;
@@ -23,7 +21,6 @@ using Utapoi.Infrastructure.Persistence;
 using Utapoi.Infrastructure.Singers;
 using Utapoi.Infrastructure.Songs;
 using Utapoi.Infrastructure.Tags;
-using Utapoi.Infrastructure.Users;
 
 namespace Utapoi.Infrastructure;
 
@@ -48,10 +45,8 @@ public static class DependencyInjection
     {
         services
             .AddOptions(configuration)
-            // .AddIdentity()
             .AddPersistence(configuration);
 
-        //services.AddScoped<IUsersService, UsersService>();
         services.AddSingleton<Storage, NativeStorage>(_ => new NativeStorage(Directory.GetCurrentDirectory()));
 
         // TODO: Add Source Generators to register all services
