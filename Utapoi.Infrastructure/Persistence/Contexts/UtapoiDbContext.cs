@@ -35,8 +35,6 @@ public sealed class UtapoiDbContext : DbContext, IUtapoiDbContext
         ChangeTracker.LazyLoadingEnabled = false;
     }
 
-    public DbSet<KaraokeInfo> Karaoke => Set<KaraokeInfo>();
-
     /// <summary>
     ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Singer" />.
     /// </summary>
@@ -55,10 +53,6 @@ public sealed class UtapoiDbContext : DbContext, IUtapoiDbContext
     public DbSet<NamedFile> Files => Set<NamedFile>();
 
     public DbSet<LocalizedString> LocalizedStrings => Set<LocalizedString>();
-
-    public DbSet<Core.Entities.Lyrics> Lyrics => Set<Core.Entities.Lyrics>();
-
-    public DbSet<KaraokeInfo> KaraokeInfos => Set<KaraokeInfo>();
 
     /// <summary>
     ///     Gets a <see cref="DbSet{TEntity}" /> of <see cref="Song" />.

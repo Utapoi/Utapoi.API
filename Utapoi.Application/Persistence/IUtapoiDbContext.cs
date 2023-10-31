@@ -9,11 +9,7 @@ public interface IUtapoiDbContext
 
     DbSet<NamedFile> Files { get; }
 
-    DbSet<KaraokeInfo> KaraokeInfos { get; }
-
     DbSet<LocalizedString> LocalizedStrings { get; }
-
-    DbSet<Core.Entities.Lyrics> Lyrics { get; }
 
     DbSet<Singer> Singers { get; }
 

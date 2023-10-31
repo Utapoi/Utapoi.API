@@ -18,39 +18,14 @@ public class SongEntityTypeConfiguration : IEntityTypeConfiguration<Song>
         builder.Property(x => x.Duration)
             .HasConversion<long>();
 
-        builder.HasOne(x => x.OriginalFile)
+        builder.HasOne(x => x.SongFile)
             .WithMany()
-            .HasForeignKey(x => x.OriginalFileId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(x => x.Vocal)
-            .WithMany()
-            .HasForeignKey(x => x.VocalId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(x => x.Instrumental)
-            .WithMany()
-            .HasForeignKey(x => x.InstrumentalId)
+            .HasForeignKey(x => x.SongFileId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.Thumbnail)
             .WithMany()
             .HasForeignKey(x => x.ThumbnailId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(x => x.Preview)
-            .WithMany()
-            .HasForeignKey(x => x.PreviewId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasMany(x => x.Lyrics)
-            .WithOne(x => x.Song)
-            .HasForeignKey(x => x.SongId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasMany(x => x.Karaoke)
-            .WithOne(x => x.Song)
-            .HasForeignKey(x => x.SongId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.Singers)

@@ -49,12 +49,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.OAuthClientId("SwaggerAPI");
-        c.OAuthAppName("Karaoke.API");
-        c.OAuthUsePkce();
-    });
+    app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
     app.UseHttpsRedirection();
 }
@@ -73,7 +68,6 @@ using (var scope = app.Services.CreateScope())
         await initializer.SeedAsync(app.Configuration);
     }
 }
-
 
 app.UseCors();
 

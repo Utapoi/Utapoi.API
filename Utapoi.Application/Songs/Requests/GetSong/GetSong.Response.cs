@@ -77,7 +77,7 @@ public static partial class GetSong
         {
             projection.ForMember(
                 d => d.OriginalFile,
-                opt => opt.MapFrom(s => s.OriginalFile != null ? s.OriginalFile.GetUrl() : string.Empty)
+                opt => opt.MapFrom(s => s.SongFile != null ? s.SongFile.GetUrl() : string.Empty)
             );
 
             projection.ForMember(

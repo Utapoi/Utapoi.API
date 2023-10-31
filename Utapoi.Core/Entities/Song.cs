@@ -28,12 +28,12 @@ public sealed class Song : AuditableEntity
     /// </summary>
     public string OriginalLanguage { get; set; } = Languages.Japanese;
 
-    public Guid? OriginalFileId { get; set; }
+    public Guid? SongFileId { get; set; }
 
     /// <summary>
     ///    Gets or sets the original song file.
     /// </summary>
-    public NamedFile? OriginalFile { get; set; }
+    public NamedFile? SongFile { get; set; }
 
     public Guid? ThumbnailId { get; set; }
 
@@ -42,41 +42,10 @@ public sealed class Song : AuditableEntity
     /// </summary>
     public NamedFile? Thumbnail { get; set; }
 
-    public Guid? VocalId { get; set; }
-
     /// <summary>
-    ///     Gets or sets the vocal file path of the song.
-    /// </summary>
-    public NamedFile? Vocal { get; set; }
-
-    public Guid? InstrumentalId { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the instrumental file path of the song.
-    /// </summary>
-    public NamedFile? Instrumental { get; set; }
-
-    public Guid? PreviewId { get; set; }
-
-    /// <summary>
-    ///    Gets or sets the preview file of the song.
-    /// </summary>
-    public NamedFile? Preview { get; set; }
-
-    /// <summary>
-    ///     Gets or sets an <see cref="ICollection{T}" /> of <see cref="Album" />s which the song belongs to.
+    /// Gets an <see cref="ICollection{T}" /> of <see cref="Album" />s.
     /// </summary>
     public ICollection<Album> Albums { get; set; } = new List<Album>();
-
-    /// <summary>
-    ///     Gets the <see cref="Entities.Lyrics" /> of the song.
-    /// </summary>
-    public ICollection<Lyrics> Lyrics { get; set; } = new List<Lyrics>();
-
-    /// <summary>
-    ///     Gets the <see cref="KaraokeInfo" /> of the song.
-    /// </summary>
-    public ICollection<KaraokeInfo> Karaoke { get; set; } = new List<KaraokeInfo>();
 
     /// <summary>
     ///     Gets an <see cref="ICollection{T}" /> of <see cref="Singer" />s who sang the song.

@@ -4,8 +4,6 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Utapoi.Application.Albums;
 using Utapoi.Application.Files;
-using Utapoi.Application.Karaoke;
-using Utapoi.Application.Lyrics;
 using Utapoi.Application.Persistence;
 using Utapoi.Application.Singers;
 using Utapoi.Application.Songs;
@@ -31,13 +29,9 @@ public sealed class SongsService : ISongsService
 
     private readonly IFilesService _filesService;
 
-    private readonly IKaraokeService _karaokeService;
-
     private readonly ISingersService _singersService;
 
     private readonly ITagsService _tagsService;
-
-    private readonly ILyricsService _lyricsService;
 
     private readonly IMapper _mapper;
 
@@ -58,9 +52,7 @@ public sealed class SongsService : ISongsService
         IAlbumsService albumsService,
         ITagsService tagsService,
         IFilesService filesService,
-        IKaraokeService karaokeService,
-        IMapper mapper,
-        ILyricsService lyricsService
+        IMapper mapper
     )
     {
         _context = context;
@@ -68,9 +60,7 @@ public sealed class SongsService : ISongsService
         _albumsService = albumsService;
         _tagsService = tagsService;
         _filesService = filesService;
-        _karaokeService = karaokeService;
         _mapper = mapper;
-        _lyricsService = lyricsService;
     }
 
     /// <inheritdoc cref="ISongsService.CreateAsync(CreateSong.Command, CancellationToken)" />
@@ -94,46 +84,17 @@ public sealed class SongsService : ISongsService
                 .Select(x => _tagsService.GetOrCreateByName(x))
                 .ToList(),
             ReleaseDate = command.ReleaseDate.ToUniversalTime(),
-            Karaoke = new List<KaraokeInfo>()
         };
 
-        song.Lyrics = command.Lyrics
-            .Select(x => _lyricsService.Create(x, song))
-            .ToList();
 
         if (command.Thumbnail?.File.Length > 0)
         {
             song.Thumbnail = await _filesService.CreateAsync(command.Thumbnail, cancellationToken);
         }
 
-        if (command.VoiceFile?.File.Length > 0)
+        if (command.SongFile?.File.Length > 0)
         {
-            song.Vocal = await _filesService.CreateAsync(command.VoiceFile, cancellationToken);
-        }
-
-        if (command.InstrumentalFile?.File.Length > 0)
-        {
-            song.Instrumental = await _filesService.CreateAsync(command.InstrumentalFile, cancellationToken);
-        }
-
-        if (command.PreviewFile?.File.Length > 0)
-        {
-            song.Preview = await _filesService.CreateAsync(command.PreviewFile, cancellationToken);
-        }
-
-        foreach (var karaokeFile in command.KaraokeFiles)
-        {
-            if (karaokeFile == null)
-            {
-                continue;
-            }
-
-            if (karaokeFile?.File.Length == 0)
-            {
-                continue;
-            }
-
-            song.Karaoke.Add(await _karaokeService.CreateAsync(karaokeFile!, song, cancellationToken));
+            song.SongFile = await _filesService.CreateAsync(command.SongFile, cancellationToken);
         }
 
         await _context.Songs.AddAsync(song, cancellationToken);
@@ -175,7 +136,6 @@ public sealed class SongsService : ISongsService
             .Include(x => x.Singers)
             .Include(x => x.Albums)
             .Include(x => x.Tags)
-            .Include(x => x.Karaoke)
             .ProjectTo<GetSong.Response>(_mapper.ConfigurationProvider)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);

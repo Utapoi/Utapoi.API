@@ -4,18 +4,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Utapoi.Application.Albums;
 using Utapoi.Application.Files;
-using Utapoi.Application.Karaoke;
 using Utapoi.Application.LocalizedStrings.Interfaces;
-using Utapoi.Application.Lyrics;
 using Utapoi.Application.Singers;
 using Utapoi.Application.Songs;
 using Utapoi.Application.Tags;
 using Utapoi.Core.Storage;
 using Utapoi.Infrastructure.Albums;
 using Utapoi.Infrastructure.Files;
-using Utapoi.Infrastructure.Karaoke;
 using Utapoi.Infrastructure.LocalizedStrings;
-using Utapoi.Infrastructure.Lyrics;
 using Utapoi.Infrastructure.Options;
 using Utapoi.Infrastructure.Persistence;
 using Utapoi.Infrastructure.Singers;
@@ -52,12 +48,10 @@ public static class DependencyInjection
         // TODO: Add Source Generators to register all services
         services.AddScoped<IAlbumsService, AlbumsService>();
         services.AddScoped<IFilesService, FilesService>();
-        services.AddScoped<IKaraokeService, KaraokeService>();
         services.AddScoped<ISingersService, SingersService>();
         services.AddScoped<ISongsService, SongsService>();
         services.AddScoped<ITagsService, TagsService>();
         services.AddScoped<ILocalizedStringsService, LocalizedStringsService>();
-        services.AddScoped<ILyricsService, LyricsService>();
 
         return services;
     }
